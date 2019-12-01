@@ -1,0 +1,15 @@
+# dependencies
+/node_modules
+
+# OS
+.DS_Store
+
+# svelte generated files
+public/build
+
+# IDE
+.idea/*
+
+# CI/CD
+rules.json
+DEPLOY.md
