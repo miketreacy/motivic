@@ -100,6 +100,20 @@ li {
 	box-sizing: border-box;
 }
 
+h1 {
+    text-transform: uppercase;
+    color: var(--theme_color_3);
+    margin: 0;
+}
+
+h1, h2, h3, h4, p, div {
+    margin: 0;
+}
+
+.hide {
+    display: none;
+}
+
 /* Viewport Breakpoints*/
 
 /*Mobile Landscape*/

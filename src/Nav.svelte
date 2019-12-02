@@ -1,77 +1,77 @@
 <script>
-    export let show = false;
-    $: displayClass = show ? 'show' : '';
+  export let show = false;
+  $: displayClass = show ? "show" : "";
 </script>
 
+<style>
+  nav {
+    position: absolute;
+    top: var(--header_offset);
+    width: 100vw;
+    transform: translate(-140vw, 0);
+    transition: transform var(--timing_slow)
+      cubic-bezier(0.57, 0.005, 0.325, 1.35) var(--timing_fastest);
+    padding: 10px;
+    border-bottom: 2px solid var(--theme_color_1);
+    z-index: var(--middle);
+    background-color: var(--theme_color_4);
+  }
+
+  nav.show {
+    transform: translate(-10px, 0);
+    position: fixed;
+  }
+
+  nav ul {
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+  }
+
+  nav ul button {
+    height: 40px;
+    width: 100px;
+  }
+
+  /*Desktop*/
+  @media (min-width: 1025px) {
+    :root {
+      --header_offset: 113px;
+      --nav_offset: 0px;
+    }
+
+    nav {
+      position: fixed;
+      justify-content: center;
+      transform: translate(0, 0);
+      transition: none;
+    }
+  }
+</style>
 
 <nav class={displayClass}>
-    <ul>
-        <li>
-            <button data-section="about">about</button>
-        </li>
-        <!--HIDING NOTE GRID FOR NOW-->
-        <!--<li>-->
-        <!--<button data-section="note-grid">note grid</button>-->
-        <!--</li>-->
-        <li>
-            <button data-section="randomizer">randomizer</button>
-        </li>
-        <li>
-            <button data-section="transformer">transformer</button>
-        </li>
-        <!--<li>-->
-            <!--<button data-section="studio">studio</button>-->
-        <!--</li>-->
-        <li>
-            <button data-section="motifs">motifs</button>
-        </li>
-        <!--<li>-->
-            <!--<button data-section="settings">settings</button>-->
-        <!--</li>-->
-    </ul>
+  <ul>
+    <li>
+      <button data-section="about">about</button>
+    </li>
+    <!--HIDING NOTE GRID FOR NOW-->
+    <!--<li>-->
+    <!--<button data-section="note-grid">note grid</button>-->
+    <!--</li>-->
+    <li>
+      <button data-section="randomizer">randomizer</button>
+    </li>
+    <li>
+      <button data-section="transformer">transformer</button>
+    </li>
+    <!--<li>-->
+    <!--<button data-section="studio">studio</button>-->
+    <!--</li>-->
+    <li>
+      <button data-section="motifs">motifs</button>
+    </li>
+    <!--<li>-->
+    <!--<button data-section="settings">settings</button>-->
+    <!--</li>-->
+  </ul>
 </nav>
-
-<style>
-    nav {
-        position: absolute;
-        top: var(--header_offset);
-        width: 100vw;
-        transform: translate(-150vw, 0);
-        transition: transform var(--timing_slow) cubic-bezier(0.57, 0.005, 0.325, 1.35) var(--timing_fastest);
-        padding: 10px;
-        border-bottom: 2px solid var(--theme_color_1);
-        z-index: var(--middle);
-        background-color: var(--theme_color_4);
-    }
-
-    nav.show {
-        transform: translate(0, 0);
-        position: fixed;
-    }
-
-    nav ul {
-        flex-direction: row;
-        justify-content: center;
-        width: 100%;
-    }
-
-    nav ul button {
-        height: 40px;
-        width: 100px;
-    }
-
-    /*Desktop*/
-    @media (min-width: 1025px) {
-        :root {
-            --header_offset: 113px;
-            --nav_offset: 0px;
-        }
-
-        nav {
-            position: fixed;
-            justify-content: center;
-            transform: translate(0, 0);
-            transition: none;
-        }
-    }
-</style>
