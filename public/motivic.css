@@ -1,0 +1,970 @@
+header, footer {
+    background-color: var(--theme_color_4);
+    position: fixed;
+    width: 100vw;
+    z-index: var(--middle);
+    padding: 10px;
+    flex-direction: column;
+    min-width: inherit;
+}
+
+header {
+    border-bottom: 2px solid var(--theme_color_1);
+}
+
+.scrolldown header > * {
+    display: none;
+}
+
+.scrolldown header h1, .scrolldown header button {
+    display: flex;
+}
+
+.scrollup footer {
+    display: none;
+}
+
+.subtitle {
+    font-style: italic;
+    display: none;
+}
+
+.subtitle .icons {
+    font-style: normal;
+}
+
+footer {
+    border-top: 2px solid var(--theme_color_1);
+    bottom: 0;
+}
+
+button .icons {
+    color: var(--theme_color_2);
+    font-size: 2em;
+}
+
+button, input, select, summary {
+    cursor: pointer;
+    color: var(--theme_color_2);
+    background-color: var(--theme_color_1);
+    font-size: var(--theme_font_size_1);
+    border: none;
+    border-radius: 5px;
+    min-height: 30px;
+    outline: none;
+}
+
+input, select {
+    font-size: var(--theme_font_size_2);
+}
+
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-left: 5%;
+}
+
+option {
+    text-align: left;
+}
+
+button, summary {
+    border-style: none;
+    padding: 4px 12px 6px;
+    margin: 5px;
+    max-width: 120px;
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.5s ease;
+}
+
+summary {
+    flex-direction: row;
+    border: 1px dotted var(--theme_color_1);
+    max-width: none;
+}
+
+button:disabled, select:disabled {
+    cursor: not-allowed;
+    background-color: var(--theme_color_4);
+    color: var(--theme_color_6);
+}
+
+button, button:focus, summary, summary:focus, select, select:focus, input, input:focus {
+    outline: none;
+}
+
+button span {
+    display: flex;
+}
+
+header button {
+    position: absolute;
+    margin: 4px 10px 10px;
+    height: 30px;
+    width: 40px;
+}
+
+button#user, button#upload-toggle {
+    right: 10px;
+    top: 10px;
+}
+
+section#user-account {
+    position: absolute;
+    right: 10px;
+    z-index: var(--front);
+}
+
+section#user-account button {
+    position: static;
+}
+
+body[data-user-logged-in="true"] button#account-login, body[data-user-logged-in="true"] button#account-create {
+    display: none;
+}
+
+body[data-user-logged-in="false"] button#account-logout {
+    display: none;
+}
+
+main {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    background-color: var(--theme_color_2);
+    top: calc(var(--header_offset) + var(--nav_offset));
+    position: relative;
+    padding: 10px 10px 0;
+    margin-bottom: var(--footer_offset);
+    width: 100%;
+    max-width: 540px;
+    align-items: center;
+    justify-content: center;
+}
+
+p, div, fieldset, h1, h2, button, table, details, summary {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /*flex: 1 1 0;*/
+    flex-wrap: wrap;
+    box-sizing: border-box;
+}
+
+summary {
+    /*attempt to fix the disclosure icon issue in Firefox */
+    /*display: list-item;*/
+    /*list-style: triangle outside none;*/
+}
+
+details {
+    flex: 1 1 0;
+}
+
+details[open] {
+    width: 100%;
+    flex-direction: column;
+}
+
+h1 {
+    text-transform: uppercase;
+    color: var(--theme_color_3);
+    margin: 0;
+}
+
+h1, h2, h3, h4, p, div {
+    margin: 0;
+}
+
+p {
+    margin: 5px auto;
+}
+
+.hide {
+    display: none;
+}
+
+.icons {
+    color: var(--theme_color_1);
+    padding: 0 5px;
+}
+
+h2 .icons {
+    color: var(--theme_color_2);
+}
+
+.dice {
+    transition: transform 1s;
+    transform: scale(1) rotate(0deg);
+}
+
+.dice.roll {
+    transform: scale(1.5) rotate(360deg);
+}
+
+.dice.unroll {
+    transform: scale(1);
+}
+
+fieldset {
+    border-style: solid;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    flex-direction: column;
+}
+
+fieldset > div {
+    padding: 5px 10px;
+    flex-direction: column;
+    border-bottom: 1px dotted var(--theme_color_10);
+    width: 100%;
+}
+
+fieldset > div:last-of-type {
+    border-bottom: none;
+}
+
+fieldset label, fieldset input {
+    padding: 0 5px;
+}
+
+table {
+    border: 1px solid var(--theme_color_3);
+    display: table;
+    padding: 5px 10px;
+    margin: 0 auto;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    border: 1px solid var(--theme_color_3);
+}
+
+th {
+    text-align: start;
+}
+
+fieldset, table, canvas {
+    background-color: var(--theme_color_5);
+}
+
+section.closed {
+    flex-direction: row;
+    border: 1px dashed var(--theme_color_6);
+    padding: 10px;
+}
+
+section.closed h2 {
+    text-transform: lowercase;
+    font-size: var(--theme_font_size_2);
+}
+
+section.closed h2 .icons {
+    display: none
+}
+
+section.closed button .icons {
+    display: none;
+}
+
+section.closed .info {
+    display: none;
+}
+
+section.closed fieldset {
+    /*trying html details -> summary approach*/
+    /*display: none;*/
+}
+
+section.closed .section-toggle.bottom {
+    display: none;
+}
+
+section.closed .section-play {
+    display: none;
+}
+
+section.closed .selected-setting label, section.closed .selected-setting button {
+    display: none;
+}
+
+section.closed .input-wrap select {
+    position: static;
+}
+
+.selected-setting {
+    padding: 0;
+}
+
+.input-wrap {
+    flex-direction: row;
+    padding: 0;
+    width: 100%;
+    position: relative;
+    height: 40px;
+    justify-content: space-between;
+}
+
+.input-wrap label {
+    padding: 5px;
+}
+
+.input-wrap input, .input-wrap select {
+    height: 30px;
+    border: 1px solid var(--theme_color_10);
+    width: 40%;
+    margin: 0;
+}
+
+.input-wrap input {
+    padding: 5px;
+}
+
+.motif-actions select {
+    height: 40px;
+    width: auto;
+    padding: 10px;
+}
+
+.input-wrap input[type="checkbox"] {
+    width: 40px;
+}
+
+input[type="file"] {
+    width: auto;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.input-wrap.overlay {
+    position: absolute;
+    left: 170px;
+    width: 80px;
+}
+
+section#selected-motif {
+    padding: 10px;
+}
+
+section#selected-motif .input-wrap {
+    height: auto;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#select-motif-reset {
+    font-style: italic;
+}
+
+.upload-controls {
+    flex-direction: column;
+    height: auto;
+}
+
+.upload-controls label, .upload-controls input {
+    position: static;
+}
+
+#input-controls {
+    min-height: 60px;
+    border: none;
+}
+
+.form-controls {
+    flex-direction: row;
+    padding: 10px 0 0 0;
+}
+
+section.closed .form-controls {
+    padding: 0;
+}
+
+body[data-display-section="note-grid"] #input-controls, body[data-display-section="randomizer"] #input-controls {
+    display: flex;
+}
+
+body[data-display-section="settings"] #selected-motif {
+    display: none;
+}
+
+/*Hide when no motifs have been created or saved*/
+body[data-motif-created=""][data-motif-saved=""] #selected-motif {
+    display: none;
+}
+
+/*Hide when there is no motif selected*/
+body[data-motif-selected=""] section#transformer, body[data-motif-selected=""] #select-motif-reset {
+    /*display: none;*/
+    visibility: hidden;
+}
+
+/*Hide when there is a motif selected*/
+body:not([data-motif-selected=""]) section#randomizer {
+    display: none;
+}
+
+[data-action="single"] button.save {
+    /*display: none;*/
+}
+
+.input-wrap.name {
+    flex-direction: column;
+}
+
+.input-wrap.name input {
+    width: auto;
+    text-align: center;
+}
+
+body:not([data-motif-selected=""])[data-motif-created="true"] [data-action="single"] button.save {
+    display: flex;
+}
+
+.motif-actions[data-action="single"] {
+    display: flex;
+    padding: 0;
+    width: 100%;
+}
+
+body[data-display-section="about"] section#selected-motif, body[data-display-section="motifs"] section#selected-motif {
+    display: none;
+}
+
+button.play.active, button.loop.active {
+    color: var(--theme_color_9);
+}
+
+#select-motif {
+    color: var(--theme_color_9);
+    width: auto;
+    padding: 0 10px;
+    text-align: center;
+    text-align-last: center;
+}
+
+label[for="select-motif"] {
+    font-size: var(--theme_font_size_1);
+}
+
+.input {
+    flex: 1 1 0;
+}
+
+.input label {
+    flex: 100% 1 0;
+}
+
+.input select, .input input, .input label {
+    font-size: var(--theme_font_size_1);
+}
+
+#svg_label {
+    margin-right: 5px;
+}
+
+.grid-display {
+    width: 100%;
+}
+
+section {
+    margin: 0;
+    padding: 10px;
+    flex-direction: column;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    position: relative;
+
+}
+
+section.show {
+    display: flex;
+}
+
+#motifs {
+    justify-content: initial;
+    align-items: initial;
+    padding: 0;
+}
+
+#motifs .controls {
+    /*max-width: 65vw;*/
+}
+
+/*#randomizer, #transformer {*/
+/*flex-direction: column;*/
+/*}*/
+
+section.motif-controls, #theme, #variations {
+    border: 2px solid var(--theme_color_6);
+}
+
+section.motif-controls {
+    background-color: var(--theme_color_2);
+    flex: none;
+    flex-direction: column;
+    flex-wrap: wrap;
+    padding: 0;
+    border-bottom: none;
+}
+
+section#theme {
+    position: relative;
+}
+
+.select-all {
+    padding: 0;
+    position: absolute;
+    left: 16px;
+    top: 16px;
+}
+
+body[data-motif-saved="false"] .select-all {
+    display: none;
+}
+
+#theme {
+    background-color: var(--theme_color_2);
+    flex: none;
+}
+
+#variations {
+    background-color: var(--theme_color_2);
+    flex: none;
+}
+
+.info {
+    font-size: .75em;
+    font-style: italic;
+}
+
+.copyright {
+    font-size: 1rem;
+    vertical-align: super;
+}
+
+#result {
+    display: none;
+    flex-direction: column;
+}
+
+#result.show {
+    display: flex;
+}
+
+#edit_table {
+    display: none;
+}
+
+#edit_table.show {
+    display: table;
+}
+
+#about ol {
+    text-align: start;
+    align-items: start;
+    padding: 10px 20px;
+}
+
+.motif-display-wrap {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    overflow: auto;
+    border: 1px solid var(--theme_color_6);
+    border-bottom: none;
+    width: 95vw;
+}
+
+#motif-display .motif-display {
+    width: 100%
+}
+
+.motif-details {
+    width: 100%
+}
+
+.motif-summary {
+    max-width: none;
+    background-color: var(--theme_color_5);
+    color: var(--theme_color_3);
+}
+
+.motif-name {
+    flex: 1 1 0;
+    padding: 0;
+}
+
+.motif-table caption {
+    width: 100%;
+}
+
+.motif-list {
+    width: 100%;
+    padding: 5px 10px;
+}
+
+.motif-table .note-number {
+    font-style: italic;
+    font-size: 10px;
+}
+
+.motif-display-header {
+    width: 95%;
+}
+
+.motif-discard {
+    position: absolute;
+    right: 30px;
+    top: 28px;
+    display: none;
+}
+
+.new-motif .motif-discard {
+    display: flex;
+}
+
+.user_motif {
+    border: 1px solid var(--theme_color_7);
+    padding: 7px;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(2, auto);
+    grid-column-gap: 2px;
+    grid-row-gap: 2px;
+    justify-items: stretch;
+    width: 100%;
+    margin: 5px 0;
+}
+
+.user_motif .motif-discard {
+    display: none;
+}
+
+.user_motif div {
+    padding: 0px;
+}
+
+.user_motif .saved {
+    display: none;
+    padding: 2px;
+    color: var(--theme_color_1);
+    font-size: var(--theme_font_size_1);
+    grid-column: 5 / span 1;
+    grid-row: 1 / span 1;
+}
+
+.user_motif[data-saved="true"] .saved {
+    display: flex;
+}
+
+.user_motif .name {
+    padding-top: 5px;
+    grid-column: 2 / span 4;
+    grid-row: 1 / span 1;
+    cursor: text;
+}
+
+.user_motif .id {
+    grid-column: 2 / span 4;
+    grid-row: 2 / span 1;
+    font-size: var(--theme_font_size_1);
+}
+
+.user_motif .motif-display {
+    grid-column: 1 / span 6;
+    grid-row: 2 / span 1;
+
+}
+
+.user_motif .rename {
+    padding-top: 5px;
+    grid-column: 3 / span 2;
+    grid-row: 1 / span 1;
+}
+
+.user_motif .name, .user_motif .rename input {
+    font-size: var(--theme_font_size_2);
+}
+
+.variations .user_motif .name, .variations .user_motif .transformations, .variations .user_motif .rename input {
+    font-size: var(--theme_font_size_1);
+}
+
+.user_motif .remove {
+    grid-column: 6 / span 1;
+    grid-row: 1 / span 1;
+    margin: 0;
+    max-height: 10px;
+    justify-self: end;
+    padding: 0 10px;
+}
+
+.user_motif .transformations-header {
+    display: none;
+    grid-column: 3 / span 2;
+    grid-row: 3 / span 1;
+    align-items: flex-start;
+}
+
+.user_motif .transformations {
+    display: none;
+    grid-column: 2 / span 4;
+    grid-row: 4 / span 1;
+    align-items: flex-start;
+}
+
+.user_motif .variations-header {
+    display: none;
+    grid-column: 2 / span 2;
+    grid-row: 3 / span 1;
+    align-items: flex-start;
+}
+
+.user_motif .variations {
+    display: none;
+    grid-column: 2 / span 5;
+    grid-row: 4 / span 1;
+    align-items: flex-start;
+}
+
+.user_motif .selection {
+    grid-column: 1 / span 1;
+    grid-row: 1 / span 1;
+    font-size: 10px;
+    font-style: italic;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.user_motif .selection label {
+    max-height: 20px;
+    flex-direction: row;
+    align-items: flex-end;
+    display: none;
+}
+
+.user_motif .selection label span {
+    padding-left: 5px;
+}
+
+.user_motif .selection label.select-theme {
+    display: flex;
+    grid-column: 1 / span 1;
+    grid-row: 1 / span 1;
+}
+
+.user_motif .selection input {
+    margin: 0;
+}
+
+label.select-theme span, label.select-all-variations {
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+    display: none;
+}
+
+.user_motif.has-transformations > .transformations-header,
+.user_motif.has-transformations > .transformations,
+.user_motif.has-variations > .variations-header,
+.user_motif.has-variations > .variations,
+.user_motif.has-variations > .selection label.select-all-variations {
+    display: flex;
+}
+
+.user_motif.has-variations > .selection {
+    display: grid;
+}
+
+.user_motif.has-variations > .selection label {
+    align-items: center;
+}
+
+.user_motif.has-variations > .selection label.select-theme span {
+    display: inline;
+}
+
+.save-setting {
+    margin: 0 auto;
+}
+
+section.form {
+    margin-bottom: 40px;
+}
+
+.form h2 {
+    flex: 1 1 0;
+}
+
+.form:not(.closed) h2 {
+    min-width: 200px;
+}
+
+/*COMPONENTS*/
+/*MODAL*/
+.modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: var(--front);
+    background-color: rgba(0, 0, 0, 0);
+    transition-property: background-color;
+    transition-duration: var(--timing_slow);
+    transition-timing-function: linear;
+    transition-delay: var(--timing_fast);
+}
+
+.modal.in {
+    background-color: rgba(0, 0, 0, .95);
+}
+
+/*ALERT*/
+.alert {
+    margin: 0 auto;
+    box-sizing: border-box;
+    text-align: center;
+    width: 40vw;
+    z-index: var(--front);
+    background-color: var(--theme_color_2);
+    border: 1px solid var(--theme_color_2);
+    cursor: default;
+    transition-property: background-color;
+    transition-duration: var(--timing_slow);
+    transition-timing-function: linear;
+    transition-delay: var(--timing_fast);
+    max-width: 400px;
+    min-width: 300px;
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.modal.in .alert {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.alert button {
+    float: right;
+    cursor: pointer;
+    padding: 10px;
+    background-color: red;
+    color: white;
+}
+
+button.dismiss {
+    position: absolute;
+    top: 0;
+    right: 0;
+    max-height: 25px;
+}
+
+#save-motif {
+    padding: 10px;
+    margin: 10px 0;
+}
+
+#save-motif .submit {
+    background-color: var(--theme_color_1);
+    margin: 10px auto 0;
+}
+
+button.section-toggle {
+    flex-direction: row;
+}
+
+section.closed .label-close, .label-open {
+    display: none;
+}
+
+section.closed .label-open, .label-close {
+    display: flex;
+}
+
+.alert section, p, div, form, input, textarea {
+    padding: 10px;
+}
+
+option[data-grid_display_columns="32"], option[data-grid_display_columns="64"] {
+    display: none;
+}
+
+/* Viewport Breakpoints*/
+
+/*Mobile Landscape*/
+@media (min-width: var(--layout_mobile_width)) {
+
+    section {
+        max-width: 75vw;
+    }
+
+}
+
+/*Tablet*/
+@media (min-width: var(--layout_tablet_width)) {
+
+    section.form {
+        max-width: 50vw;
+    }
+
+}
+
+/*Desktop*/
+@media (min-width: var(--layout_desktop_width)) {
+    :root {
+        --header_offset: 113px;
+        --nav_offset: 72px;
+    }
+
+    .subtitle {
+        display: flex;
+    }
+
+    .scrolldown header > * {
+        display: flex;
+    }
+
+    button#menu {
+        display: none;
+    }
+
+    button#upload-toggle {
+        display: none;
+    }
+
+    .upload-controls {
+        display: flex;
+        position: absolute;
+        right: 15vw;
+        width: auto;
+        top: 5px;
+    }
+
+    main {
+        /*flex-direction: row;*/
+    }
+
+    section {
+        padding: 10px;
+        max-width: 50vw;
+    }
+
+    section#note-grid, section#motifs, section#about {
+        /*display: flex;*/
+
+    }
+
+}
+
+/*Widescreen*/
+@media (min-width: var(--layout_widescreen_width)) {
+
+}

@@ -1,66 +1,135 @@
-html, body {
-	position: relative;
-	width: 100%;
-	height: 100%;
+/* GLOBAL CSS VARIABLES */
+:root {
+	/* aka HTML color deepskyblue*/
+	--theme_color_1: #00bfff;
+	--theme_color_2: #fff;
+	--theme_color_3: black;
+	--theme_color_4: #eefaff;
+	--theme_color_5: #eee;
+	--theme_color_6: #ccc014;
+	--theme_color_7: #b2a709;
+	--theme_color_8: #ff1954;
+	--theme_color_9: #FFFF00;
+	--theme_color_10: rgb(192, 192, 192);
+	--theme_font_1: 'Helvetica';
+	/* prevents auto input-zoom on mobile
+    http://blog.osmosys.asia/2017/01/05/prevent-ios-from-zooming-in-on-input-fields/*/
+	--theme_font_size_base: 16px;
+	--theme_font_size_1: .75rem;
+	--theme_font_size_2: 1rem;
+
+	--header_offset: 59px;
+	--nav_offset: 0px;
+	--footer_offset: 54px;
+
+	/*z-index Variables*/
+	--front: 1000;
+	--middle: 500;
+	--back: 0;
+
+	/*Timing Variables*/
+	--timing_now: 0ms;
+	--timing_fastest: 250ms;
+	--timing_fast: 500ms;
+	--timing_slow: 750ms;
+	--timing_slowest: 1000ms;
+
+	/*Break points*/
+	--layout_min_width: 370px;
+	--layout_mobile_width: 480px;
+	--layout_tablet_width: 768px;
+	--layout_desktop_width: 1025px;
+	--layout_widescreen_width: 1300px;
+}
+
+:focus {
+	outline: var(--theme_color_6) auto 5px;
 }
 
 body {
-	color: #333;
-	margin: 0;
-	padding: 8px;
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	background-color: var(--theme_color_2);
+	font-family: var(--theme_font_1);
+	flex-wrap: wrap;
+	margin: 0 auto;
 	box-sizing: border-box;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	align-items: center;
+	font-size: var(--theme_font_size_base);
+	min-width: var(--layout_min_width)
 }
 
-a {
-	color: rgb(0,100,200);
+a, a:visited {
 	text-decoration: none;
+	color: var(--theme_color_3);
 }
 
 a:hover {
 	text-decoration: underline;
 }
 
-a:visited {
-	color: rgb(0,80,160);
-}
-
-label {
-	display: block;
-}
-
-input, button, select, textarea {
-	font-family: inherit;
-	font-size: inherit;
-	padding: 0.4em;
-	margin: 0 0 0.5em 0;
+header, nav, main, section, footer {
 	box-sizing: border-box;
-	border: 1px solid #ccc;
-	border-radius: 2px;
+	display: flex;
 }
 
-input:disabled {
-	color: #ccc;
+p, div, fieldset, h1, h2, button, table, details, summary {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
+	box-sizing: border-box;
 }
 
-input[type="range"] {
-	height: 0;
+ul {
+	list-style: none;
 }
 
-button {
-	color: #333;
-	background-color: #f4f4f4;
-	outline: none;
+ul, ol {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	padding: 0;
+	margin: 0;
+	align-items: center;
+	box-sizing: border-box;
 }
 
-button:disabled {
-	color: #999;
+li {
+	box-sizing: border-box;
 }
 
-button:not(:disabled):active {
-	background-color: #ddd;
+/* Viewport Breakpoints*/
+
+/*Mobile Landscape*/
+@media (min-width: var(--layout_mobile_width)) {
+
+	section {
+		max-width: 75vw;
+	}
+
 }
 
-button:focus {
-	border-color: #666;
+/*Tablet*/
+@media (min-width: var(--layout_tablet_width)) {
+
+	section.form {
+		max-width: 50vw;
+	}
+
+}
+
+/*Desktop*/
+@media (min-width: var(--layout_desktop_width)) {
+	:root {
+		--header_offset: 113px;
+		--nav_offset: 72px;
+	}
+
+}
+
+/*Widescreen*/
+@media (min-width: var(--layout_widescreen_width)) {
+
 }

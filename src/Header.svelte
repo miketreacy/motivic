@@ -1,5 +1,12 @@
+<script>
+    import Nav from './Nav.svelte'
+    const toggleNavMenu = () => showNav = !showNav;
+    export let showNav = false;
+
+
+</script>
 <header class="show">
-    <button id="menu"><span>&#9776;</span></button>
+    <button id="menu" on:click={toggleNavMenu}><span>&#9776;</span></button>
     <h1><a href="/">Motivic</a></h1>
     <!--HIDING USER ACCOUNT FOR NOW-->
     <!--<button id="user"><span>user</span></button>-->
@@ -16,4 +23,57 @@
         <label for="upload">Upload file (MIDI or JSON)</label>
         <input id="upload" type="file" accept=".json, .midi, .mid"/>
     </div>
+    <Nav show={showNav}></Nav>
 </header>
+
+<style>
+    :root {
+    --layout_desktop_width: 1025px;
+    }
+    header {
+        box-sizing: border-box;
+        display: flex;
+    }
+
+    header {
+        background-color: var(--theme_color_4);
+        position: fixed;
+        width: 100vw;
+        z-index: var(--middle);
+        padding: 10px;
+        flex-direction: column;
+        min-width: inherit;
+    }
+
+    header {
+        border-bottom: 2px solid var(--theme_color_1);
+    }
+
+    header button {
+        position: absolute;
+        margin: 4px 10px 10px;
+        height: 30px;
+        width: 40px;
+    }
+
+    button#user, button#upload-toggle {
+        right: 10px;
+        top: 10px;
+    }
+
+    .scrolldown header > * {
+        display: none;
+    }
+
+    .scrolldown header h1, .scrolldown header button {
+        display: flex;
+    }
+
+    /*Desktop*/
+    @media (min-width: 1025px) {
+
+        .scrolldown header > * {
+            display: flex;
+        }
+    }
+</style>
