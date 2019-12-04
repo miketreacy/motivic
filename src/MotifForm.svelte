@@ -1,8 +1,11 @@
 <script>
+  import Field from "./Field.svelte";
   export let formId;
   export let formTitle;
   export let formInfo;
   export let submitFunction;
+  export let formState = {};
+  export let fieldRows = [];
 </script>
 
 <style>
@@ -33,6 +36,23 @@
 
 <!--TODO: make this the abstract component class that is used by RandomizerForm and TransformerForm -->
 <section id={formId} class="show closed form">
+  <h2>
+    <span class="icons dice">&#9861;</span>
+    {formTitle}
+    <span class="icons dice">&#9861;</span>
+  </h2>
+  <p class="info">{formInfo}</p>
+  <fieldset class="user-input">
+    <legend>Settings</legend>
+    <!--<button class="save-setting">save setting</button>-->
+    {#each fieldRows as fields}
+      <div class="form-row">
+        {#each fields as field}
+          <Field {...field} />
+        {/each}
+      </div>
+    {/each}
+  </fieldset>
   <details data-section={formId}>
     <summary>
       <h2>
@@ -52,42 +72,13 @@
     <fieldset class="user-input">
       <legend>Settings</legend>
       <!--<button class="save-setting">save setting</button>-->
-      <div class="form-row">
-        <slot />
-      </div>
-      <div
-        class="form-row input-group input-range"
-        data-property="octave"
-        data-type="object">
-        <slot />
-      </div>
-      <div
-        class="form-row input-group input-range"
-        data-property="leap"
-        data-type="object">
-        <slot />
-      </div>
-      <div
-        class="form-row input-group"
-        data-property="timeSignature"
-        data-type="array">
-        <slot />
-      </div>
-      <div class="form-row">
-        <div
-          class="input-wrap input-group"
-          data-property="tempo"
-          data-type="object">
-          <slot />
+      {#each fieldRows as fields}
+        <div class="form-row">
+          {#each fields as field}
+            <Field {...field} />
+          {/each}
         </div>
-        <div
-          class="input-wrap input-group"
-          data-property="length"
-          data-type="object">
-          <slot />
-          >
-        </div>
-      </div>
+      {/each}
     </fieldset>
   </details>
   <div class="form-controls">

@@ -4,12 +4,12 @@
   export let dataKey = "";
   export let dataIndex = 0;
   export let label = "";
-  export let defaultValue = "";
   export let required = true;
   export let options = [];
   export let min = 0;
   export let max = 9;
   export let step = 1;
+  export let value = null;
 </script>
 
 <style>
@@ -92,25 +92,23 @@
 
 <div class="input-wrap">
   <label for={id}>{label}</label>
-  {#if type == 'dropdown'}
+  {#if type == 'select'}
     <select
       {id}
       data-key={dataKey}
-      data-default={defaultValue}
       data-index={dataIndex}
-      value={defaultValue}
+      bind:value
       {required}>
       {#each options as opt}
-        <option>opt.label</option>
+        <option>{opt}</option>
       {/each}
     </select>
   {:else if type == 'number'}
     <input
-      {type}
+      type="number"
       {id}
       data-key={dataKey}
-      data-default={defaultValue}
-      value={defaultValue}
+      bind:value
       {required}
       {min}
       {max}
@@ -119,30 +117,27 @@
       pattern="[0-9]*" />
   {:else if type == 'text'}
     <input
-      {type}
+      type="text"
       {id}
       data-key={dataKey}
-      data-default={defaultValue}
-      value={defaultValue}
-      placeholder={defaultValue}
+      bind:value
+      placeholder={value}
       {max}
       {required} />
   {:else if type == 'checkbox'}
     <input
-      {type}
+      type="checkbox"
       {id}
       data-key={dataKey}
-      data-default={defaultValue}
       data-index={dataIndex}
-      value={defaultValue}
+      bind:checked={value}
       {required} />
   {:else if type == 'hidden'}
     <input
-      {type}
+      type="hidden"
       {id}
       data-key={dataKey}
-      data-default={defaultValue}
-      data-index={dataIndex}
-      value={defaultValue} />
+      bind:value
+      data-index={dataIndex} />
   {/if}
 </div>
