@@ -51,7 +51,13 @@
     formState: {},
     fieldRows: [
       [
-        { type: "select", id: "key", label: "key", value: "c", options: keys },
+        {
+          type: "select",
+          id: "key",
+          label: "key",
+          value: "c",
+          options: keys
+        },
         {
           type: "select",
           id: "mode",
