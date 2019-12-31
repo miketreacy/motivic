@@ -1,24 +1,9 @@
 <script>
   import MotifForm from "./MotifForm.svelte";
-  export let formId;
-  export let formTitle;
-  export let formInfo;
-  export let submitFunction;
-  export let formState = {};
-  export let fieldRows = [];
-
-  export let type = "";
-  export let id = "";
-  export let dataKey = "";
-  export let dataIndex = 0;
-  export let label = "";
-  export let required = true;
-  export let options = [];
-  export let min = 0;
-  export let max = 9;
-  export let step = 1;
-  export let value = null;
-
+  const submitFunction = state => {
+    console.log(`RANDOMIZER FORM SUMITTED!`);
+    console.dif(state);
+  };
   const keys = [
     "c",
     "c#",
@@ -44,29 +29,62 @@
     "aeolian",
     "locrian"
   ];
-  let props = {
-    formId: "randomizer",
-    formTitle: "Randomizer",
-    formInfo: "generates a random monophonic melody based on user settings",
-    formState: {},
-    fieldRows: [
-      [
-        {
-          type: "select",
-          id: "key",
-          label: "key",
-          value: "c",
-          options: keys
-        },
-        {
-          type: "select",
-          id: "mode",
-          label: "mode",
-          value: "chromatic",
-          options: modes
-        }
-      ]
+  const formId = "randomizer";
+  const formTitle = "Randomizer";
+  const formInfo =
+    "generates a random monophonic melody based on user settings";
+  let formState = {
+    key: "c",
+    mode: "chromatic",
+    octave_low: 3,
+    octave_high: 5
+  };
+  const fieldRows = [
+    [
+      {
+        type: "select",
+        id: "key",
+        label: "key",
+        value: "c",
+        options: keys
+      },
+      {
+        type: "select",
+        id: "mode",
+        label: "mode",
+        value: "chromatic",
+        options: modes
+      }
+    ],
+    [
+      {
+        type: "number",
+        id: "octave_low",
+        label: "Low Octave",
+        value: 3,
+        step: 1,
+        min: 0,
+        max: 8
+      },
+      {
+        type: "number",
+        id: "octave_high",
+        label: "High Octave",
+        value: 5,
+        step: 1,
+        min: 0,
+        max: 8
+      }
     ]
+  ];
+
+  let props = {
+    formId,
+    formTitle,
+    formInfo,
+    formState,
+    fieldRows,
+    submitFunction
   };
 </script>
 

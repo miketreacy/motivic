@@ -13,38 +13,105 @@
   let formOpen = false;
   let formInDefaultState = true;
 
-  function formChange(event) {
-    console.log("formChange() called!");
-    let fieldId = this.id;
-    formState[fieldId] = event.detail.value;
-    console.log("FORM STATE CHANGE");
-    console.dir(formState);
-    console.dir(formStateDefault);
-  }
   function jsonCopy(val) {
     return JSON.parse(JSON.stringify(val));
   }
-  function checkFormState(state, defaultState) {}
+  function logAll() {
+    console.log("formState");
+    console.dir(formState);
+    console.log("formStateDefault");
+    console.dir(formStateDefault);
+  }
+  function validateOctaves(field, newState, oldState) {
+    let lowOctave = oldState["octave_low"];
+    let highOctave = oldState["octave_high"];
+    if (field === "octave_low") {
+      lowOctave = newState[field];
+      highOctave = Math.max(lowOctave, highOctave);
+    }
+    if (field === "octave_high") {
+      highOctave = newState[field];
+      lowOctave = Math.min(highOctave, lowOctave);
+    }
+    newState["octave_high"] = highOctave;
+    newState["octave_low"] = lowOctave;
+    return newState;
+  }
+
+  function getNewState(field, value) {
+    let oldState = jsonCopy(formState);
+    let newState = { [field]: value };
+
+    if (field.includes("octave_")) {
+      newState = validateOctaves(field, newState, oldState);
+    }
+    newState = Object.entries(newState).reduce((obj, [k, v]) => {
+      obj[k] = v;
+      return obj;
+    }, oldState);
+    return newState;
+  }
+
+  function getUpdatedFieldRows(state) {
+    return fieldRows.map(row => {
+      return row.map(field => {
+        field.value = state[field.id];
+        return field;
+      });
+    });
+  }
+
+  function formChange(event) {
+    let fieldId = event.detail.field;
+    let fieldValue = event.detail.value;
+    let newState = getNewState(fieldId, fieldValue);
+    formState = newState;
+  }
+
+  function isInDefaultState(state, stateDefault) {
+    let diffKeys = [];
+    let result = true;
+    if (!(state && stateDefault)) {
+      return result;
+    }
+    logAll();
+    Object.entries(formState).forEach(([k, v]) => {
+      if (stateDefault[k] !== v) {
+        let diffKey = [k, stateDefault[k], v];
+        diffKeys.push(diffKey);
+      }
+    });
+    if (diffKeys.length) {
+      let diffMsg = diffKeys
+        .map(diff => `${diff[0]} was ${diff[1]}, is ${diff[2]}`)
+        .join("\n");
+      console.info(diffMsg);
+      result = false;
+    }
+    console.info(`formInDefaultState: ${result}`);
+    return result;
+  }
 
   onMount(() => {
-    // store initial value as default
-    formStateDefault = jsonCopy(formState);
+    // store initial values as defaults
+    formStateDefault = [].concat(...fieldRows).reduce((obj, field) => {
+      obj[field.id] = field.value;
+      return obj;
+    }, {});
+    formState = jsonCopy(formStateDefault);
+    logAll();
   });
+
   $: {
-    formInDefaultState = (formState, formStateDefault) => {
-      console.dir(formState);
-      console.dir(formStateDefault);
-      Object.entries(formState).forEach(([k, v]) => {
-        if (formStateDefault[k] !== v) {
-          return false;
-        }
-      });
-      return true;
-    };
+    formInDefaultState = isInDefaultState(formState, formStateDefault);
+    fieldRows = getUpdatedFieldRows(formState);
   }
 </script>
 
 <style>
+  section {
+    flex-direction: column;
+  }
   fieldset {
     border-style: solid;
     padding: 0;
@@ -70,7 +137,6 @@
   }
 </style>
 
-<!--TODO: make this the abstract component class that is used by RandomizerForm and TransformerForm -->
 <section id={formId} class="show closed form">
   <MotifFormHeader {formId} {formTitle} {formInfo} />
   <fieldset class="user-input">
@@ -79,7 +145,10 @@
     {#each fieldRows as fields}
       <div class="form-row">
         {#each fields as field}
-          <Field {...field} defaultValue={field.value} on:change={formChange} />
+          <Field
+            {...field}
+            defaultValue={field.value}
+            on:valueChange={formChange} />
         {/each}
       </div>
     {/each}
@@ -91,5 +160,9 @@
                     <select id="select-setting" name="selected-setting" data-default="new unnamed" data-action="single"></select>
                 </div>
             </section>-->
-  <MotifFormControls {formId} {formOpen} {formInDefaultState} />
+  <MotifFormControls
+    {formId}
+    {formOpen}
+    {formInDefaultState}
+    submitFormFn={submitFunction} />
 </section>

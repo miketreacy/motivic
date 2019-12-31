@@ -1,7 +1,7 @@
 <script>
-  import { onMount } from "svelte";
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
+  export let field = null;
   export let type = "";
   export let id = "";
   export let dataKey = "";
@@ -10,13 +10,16 @@
   export let required = true;
   export let options = [];
   export let min = 0;
-  export let max = 9;
+  export let max = 8;
   export let step = 1;
   export let value = null;
-  export let defaultValue = null;
+  export const defaultValue = null;
+  function dispatchValueChange(val) {
+    dispatch("valueChange", { value: val, field: id });
+  }
 
   $: {
-    value => dispatch("change", { value: value });
+    dispatchValueChange(value);
   }
 </script>
 
