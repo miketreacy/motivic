@@ -24,7 +24,8 @@
 </script>
 
 <style>
-  input {
+  input,
+  select {
     cursor: pointer;
     color: var(--theme_color_2);
     font-size: var(--theme_font_size_2);
@@ -33,6 +34,11 @@
     border-radius: 5px;
     min-height: 30px;
     outline: none;
+    padding: 5px;
+    height: 30px;
+    border: 1px solid var(--theme_color_10);
+    width: 40%;
+    margin: 0;
   }
 
   input:focus {
@@ -41,25 +47,17 @@
 
   .input-wrap {
     flex-direction: row;
-    padding: 0;
+    padding: 5px;
     width: 100%;
     position: relative;
-    height: 40px;
     justify-content: space-between;
   }
 
-  .input-wrap label {
+  label {
     padding: 5px;
   }
 
-  .input-wrap input {
-    padding: 5px;
-    height: 30px;
-    border: 1px solid var(--theme_color_10);
-    width: 40%;
-    margin: 0;
-  }
-  .input-wrap input[type="checkbox"] {
+  input[type="checkbox"] {
     width: 40px;
   }
 
@@ -102,7 +100,9 @@
 </style>
 
 <div class="input-wrap">
-  <label for={id}>{label}</label>
+  {#if label}
+    <label for={id}>{label}</label>
+  {/if}
   {#if type == 'select'}
     <select
       {id}
