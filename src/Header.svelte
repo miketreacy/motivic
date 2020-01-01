@@ -2,6 +2,7 @@
   import Nav from "./Nav.svelte";
   const toggleNavMenu = () => (showNav = !showNav);
   export let showNav = false;
+  export let view = "";
 </script>
 
 <style>
@@ -114,5 +115,5 @@
     <label for="upload">Upload file (MIDI or JSON)</label>
     <input id="upload" type="file" accept=".json, .midi, .mid" />
   </div>
-  <Nav show={showNav} />
+  <Nav show={showNav} {view} on:viewChange />
 </header>

@@ -1,6 +1,21 @@
 <script>
+  import { createEventDispatcher } from "svelte";
+  const dispatch = createEventDispatcher();
   export let show = false;
-  $: displayClass = show ? "show" : "";
+  export let view = "";
+  let displayClass = "";
+  function selectView(event) {
+    view = event.target.dataset.view;
+    show = false;
+  }
+  function dispatchViewChange(view) {
+    dispatch("viewChange", { view });
+  }
+
+  $: {
+    displayClass = show ? "show" : "";
+    dispatchViewChange(view);
+  }
 </script>
 
 <style>
@@ -52,26 +67,20 @@
 <nav class={displayClass}>
   <ul>
     <li>
-      <button data-section="about">about</button>
+      <button data-view="about" on:click={selectView}>about</button>
     </li>
     <!--HIDING NOTE GRID FOR NOW-->
     <!--<li>-->
-    <!--<button data-section="note-grid">note grid</button>-->
+    <!--<button data-view="note-grid">note grid</button>-->
     <!--</li>-->
     <li>
-      <button data-section="randomizer">randomizer</button>
+      <button data-view="studio" on:click={selectView}>studio</button>
     </li>
     <li>
-      <button data-section="transformer">transformer</button>
+      <button data-view="motifs" on:click={selectView}>motifs</button>
     </li>
     <!--<li>-->
-    <!--<button data-section="studio">studio</button>-->
-    <!--</li>-->
-    <li>
-      <button data-section="motifs">motifs</button>
-    </li>
-    <!--<li>-->
-    <!--<button data-section="settings">settings</button>-->
+    <!--<button data-view="settings">settings</button>-->
     <!--</li>-->
   </ul>
 </nav>

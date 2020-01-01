@@ -12,10 +12,33 @@
 </script>
 
 <style>
+  .form-controls {
+    flex-direction: row !important;
+    border-style: none;
+    padding: 4px 12px 6px;
+    margin: 5px;
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.5s ease;
+  }
 
+  .form-controls[data-closed="true"] {
+    padding: 0;
+    margin: 0;
+  }
+
+  button {
+    flex-direction: row;
+    flex: 1 1 0;
+    border-style: none;
+    padding: 4px 12px 6px;
+    margin: 5px;
+    max-width: 50px;
+    transition: background-color 0.5s ease;
+  }
 </style>
 
-<div class="form-controls">
+<div class="form-controls" data-closed={!formOpen}>
   <button class="section-toggle" on:click={toggleFormFn}>
     {formOpen ? 'close' : 'open'}
   </button>

@@ -92,6 +92,14 @@
     return result;
   }
 
+  function resetFormFn() {
+    formState = formStateDefault;
+  }
+
+  function toggleFormFn() {
+    formOpen = !formOpen;
+  }
+
   onMount(() => {
     // store initial values as defaults
     formStateDefault = [].concat(...fieldRows).reduce((obj, field) => {
@@ -111,6 +119,11 @@
 <style>
   section {
     flex-direction: column;
+  }
+  section[data-closed="true"] {
+    flex-direction: row;
+    border: 1px dashed var(--theme_color_6);
+    padding: 10px;
   }
   fieldset {
     border-style: solid;
@@ -137,22 +150,32 @@
   }
 </style>
 
-<section id={formId} class="show closed form">
-  <MotifFormHeader {formId} {formTitle} {formInfo} />
-  <fieldset class="user-input">
-    <legend>Settings</legend>
-    <!--<button class="save-setting">save setting</button>-->
-    {#each fieldRows as fields}
-      <div class="form-row">
-        {#each fields as field}
-          <Field
-            {...field}
-            defaultValue={field.value}
-            on:valueChange={formChange} />
-        {/each}
-      </div>
-    {/each}
-  </fieldset>
+<section id={formId} data-closed={!formOpen}>
+  <MotifFormHeader {formId} {formTitle} {formInfo} {formOpen} />
+
+  {#if formOpen}
+    <MotifFormControls
+      {formId}
+      {formOpen}
+      {formInDefaultState}
+      {toggleFormFn}
+      {resetFormFn}
+      submitFormFn={submitFunction} />
+    <fieldset class="user-input">
+      <legend>Settings</legend>
+      <!--<button class="save-setting">save setting</button>-->
+      {#each fieldRows as fields}
+        <div class="form-row">
+          {#each fields as field}
+            <Field
+              {...field}
+              defaultValue={field.value}
+              on:valueChange={formChange} />
+          {/each}
+        </div>
+      {/each}
+    </fieldset>
+  {/if}
   <!--<section class="show selected-setting">
                 <div class="input-wrap">
                     <label for="select-setting">Selected Setting</label>
@@ -164,5 +187,7 @@
     {formId}
     {formOpen}
     {formInDefaultState}
+    {toggleFormFn}
+    {resetFormFn}
     submitFormFn={submitFunction} />
 </section>

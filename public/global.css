@@ -82,6 +82,30 @@ p, div, fieldset, h1, h2, button, table, details, summary {
 	box-sizing: border-box;
 }
 
+button, input,
+  select {
+    cursor: pointer;
+    color: var(--theme_color_2);
+    font-size: var(--theme_font_size_2);
+    background-color: var(--theme_color_1);
+    border: none;
+    border-radius: 5px;
+    min-height: 30px;
+    outline: none;
+    padding: 5px;
+    height: 30px;
+    border: 1px solid var(--theme_color_10);
+    width: 40%;
+    margin: 0;
+  }
+
+  button:disabled, select:disabled {
+    cursor: not-allowed;
+    background-color: var(--theme_color_4);
+    color: var(--theme_color_6);
+}
+
+
 ul {
 	list-style: none;
 }
@@ -112,6 +136,15 @@ h1, h2, h3, h4, p, div {
 
 .hide {
     display: none;
+}
+section {
+	margin: 0;
+    padding: 10px;
+    flex-direction: column;    
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+	position: relative;
 }
 
 /* Viewport Breakpoints*/

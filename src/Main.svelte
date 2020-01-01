@@ -1,5 +1,9 @@
 <script>
+  import About from "./About.svelte";
+  import SelectedMotif from "./SelectedMotif.svelte";
   import RandomizerForm from "./RandomizerForm.svelte";
+  export let view = "";
+  export let motifSelected = false;
 </script>
 
 <style>
@@ -20,5 +24,12 @@
 </style>
 
 <main>
-  <RandomizerForm />
+  {#if view === 'about'}
+    <About />
+  {/if}
+  {#if view === 'studio'}
+    <SelectedMotif {motifSelected} />
+
+    <RandomizerForm />
+  {/if}
 </main>
