@@ -2,6 +2,7 @@
   import About from "./About.svelte";
   import SelectedMotif from "./SelectedMotif.svelte";
   import RandomizerForm from "./RandomizerForm.svelte";
+  import TransformerForm from "./TransformerForm.svelte";
   export let view = "";
   export let motifSelected = false;
 </script>
@@ -31,5 +32,6 @@
     <SelectedMotif {motifSelected} />
 
     <RandomizerForm />
+    <TransformerForm />
   {/if}
 </main>

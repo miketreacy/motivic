@@ -1,8 +1,37 @@
 <script>
+  import Utils from "./utils";
   import Nav from "./Nav.svelte";
-  const toggleNavMenu = () => (showNav = !showNav);
+  import Field from "./Field.svelte";
+
   export let showNav = false;
+  export let showUpload = false;
   export let view = "";
+  const fileUploadField = {
+    type: "file",
+    id: "upload",
+    label: "Upload file (MIDI or JSON)",
+    accept: ".json, .midi, .mid"
+  };
+  function toggleNavMenu() {
+    showNav = !showNav;
+  }
+  function toggleUploadMenu() {
+    showUpload = !showUpload;
+  }
+  function uploadFile(event) {
+    let files = event.detail.value;
+    let file = files[0];
+    let reader = new FileReader();
+    let fileName = file.name.split(".")[0];
+    let fileType = file.name.split(".")[1];
+    if (fileType === "json") {
+      reader.addEventListener("load", Utils.file.json.handler(fileName));
+      reader.readAsText(file);
+    } else if (fileType === "midi" || fileType === "mid") {
+      reader.addEventListener("load", Utils.file.midi.handler(fileName));
+      reader.readAsDataURL(file);
+    }
+  }
 </script>
 
 <style>
@@ -103,7 +132,7 @@
   <!--<button id="account-login">login</button>-->
   <!--<button id="account-logout">logout</button>-->
   <!--</section>-->
-  <button id="upload-toggle">
+  <button id="upload-toggle" on:click={toggleUploadMenu}>
     <span>&#8679;</span>
   </button>
   <p class="subtitle">
@@ -111,9 +140,8 @@
     tools for composers
     <span class="icons">&#9836;</span>
   </p>
-  <div class="upload-controls input-wrap hide">
-    <label for="upload">Upload file (MIDI or JSON)</label>
-    <input id="upload" type="file" accept=".json, .midi, .mid" />
-  </div>
+  {#if showUpload}
+    <Field {...fileUploadField} on:valueChange={uploadFile} />
+  {/if}
   <Nav show={showNav} {view} on:viewChange />
 </header>

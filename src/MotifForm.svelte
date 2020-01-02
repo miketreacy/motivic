@@ -1,18 +1,24 @@
 <script>
   import { onMount } from "svelte";
+  import Config from "./Config.js";
+  import Utils from "./utils";
   import Field from "./Field.svelte";
   import MotifFormHeader from "./MotifFormHeader.svelte";
   import MotifFormControls from "./MotifFormControls.svelte";
   export let formId;
   export let formTitle;
   export let formInfo;
-  export let submitFunction;
   export let formState = {};
   export let fieldRows = [];
+  export let submitOptions = null;
+  export let submitCallbackFn = Function.prototype;
+  export let getRequestBodyFn = Function.prototype;
+  export let formCanSubmitDefault = false;
+  const apiUrl = `${Config.api.baseURL}${submitOptions.path}`;
   let formStateDefault = {};
   let formOpen = false;
   let formInDefaultState = true;
-
+  let formCanSubmit = true;
   function jsonCopy(val) {
     return JSON.parse(JSON.stringify(val));
   }
@@ -52,10 +58,27 @@
     return newState;
   }
 
+  function getResetValue(fieldType) {
+    switch (fieldType) {
+      case "text":
+        return "";
+      case "number":
+        return 0;
+      case "checkbox":
+        return false;
+      default:
+        return "";
+    }
+  }
+
   function getUpdatedFieldRows(state) {
     return fieldRows.map(row => {
       return row.map(field => {
-        field.value = state[field.id];
+        if (field.id in state) {
+          field.value = state[field.id];
+        } else {
+          field.value = getResetValue(field.type);
+        }
         return field;
       });
     });
@@ -92,6 +115,14 @@
     return result;
   }
 
+  function canFormSubmit(inDefaultState) {
+    let result = true;
+    if (inDefaultState && !formCanSubmitDefault) {
+      result = false;
+    }
+    return result;
+  }
+
   function resetFormFn() {
     formState = formStateDefault;
   }
@@ -100,18 +131,48 @@
     formOpen = !formOpen;
   }
 
+  function getApiParams(payload) {
+    let { method, mode, headers } = submitOptions;
+    return {
+      method,
+      body: JSON.stringify(payload),
+      mode,
+      headers
+    };
+  }
+
+  async function submitFormFn() {
+    console.info(`formState`);
+    console.info(formState);
+    const reqBody = getRequestBodyFn(formState);
+    console.info(`${submitOptions.method} ${submitOptions.path} request body:`);
+    console.dir(reqBody);
+    // rollDice();
+    // toggleLoader(doc.querySelector("#randomize .dice"), true);
+    // let data = await Utils.http.awaitFetch(apiUrl, getApiParams(reqBody));
+    // let melody = data.response;
+    // toggleLoader(doc.querySelector("#randomize .dice"), false);
+    // processNewMotif(
+    //   melody,
+    //   "My Random Motif",
+    //   "theme",
+    //   "",
+    //   "Random melody generated"
+    // );
+    // toggleDetails("randomizer", true);
+    // toggleSection("randomizer", true);
+    submitCallbackFn(melody);
+  }
+
   onMount(() => {
     // store initial values as defaults
-    formStateDefault = [].concat(...fieldRows).reduce((obj, field) => {
-      obj[field.id] = field.value;
-      return obj;
-    }, {});
-    formState = jsonCopy(formStateDefault);
+    formStateDefault = jsonCopy(formState);
     logAll();
   });
 
   $: {
     formInDefaultState = isInDefaultState(formState, formStateDefault);
+    formCanSubmit = canFormSubmit(formInDefaultState);
     fieldRows = getUpdatedFieldRows(formState);
   }
 </script>
@@ -160,34 +221,37 @@
       {formInDefaultState}
       {toggleFormFn}
       {resetFormFn}
-      submitFormFn={submitFunction} />
+      {submitFormFn}
+      {formCanSubmit} />
     <fieldset class="user-input">
       <legend>Settings</legend>
       <!--<button class="save-setting">save setting</button>-->
       {#each fieldRows as fields}
         <div class="form-row">
           {#each fields as field}
-            <Field
-              {...field}
-              defaultValue={field.value}
-              on:valueChange={formChange} />
+            <Field {...field} on:valueChange={formChange} />
           {/each}
         </div>
       {/each}
     </fieldset>
   {/if}
-  <!--<section class="show selected-setting">
-                <div class="input-wrap">
-                    <label for="select-setting">Selected Setting</label>
-                    <button id="select-setting-reset">clear</button>
-                    <select id="select-setting" name="selected-setting" data-default="new unnamed" data-action="single"></select>
-                </div>
-            </section>-->
+  <!-- <section class="show selected-setting">
+    <div class="input-wrap">
+      <label for="select-setting">Selected Setting</label>
+      <button id="select-setting-reset">clear</button>
+      <select
+        id="select-setting"
+        name="selected-setting"
+        data-default="new unnamed"
+        data-action="single" />
+    </div>
+  </section> -->
   <MotifFormControls
     {formId}
     {formOpen}
     {formInDefaultState}
     {toggleFormFn}
     {resetFormFn}
-    submitFormFn={submitFunction} />
+    {submitFormFn}
+    {formCanSubmit} />
 </section>

@@ -2,6 +2,7 @@
   export let formId = "";
   export let formOpen = false;
   export let formInDefaultState = true;
+  export let formCanSubmit = false;
   export let toggleFormFn = () => null;
   export let resetFormFn = () => null;
   export let submitFormFn = () => null;
@@ -45,7 +46,11 @@
   <button class="reset" on:click={resetFormFn} disabled={formInDefaultState}>
     reset
   </button>
-  <button class="apply" id={formId} on:click={submitFormFn}>
+  <button
+    class="apply"
+    id={formId}
+    on:click={submitFormFn}
+    disabled={!formCanSubmit}>
     <span>apply</span>
   </button>
 </div>

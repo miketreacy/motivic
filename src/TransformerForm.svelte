@@ -1,133 +1,147 @@
-<section id="transformer" class="show closed form">
-        <details data-section="transformer">
-            <summary>
-                <h2><span class="icons">&#10226;</span>Transformer<span class="icons">&#10227;</span></h2>
-                <p class="info">applies transformations to an existing melody to produce counterpoint</p>
-            </summary>
-            <!--<section class="show selected-setting">
-                    <div class="input-wrap">
-                        <label for="select-setting">Selected Setting</label>
-                        <button id="select-setting-reset">clear</button>
-                        <select id="select-setting" name="selected-setting" data-default="new unnamed" data-action="single"></select>
-                    </div>
-                </section>-->
-            <fieldset class="user-input input-required">
-                <legend>Settings</legend>
-                <button class="reset" data-section="transformer" disabled>reset</button>
-                <!--<button class="save-setting">save setting</button>-->
-                <div>
-                    <div class="input-wrap"><label for="transpose">Transpose</label>
-                        <input
-                                type="number"
-                                data-default="0"
-                                value="0"
-                                min="-11"
-                                max="11"
-                                step="1"
-                                id="transpose"
-                                class="transpose"
-                        />
-                    </div>
-                    <div class="input-wrap">
-                        <label for="invert">Invert</label>
-                        <input
-                            type="checkbox"
-                            id="invert"
-                            class="invert"
-                            data-type="boolean"
-                            data-default="false"
-                            value="off"
-                        />
-                    </div>
-                </div>
-                <div class="input-group" data-property="reverse">
-                    <div class="input-wrap">
-                        <label for="reverse_pitch">Reverse Pitches</label>
-                        <input
-                                type="checkbox"
-                                name="reverse"
-                                id="reverse_pitch"
-                                class="reverse_pitch"
-                                data-type="boolean"
-                                data-index="1"
-                                data-default="false"
-                                value="off"
-                        />
-                    </div>
-                    <div class="input-wrap">
-                        <label for="reverse_rhythm">Reverse Durations</label>
-                        <input
-                                type="checkbox"
-                                name="reverse"
-                                id="reverse_rhythm"
-                                class="reverse_rhythm"
-                                data-type="boolean"
-                                data-index="0"
-                                data-default="false"
-                                value="off"
-                        />
-                    </div>
-                </div>
-                <div>
-                    <div class="input-wrap"><label for="augment">Augment</label>
-                        <input
-                                type="number"
-                                id="augment"
-                                class="augment"
-                                data-default="0"
-                                value="0"
-                                min="0"
-                                max="4"
-                                step="2"
-                                inputmode="numeric"
-                                pattern="[0-9]*"
-                        />
-                    </div>
-                    <div class="input-wrap"><label for="diminish">Diminish</label>
-                        <input
-                            type="number"
-                            id="diminish"
-                            class="diminish"
-                            data-default="0"
-                            value="0"
-                            min="0"
-                            max="4"
-                            step="2"
-                            inputmode="numeric"
-                            pattern="[0-9]*"
-                        />
-                    </div>
-                    <div class="input-wrap"><label for="stagger">Stagger</label>
-                        <input
-                            type="number"
-                            id="stagger"
-                            class="stagger"
-                            data-default="0"
-                            value="0"
-                            min="0"
-                            max="64"
-                            step="1"
-                            inputmode="numeric"
-                            pattern="[0-9]*"
-                        />
-                    </div>
-                </div>
-                <div>
-                    <div class="input-wrap name"><label for="variation_name">name</label>
-                        <input
-                            type="text"
-                            id="variation_name"
-                            max="16"
-                            class="name"
-                            data-default=""
-                        />
-                    </div>
-                </div>
-            </fieldset>
-        </details>
-        <div class="form-controls">
-            <button class="section-toggle" data-section="transformer">open</button>
-            <button class="reset" data-section="transformer" disabled>reset</button>
-            <button class="apply transform" id="transform" data-section="transformer" disabled><span>apply</span></button>
-        </div>
-    </section>
+<script>
+  import Config from "./Config.js";
+  import MotifForm from "./MotifForm.svelte";
+  export let motif = null;
+  const formId = "transformer";
+  const formTitle = "Transformer";
+  const formInfo =
+    "applies transformations to an existing melody to produce counterpoint";
+  const formCanSubmitDefault = false;
+  let formState = {
+    transpose: 0,
+    invert: false,
+    reverse_rhythm_0: false,
+    reverse_pitch_1: false,
+    augment: 0,
+    diminish: 0,
+    stagger: 0
+  };
+  const fieldRows = [
+    [
+      {
+        type: "number",
+        id: "transpose",
+        label: "Transpose",
+        value: 0,
+        step: 1,
+        min: -11,
+        max: 11
+      },
+      {
+        type: "checkbox",
+        id: "invert",
+        label: "Invert",
+        value: false
+      }
+    ],
+    [
+      {
+        type: "checkbox",
+        id: "reverse_pitch_1",
+        label: "Reverse Pitches",
+        value: false
+      },
+      {
+        type: "checkbox",
+        id: "reverse_rhythm_0",
+        label: "Reverse Durations",
+        value: false
+      }
+    ],
+    [
+      {
+        type: "number",
+        id: "augment",
+        label: "Augment",
+        value: 0,
+        step: 2,
+        min: 0,
+        max: 4
+      },
+      {
+        type: "number",
+        id: "diminish",
+        label: "Diminish",
+        value: 0,
+        step: 2,
+        min: 0,
+        max: 4
+      },
+      {
+        type: "number",
+        id: "stagger",
+        label: "Stagger",
+        value: 0,
+        step: 1,
+        min: 0,
+        max: 64
+      }
+    ],
+    [
+      {
+        type: "text",
+        id: "name",
+        label: "Name",
+        max: 16,
+        apiField: false
+      }
+    ]
+  ];
+
+  const submitOptions = Config.api.operations.transformer;
+  function submitCallbackFn(melody) {
+    console.info(`SUCCESS response from ${formId.toUpperCase()} API`);
+    console.dir(melody);
+  }
+
+  function getTransformations(state) {
+    let list = [];
+    for (let [key, value] of Object.entries(state)) {
+      console.log(`${key}: ${value}`);
+      if (value !== formState[key]) {
+        let map = { type: key, params: [value] };
+        if (typeof value === "boolean") {
+          map.params = [];
+        }
+        list.push(map);
+      }
+    }
+
+    //TODO: refactor this hot mess 😰
+    let reverseMaps = list.filter(map => map.type.split("_")[0] === "reverse");
+    if (reverseMaps.length) {
+      let thisMap = { type: "reverse", params: [false, false] };
+      reverseMaps.forEach(map => {
+        let i = list.findIndex(el => el === map);
+        let [, , valIdx] = map.type.split("_");
+        list.splice(i, 1);
+        thisMap.params[parseInt(valIdx)] = true;
+      });
+      list.push(thisMap);
+    }
+    console.log(list);
+    return list;
+  }
+
+  function getRequestBodyFn(state) {
+    return { melody: motif, transformations: getTransformations(state) };
+  }
+
+  let props = {
+    formId,
+    formTitle,
+    formInfo,
+    formState,
+    fieldRows,
+    submitCallbackFn,
+    submitOptions,
+    getRequestBodyFn,
+    formCanSubmitDefault
+  };
+</script>
+
+<style>
+
+</style>
+
+<MotifForm {...props} />

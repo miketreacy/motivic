@@ -1,40 +1,12 @@
 <script>
   import MotifForm from "./MotifForm.svelte";
-  const submitFunction = e => {
-    console.log(`RANDOMIZER FORM SUBMITTED!`);
-    console.dir(formState);
-  };
-  const keys = [
-    "c",
-    "c#",
-    "d",
-    "d#",
-    "e",
-    "f",
-    "f#",
-    "g",
-    "g#",
-    "a",
-    "a#",
-    "b"
-  ];
-  const modes = [
-    "chromatic",
-    "whole",
-    "ionian",
-    "dorian",
-    "phrygian",
-    "lydian",
-    "mixolydian",
-    "aeolian",
-    "locrian"
-  ];
-  const timeSignatureBeats = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-  const timeSignatureUnits = [1, 2, 4, 8, 12, 16];
+  import Config from "./Config.js";
+  const { notes, modes, timeSignatureBeats, timeSignatureUnits } = Config;
   const formId = "randomizer";
   const formTitle = "Randomizer";
   const formInfo =
     "generates a random monophonic melody based on user settings";
+  const formCanSubmitDefault = true;
   let formState = {
     key: "c",
     mode: "chromatic",
@@ -42,8 +14,8 @@
     octave_high: 5,
     leap_min: 1,
     leap_max: 24,
-    timeSignature_beat: 4,
-    timeSignature_unit: 4,
+    timeSignature_beat_0: 4,
+    timeSignature_unit_1: 4,
     tempo_type: "bpm",
     tempo_units: 120,
     length_type: "measures",
@@ -56,14 +28,14 @@
         id: "key",
         label: "Key",
         value: "c",
-        options: keys
+        options: notes
       },
       {
         type: "select",
         id: "mode",
         label: "Mode",
         value: "chromatic",
-        options: modes
+        options: Object.keys(modes)
       }
     ],
     [
@@ -109,14 +81,14 @@
     [
       {
         type: "select",
-        id: "timeSignature_beat",
+        id: "timeSignature_beat_0",
         label: "Time Signature Beat",
         value: 4,
         options: timeSignatureBeats
       },
       {
         type: "select",
-        id: "timeSignature_unit",
+        id: "timeSignature_unit_1",
         label: "Time Signature Unit",
         value: 4,
         options: timeSignatureUnits
@@ -155,6 +127,35 @@
       }
     ]
   ];
+  const submitOptions = Config.api.operations.randomizer;
+  function submitCallbackFn(melody) {
+    console.info(`SUCCESS response from ${formId.toUpperCase()} API`);
+    console.dir(melody);
+  }
+
+  function getRequestBodyFn(state) {
+    let reqBody = {};
+    for (let [key, value] of Object.entries(state)) {
+      console.log(`${key}: ${value}`);
+      let [propMap, propKey, valIdx] = key.split("_");
+      if (propKey) {
+        let idx = parseInt(valIdx);
+        if (!Number.isNaN(idx)) {
+          // is array prop
+          reqBody[propMap] = reqBody[propMap] || [];
+          reqBody[propMap][idx] = value;
+        } else {
+          // is nested object prop
+          reqBody[propMap] = reqBody[propMap] || {};
+          reqBody[propMap][propKey] = value;
+        }
+      } else {
+        // is primitive prop
+        reqBody[key] = value;
+      }
+    }
+    return reqBody;
+  }
 
   let props = {
     formId,
@@ -162,7 +163,10 @@
     formInfo,
     formState,
     fieldRows,
-    submitFunction
+    submitCallbackFn,
+    submitOptions,
+    getRequestBodyFn,
+    formCanSubmitDefault
   };
 </script>
 

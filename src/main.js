@@ -1,48 +1,13 @@
 import App from './App.svelte';
+import Utils from './utils'
 const views = ["about", "studio", "motifs"];
-
-
-const urlUtils = {
-	get: win => new URL(win.location.href),
-	/**
-	 * Create new history entry.
-	 * @param {Window} win Fresh instance of Window.
-	 * @param {Object} opts Params map.
-	 * @param {Object} [opts.state] Data to associate with url.
-	 * @param {string} [opts.title] Title to associate with url.
-	 * @param {string} [opts.url] New url.
-	 */
-	create: function (win, opts) {
-		let state = opts.state || null;
-		let title = opts.title || document.querySelector('title').textContent;
-		let url = opts.url || win.location.href;
-
-		win.history.pushState(state, title, url);
-	},
-	/**
-	 * Update current history entry.
-	 * @param {Window} win Fresh instance of Window.
-	 * @param {Object} opts Params map.
-	 * @param {Object} [opts.state] Data to associate with url.
-	 * @param {string} [opts.title] Title to associate with url.
-	 * @param {string} [opts.url] New url.
-	 */
-	update: function (win, opts) {
-		let state = opts.state || null;
-		let title = opts.title || document.querySelector('title').textContent;
-		let url = opts.url || win.location.href;
-
-		win.history.replaceState(state, title, url);
-	}
-};
-
 
 /**
 * Parses URL to loads appropriate view.
 * Allows for sharable links.
 */
 function parseURL() {
-	let url = urlUtils.get(window);
+	let url = Utils.url.get(window);
 	let hash = url.hash.split('#')[1] || '';
 	let [view, query = ''] = hash.split('?');
 	view = view || views[1];
@@ -71,8 +36,12 @@ function popState(e) {
 	console.table(state);
 	parseURL();
 }
-function updateURL() {
-	urlUtils.create(
+// TODO: move this to App.svelte to update URL when view changes?
+function updateURL(view = '', query = '', stateMap = {}, pagination = null) {
+	let newURL = Utils.utils.get(window);
+	newURL.hash = query ? `${view}?${query}` : `${view}`;
+	stateMap.view = view;
+	Utils.url.create(
 		window,
 		{
 			//TODO: add more local state e.g. form state, grid state, etc.

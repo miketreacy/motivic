@@ -16,6 +16,8 @@
     "svelte": "^3.0.0"
   },
   "dependencies": {
+    "jsmidgen": "0.1.5",
+    "midi-parser-js": "4.0.4",
     "sirv-cli": "^0.4.4"
   }
 }

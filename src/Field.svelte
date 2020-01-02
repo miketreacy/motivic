@@ -1,11 +1,11 @@
 <script>
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
-  export let field = null;
   export let type = "";
+  export let apiField = true;
   export let id = "";
   export let dataKey = "";
-  export let dataIndex = 0;
+  export let dataIndex = null;
   export let label = "";
   export let required = true;
   export let options = [];
@@ -13,9 +13,12 @@
   export let max = 8;
   export let step = 1;
   export let value = null;
-  export const defaultValue = null;
+  export let accept = "";
+
   function dispatchValueChange(val) {
-    dispatch("valueChange", { value: val, field: id });
+    if (apiField) {
+      dispatch("valueChange", { value: val, field: id });
+    }
   }
 
   $: {
@@ -143,12 +146,9 @@
       data-index={dataIndex}
       bind:checked={value}
       {required} />
+  {:else if type == 'file'}
+    <input type="file" {id} {accept} bind:files={value} {dataKey} {dataIndex} />
   {:else if type == 'hidden'}
-    <input
-      type="hidden"
-      {id}
-      data-key={dataKey}
-      bind:value
-      data-index={dataIndex} />
+    <input type="hidden" {id} bind:value {dataKey} {dataIndex} />
   {/if}
 </div>
