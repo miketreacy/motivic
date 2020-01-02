@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import { createEventDispatcher } from "svelte";
   import Config from "./Config.js";
   import Utils from "./utils";
   import Field from "./Field.svelte";
@@ -19,6 +20,10 @@
   let formOpen = false;
   let formInDefaultState = true;
   let formCanSubmit = true;
+  const dispatch = createEventDispatcher();
+  function dispatchFormToggle(formId, formOpen) {
+    dispatch("formToggle", { form: formId, open: formOpen });
+  }
   function jsonCopy(val) {
     return JSON.parse(JSON.stringify(val));
   }
@@ -129,6 +134,7 @@
 
   function toggleFormFn() {
     formOpen = !formOpen;
+    dispatchFormToggle(formId, formOpen);
   }
 
   function getApiParams(payload) {

@@ -144,4 +144,4 @@
 
 </style>
 
-<MotifForm {...props} />
+<MotifForm {...props} on:formToggle />
