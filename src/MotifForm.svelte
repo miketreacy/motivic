@@ -21,18 +21,18 @@
   let formInDefaultState = true;
   let formCanSubmit = true;
   const dispatch = createEventDispatcher();
+
   function dispatchFormToggle(formId, formOpen) {
-    dispatch("formToggle", { form: formId, open: formOpen });
+    dispatch("displayToggle", { section: formId, open: formOpen });
   }
-  function jsonCopy(val) {
-    return JSON.parse(JSON.stringify(val));
-  }
+
   function logAll() {
-    console.log("formState");
-    console.dir(formState);
-    console.log("formStateDefault");
-    console.dir(formStateDefault);
+    // console.log("formState");
+    // console.dir(formState);
+    // console.log("formStateDefault");
+    // console.dir(formStateDefault);
   }
+
   function validateOctaves(field, newState, oldState) {
     let lowOctave = oldState["octave_low"];
     let highOctave = oldState["octave_high"];
@@ -50,7 +50,7 @@
   }
 
   function getNewState(field, value) {
-    let oldState = jsonCopy(formState);
+    let oldState = Utils.general.clone(formState);
     let newState = { [field]: value };
 
     if (field.includes("octave_")) {
@@ -113,10 +113,10 @@
       let diffMsg = diffKeys
         .map(diff => `${diff[0]} was ${diff[1]}, is ${diff[2]}`)
         .join("\n");
-      console.info(diffMsg);
+      // console.info(diffMsg);
       result = false;
     }
-    console.info(`formInDefaultState: ${result}`);
+    // console.info(`formInDefaultState: ${result}`);
     return result;
   }
 
@@ -155,7 +155,7 @@
     console.dir(reqBody);
     // rollDice();
     // toggleLoader(doc.querySelector("#randomize .dice"), true);
-    // let data = await Utils.http.awaitFetch(apiUrl, getApiParams(reqBody));
+    let data = await Utils.http.awaitFetch(apiUrl, getApiParams(reqBody));
     // let melody = data.response;
     // toggleLoader(doc.querySelector("#randomize .dice"), false);
     // processNewMotif(
@@ -167,12 +167,12 @@
     // );
     // toggleDetails("randomizer", true);
     // toggleSection("randomizer", true);
-    submitCallbackFn(melody);
+    submitCallbackFn(data);
   }
 
   onMount(() => {
     // store initial values as defaults
-    formStateDefault = jsonCopy(formState);
+    formStateDefault = Utils.general.clone(formState);
     logAll();
   });
 
@@ -188,6 +188,7 @@
     flex-direction: column;
   }
   section[data-closed="true"] {
+    margin-top: 2px;
     flex-direction: row;
     border: 1px dashed var(--theme_color_6);
     padding: 10px;
@@ -229,6 +230,7 @@
       {resetFormFn}
       {submitFormFn}
       {formCanSubmit} />
+    <slot />
     <fieldset class="user-input">
       <legend>Settings</legend>
       <!--<button class="save-setting">save setting</button>-->

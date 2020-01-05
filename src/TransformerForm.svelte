@@ -1,6 +1,7 @@
 <script>
   import Config from "./Config.js";
   import MotifForm from "./MotifForm.svelte";
+  import SelectedMotif from "./SelectedMotif.svelte";
   export let motif = null;
   const formId = "transformer";
   const formTitle = "Transformer";
@@ -144,4 +145,6 @@
 
 </style>
 
-<MotifForm {...props} on:formToggle />
+<MotifForm {...props} on:displayToggle>
+  <SelectedMotif />
+</MotifForm>

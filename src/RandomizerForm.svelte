@@ -1,6 +1,8 @@
 <script>
   import MotifForm from "./MotifForm.svelte";
   import Config from "./Config.js";
+  import Utils from "./Utils";
+  import { motifStore } from "./Stores.js";
   const { notes, modes, timeSignatureBeats, timeSignatureUnits } = Config;
   const formId = "randomizer";
   const formTitle = "Randomizer";
@@ -128,9 +130,12 @@
     ]
   ];
   const submitOptions = Config.api.operations.randomizer;
-  function submitCallbackFn(melody) {
+
+  function submitCallbackFn(data) {
+    const motif = data && data.response ? data.response : null;
     console.info(`SUCCESS response from ${formId.toUpperCase()} API`);
-    console.dir(melody);
+    console.dir(motif);
+    Utils.userData.processNewItem(motif, "motifs", "my motif");
   }
 
   function getRequestBodyFn(state) {
@@ -174,4 +179,4 @@
 
 </style>
 
-<MotifForm {...props} on:formToggle />
+<MotifForm {...props} on:displayToggle />

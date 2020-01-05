@@ -1,9 +1,49 @@
 import Midi from 'jsmidgen';
 import MIDIParser from 'midi-parser-js';
 import Config from "./Config.js";
+import { motifStore, settingStore } from "./Stores.js";
 let win = window
 let doc = document
 const Utils = {
+    general: {
+        clone: function (val) {
+            return JSON.parse(JSON.stringify(val));
+        },
+        /**
+         * Generates and returns a random alphanumeric string. Will return only alpha or numeric
+         * characters if optional type argument is passed.
+         * @param {number} length The length of the random string we wish to generate.
+         * @param {string} [type] Optional type of string (alpha or num).
+         * @returns {string} A random alphanumeric string.
+         */
+        randomString: function (length, type = 'alphaNum') {
+            let alpha = "abcdefghijklmnopqrstuvwxyz";
+            let num = "0123456789";
+            let charMap = {
+                alpha: alpha.toUpperCase() + alpha,
+                num: num,
+                alphaNum: num + alpha + num + alpha.toUpperCase() + num
+            };
+            let text = "";
+
+
+            for (let i = 0; i < length; i++) {
+                let map = charMap[type];
+                text += map.charAt(Math.floor(Math.random() * map.length));
+            }
+            return text;
+        },
+
+        /**
+         * simple util for getting a singular string from plural string
+         * @param {string} str String to singularize
+         * @returns {string} Singularized string
+         */
+        singularize: function (str) {
+            let split = str.split('');
+            return split.filter((char, i, arr) => i < (arr.length - 1)).join('');
+        },
+    },
     http: {
         awaitFetch: async function (url, params) {
             try {
@@ -350,6 +390,191 @@ const Utils = {
 
             win.history.replaceState(state, title, url);
         }
+    },
+    userData: {
+        /**
+         * Gets initial memory state from localStorage
+         */
+        init: function () {
+            const schema = Config.userData.schema;
+            return Object.keys(schema).reduce((map, k) => {
+                map[k] = Utils.storage.get.bind(Utils.storage)(k) || [];
+                return map;
+            }, {});
+        },
+
+        processNewItem: function (item, type, name = '', role = 'theme', parentId = null, store = false) {
+            let newItem = this.initSavedItem(item, name, role, parentId);
+            this.persist(newItem, type, store);
+        },
+
+        initSavedItem: function (item, name, role = 'theme', parentId = '') {
+            let savedItem = Utils.general.clone(item);
+            let initMap = {
+                role,
+                name,
+                variations: [],
+                transformations: [],
+                id: Utils.general.randomString(8),
+                parent: parentId,
+                saved: { local: false, cloud: false }
+            };
+
+            return Object.assign(savedItem, initMap);
+        },
+
+        getNameAndVersion: function (name) {
+            const split = name.split('_');
+            let version = parseInt(split[split.length - 1]);
+            const isVersioned = !isNaN(version);
+            version = isVersioned ? version : null;
+            let baseName = isVersioned ? split.slice(0, -1).join('_') : name;
+            return [baseName, version];
+        },
+
+        getNameSuffix: function (oldVersion) {
+            let newSuffix = '_1';
+            if (oldVersion !== null) {
+                newSuffix = `_${oldVersion + 1}`
+            }
+            return newSuffix;
+        },
+
+        /**
+         * Stores a unique piece of user data in localStorage
+         * @param {Object} item Item to store
+         * @param {string} type Type of item
+         * @param {boolean} add Should this item be added? (if false, then delete)
+         */
+        store: function (item, type, add = true) {
+            let storedItems = Utils.storage.get.bind(Utils.storage)(type);
+            const limit = Config.userData.savedItemLimit[type]
+            if (storedItems.length >= limit) {
+                const errMsg = `Saved ${type} limit met! You already have ${limit} saved ${type}. \nYou must delete existing ${type} before you can save new ones.`;
+                throw new Error(errMsg);
+            }
+            item.saved.local = true;
+            let newItemList = this.mutateList.bind(this)(storedItems, item, !add);
+            Utils.storage.set.bind(Utils.storage)(type, newItemList);
+        },
+
+        /**
+         * Updates a list of items in place with a new item
+         * @param {Array} list
+         * @param {Object} item Item to store
+         * @param {boolean} remove Should this item be deleted?
+         * @returns {Array} Updated item list
+         */
+        mutateList: function (list, item, remove = false) {
+            const idx = list.findIndex(i => i.id === item.id);
+            if (remove) {
+                if (idx > -1) {
+                    list[idx] = null;
+                    list = list.filter(m => m);
+                }
+            } else {
+                if (idx > -1) {
+                    list[idx] = item;
+                } else {
+                    list.push(item);
+                }
+            }
+            return list;
+        },
+        /**
+         * Validates user data item if necessary
+         * @param {Object} item Item to store
+         * @param {string} type Type of item (motifs, settings, etc)
+         * @returns {Object} validated item
+         */
+        validate: function (item, type) {
+            const existingItemNames = win.MOTIVIC.user[type].map(m => m.name);
+            const nameMap = existingItemNames
+                .map(this.getNameAndVersion)
+                .reduce((map, [name, version]) => {
+                    if (name in map) {
+                        map[name] = Math.max(map[name], version)
+                    } else {
+                        map[name] = version;
+                    }
+                    return map;
+                }, {});
+            const existingNames = Object.keys(nameMap).map(k => k);
+            let [thisName,] = this.getNameAndVersion(item.name);
+            if (existingNames.includes(thisName)) {
+                item.name = `${thisName}${this.getNameSuffix(nameMap[thisName])}`;
+            }
+            return item;
+        },
+        /**
+         * Saves user data items to memory and localStorage if indicated
+         * @param {Object} item Item to store
+         * @param {string} type Type of item (motifs, settings, etc)
+         * @param {boolean} store Should this motif be persisted to localStorage?
+         */
+        persist: function (item, type, store = false) {
+            const validatedItem = this.validate.bind(this)(item, type);
+            // Storing the motif in active memory state
+            // APP.user[type] = this.mutateList.bind(this)(APP.user[type], validatedItem);
+            const itemStoreMap = { motifs: motifStore, settings: settingStore };
+            itemStoreMap[type].add(item);
+            if (store) {
+                this.store.bind(this)(item, type);
+            }
+        },
+
+        getSettingHTML: function (item) {
+            let html = '';
+            const { setting } = item;
+            const setList = Object.entries(setting).sort((a, b) => a[0] - b[0]);
+            for (const [key, value] of setList) {
+                html += `<li><span>${key}</span><span>${value}</span></li>`;
+            }
+            return html;
+        },
+    },
+    storage: {
+        init: function () {
+            let storage = this.get.bind(this)() || {};
+            const schema = Config.userData.schema;
+            Object.keys(schema).forEach(k => {
+                storage[k] = storage[k] || schema[k];
+            });
+            this.set.bind(this)(Config.nameSpace, storage);
+        },
+
+        set: function (key, value) {
+            let storage = this.get.bind(this)() || {};
+            if (key !== Config.nameSpace) {
+                storage[key] = value;
+            } else {
+                storage = value;
+            }
+            this.update.bind(Utils.storage)(storage);
+        },
+
+        update: function (payload) {
+            try {
+                localStorage.setItem(Config.nameSpace, JSON.stringify(payload));
+            } catch (err) {
+                console.error(`error setting localStorage`);
+                console.error(err);
+                win.alert(`ERROR: Local storage unavailable. Please clear cache or close browser windows.`)
+            }
+        },
+
+        get: function (key = null) {
+            let storage = {};
+            try {
+                storage = JSON.parse(localStorage.getItem(Config.nameSpace));
+            }
+            catch (e) {
+                console.error(`error retrieving localStorage${key && `for key ${key}`}`);
+                console.error(e);
+            }
+            return key ? storage[key] : storage;
+        },
+
     }
 };
 

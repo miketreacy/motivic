@@ -3,36 +3,38 @@
   import SelectedMotif from "./SelectedMotif.svelte";
   import RandomizerForm from "./RandomizerForm.svelte";
   import TransformerForm from "./TransformerForm.svelte";
+  import MotifList from "./MotifList.svelte";
   export let view = "";
-  export let openForm = "";
+  export let openSection = "";
   export let motifSelected = false;
-  let showFormMap = { randomizer: true, transformer: true };
-  function updateFormState(openForm) {
-    if (openForm) {
-      showFormMap = Object.keys(showFormMap).reduce((obj, key) => {
-        obj[key] = key === openForm;
+  export let motifs = [];
+  let showSectionMap = { motifs: true, randomizer: true, transformer: true };
+  function updateDisplayState(openSection) {
+    if (openSection) {
+      showSectionMap = Object.keys(showSectionMap).reduce((obj, key) => {
+        obj[key] = key === openSection;
         return obj;
       }, {});
     } else {
-      showFormMap = Object.keys(showFormMap).reduce((obj, key) => {
+      showSectionMap = Object.keys(showSectionMap).reduce((obj, key) => {
         obj[key] = true;
         return obj;
       }, {});
     }
-    console.info(`openForm = ${openForm}`);
-    console.dir(showFormMap);
+    console.info(`openSection = ${openSection}`);
+    console.dir(showSectionMap);
   }
-  function handleFormToggle(event) {
-    let form = event.detail.form;
+  function handleDisplayToggle(event) {
+    let section = event.detail.section;
     let open = event.detail.open;
     if (open) {
-      openForm = form;
+      openSection = section;
     } else {
-      openForm = "";
+      openSection = "";
     }
   }
   $: {
-    updateFormState(openForm);
+    updateDisplayState(openSection);
   }
 </script>
 
@@ -58,12 +60,17 @@
     <About />
   {/if}
   {#if view === 'studio'}
-    <SelectedMotif {motifSelected} />
-    {#if showFormMap.randomizer}
-      <RandomizerForm on:formToggle={handleFormToggle} />
+    {#if showSectionMap.motifs}
+      <MotifList {motifs} on:displayToggle={handleDisplayToggle} />
     {/if}
-    {#if showFormMap.transformer}
-      <TransformerForm on:formToggle={handleFormToggle} />
+    {#if !openSection}
+      <!-- <SelectedMotif {motifSelected} /> -->
+    {/if}
+    {#if showSectionMap.randomizer}
+      <RandomizerForm on:displayToggle={handleDisplayToggle} />
+    {/if}
+    {#if showSectionMap.transformer}
+      <TransformerForm on:displayToggle={handleDisplayToggle} />
     {/if}
   {/if}
 </main>

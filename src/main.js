@@ -1,6 +1,8 @@
 import App from './App.svelte';
-import Utils from './utils'
+import Utils from './Utils'
+import { motifStore, settingStore } from './Stores.js';
 const views = ["about", "studio", "motifs"];
+let view = "studio";
 
 /**
 * Parses URL to loads appropriate view.
@@ -51,12 +53,18 @@ function updateURL(view = '', query = '', stateMap = {}, pagination = null) {
 		});
 }
 
+function init() {
+	Utils.storage.init.bind(Utils.storage)();
+	let localData = Utils.userData.init.bind(Utils.userData)();
+	localData.motifs.forEach(m => motifStore.add(m));
+	localData.settings.forEach(s => settingStore.add(s));
+	let [urlView, query, queryMap, pagination] = parseURL();
+	view = urlView;
+	console.log(`parsed URL: view = ${view}`);
+	window.addEventListener('popstate', popState, false);
+}
 
-//TODO: compute initial app state based on url path, localStorage, etc.
-window.addEventListener('popstate', popState, false);
-let [view, query, queryMap, pagination] = parseURL();
-console.log(`parsed URL: view = ${view}`);
-
+init();
 const app = new App({
 	target: document.body,
 	props: {
