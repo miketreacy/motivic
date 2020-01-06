@@ -99,7 +99,7 @@ button, input,
     margin: 0;
   }
 
-  button:focus, a:focus, input:focus {
+  button:focus, a:focus, input:focus, select:focus {
 	  outline:none;
   }
 
@@ -150,6 +150,36 @@ section {
     width: 100%;
 	position: relative;
 }
+
+.motif-controls {
+    display: flex;
+	flex-direction: row;
+	width: 100%;
+  }
+  .motif-controls button,
+  .motif-controls input,
+  .motif-controls select {
+    font-size: var(--theme_font_size_1);
+    border: none;
+    border-radius: 5px;
+	min-height: 30px;
+	height: 40px;
+    border-style: none;
+    padding: 4px 12px 6px;
+    margin: 5px;
+    max-width: 120px;
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.5s ease;
+    flex: 1 1 0;
+  }
+  .motif-controls button:disabled,
+  .motif-controls select:disabled,
+  .motif-controls input:disabled {
+    cursor: not-allowed;
+    background-color: var(--theme_color_4);
+    color: var(--theme_color_6);
+  }
 
 /* Viewport Breakpoints*/
 

@@ -90,10 +90,13 @@
   }
 
   function formChange(event) {
-    let fieldId = event.detail.field;
-    let fieldValue = event.detail.value;
-    let newState = getNewState(fieldId, fieldValue);
-    formState = newState;
+    const fieldForm = event.detail.form;
+    const fieldId = event.detail.field;
+    const fieldValue = event.detail.value;
+    if (fieldForm === formId) {
+      let newState = getNewState(fieldId, fieldValue);
+      formState = newState;
+    }
   }
 
   function isInDefaultState(state, stateDefault) {
@@ -199,22 +202,18 @@
     margin: 0;
     width: 100%;
     flex-direction: column;
+    background-color: var(--theme_color_5);
   }
 
-  fieldset > div {
+  .form-row {
     padding: 5px 10px;
     flex-direction: column;
     border-bottom: 1px dotted var(--theme_color_10);
     width: 100%;
   }
 
-  fieldset > div:last-of-type {
+  .form-row:last-of-type {
     border-bottom: none;
-  }
-
-  fieldset label,
-  fieldset input {
-    padding: 0 5px;
   }
 </style>
 
@@ -237,7 +236,7 @@
       {#each fieldRows as fields}
         <div class="form-row">
           {#each fields as field}
-            <Field {...field} on:valueChange={formChange} />
+            <Field {...field} on:inputValueChange={formChange} />
           {/each}
         </div>
       {/each}

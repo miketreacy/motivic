@@ -1,11 +1,10 @@
 <script>
   import { createEventDispatcher } from "svelte";
+  import Input from "./Input.svelte";
   const dispatch = createEventDispatcher();
   export let type = "";
   export let apiField = true;
   export let id = "";
-  export let dataKey = "";
-  export let dataIndex = null;
   export let label = "";
   export let required = true;
   export let options = [];
@@ -14,62 +13,24 @@
   export let step = 1;
   export let value = null;
   export let accept = "";
-
-  function dispatchValueChange(val) {
-    if (apiField) {
-      dispatch("valueChange", { value: val, field: id });
-    }
-  }
-
-  $: {
-    dispatchValueChange(value);
-  }
+  export let wrap = true;
 </script>
 
 <style>
-  input,
-  select {
-    cursor: pointer;
-    color: var(--theme_color_2);
-    font-size: var(--theme_font_size_2);
-    background-color: var(--theme_color_1);
-    border: none;
-    border-radius: 5px;
-    min-height: 30px;
-    outline: none;
-    padding: 5px;
-    height: 30px;
-    border: 1px solid var(--theme_color_10);
-    width: 40%;
-    margin: 0;
-  }
-
-  input:focus {
-    outline: none;
-  }
-
   .input-wrap {
     flex-direction: row;
-    padding: 5px;
+    padding: 0px;
+    height: 40px;
     width: 100%;
     position: relative;
     justify-content: space-between;
   }
 
   label {
+    display: block;
     padding: 5px;
-  }
-
-  input[type="checkbox"] {
-    width: 40px;
-  }
-
-  input[type="file"] {
-    width: auto;
-    height: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    flex: 1 1 0;
+    text-align: left;
   }
 
   .input-wrap.overlay {
@@ -86,69 +47,40 @@
     width: auto;
     text-align: center;
   }
-
-  .input {
-    flex: 1 1 0;
-  }
-
-  .input label {
-    flex: 100% 1 0;
-  }
-
-  .input select,
-  .input input,
-  .input label {
-    font-size: var(--theme_font_size_1);
-  }
 </style>
 
-<div class="input-wrap">
-  {#if label}
-    <label for={id}>{label}</label>
-  {/if}
-  {#if type == 'select'}
-    <select
+{#if wrap}
+  <div class="input-wrap">
+    {#if label}
+      <label for={id}>{label}</label>
+    {/if}
+    <Input
+      {type}
+      {apiField}
       {id}
-      data-key={dataKey}
-      data-index={dataIndex}
-      bind:value
-      {required}>
-      {#each options as opt}
-        <option>{opt}</option>
-      {/each}
-    </select>
-  {:else if type == 'number'}
-    <input
-      type="number"
-      {id}
-      data-key={dataKey}
-      bind:value
       {required}
+      {options}
       {min}
       {max}
       {step}
-      inputmode="numeric"
-      pattern="[0-9]*" />
-  {:else if type == 'text'}
-    <input
-      type="text"
-      {id}
-      data-key={dataKey}
-      bind:value
-      placeholder={value}
-      {max}
-      {required} />
-  {:else if type == 'checkbox'}
-    <input
-      type="checkbox"
-      {id}
-      data-key={dataKey}
-      data-index={dataIndex}
-      bind:checked={value}
-      {required} />
-  {:else if type == 'file'}
-    <input type="file" {id} {accept} bind:files={value} {dataKey} {dataIndex} />
-  {:else if type == 'hidden'}
-    <input type="hidden" {id} bind:value {dataKey} {dataIndex} />
+      {value}
+      {accept}
+      on:inputValueChange />
+  </div>
+{:else}
+  {#if label}
+    <label for={id}>{label}</label>
   {/if}
-</div>
+  <Input
+    {type}
+    {apiField}
+    {id}
+    {required}
+    {options}
+    {min}
+    {max}
+    {step}
+    {value}
+    {accept}
+    on:inputValueChange />
+{/if}
