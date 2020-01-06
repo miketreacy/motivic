@@ -1,4 +1,5 @@
 <script>
+  import { createEventDispatcher } from "svelte";
   export let id = "";
   export let name = "";
   export let role = "";
@@ -8,6 +9,18 @@
   export let transformations = [];
   export let notes = [];
   export let tempo = { type: "", units: 0 };
+  export let selected = false;
+  const dispatch = createEventDispatcher();
+  function dispatchMotifSelection(selected) {
+    dispatch("motifSelection", {
+      selected,
+      ids: [id]
+    });
+  }
+
+  $: {
+    dispatchMotifSelection(selected);
+  }
 </script>
 
 <style>
@@ -171,7 +184,12 @@
 <li class="motif" id="motif_{id}" data-id={id} data-saved="">
   <div class="selection">
     <label class="select-theme">
-      <input class="select" type="checkbox" data-action="multi" value="off" />
+      <input
+        class="select"
+        type="checkbox"
+        data-action="multi"
+        value="off"
+        bind:checked={selected} />
       <span>theme</span>
     </label>
     {#if variations.length}
@@ -180,6 +198,7 @@
           class="select-all-variations"
           type="checkbox"
           data-action="multi"
+          bind:checked={selected}
           value="off" />
         <span>variations</span>
       </label>

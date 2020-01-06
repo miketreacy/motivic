@@ -1,10 +1,13 @@
 <script>
+  import Utils from "./Utils.js";
   import Config from "./Config.js";
   import Field from "./Field.svelte";
   import Input from "./Input.svelte";
   import AudioControls from "./AudioControls.svelte";
   import CrudControls from "./CrudControls.svelte";
   import DownloadControls from "./DownloadControls.svelte";
+
+  export let selectedMotifs = [];
 </script>
 
 <style>
@@ -23,7 +26,7 @@
 <!--TODO: this section defines what you can do with a newly-created motif (note-grid, randomize, upload)-->
 <section class="motif-controls">
   <!--TODO: convert this to a <fieldset> so I can disable them all at once-->
-  <AudioControls />
-  <CrudControls />
-  <DownloadControls />
+  <AudioControls {selectedMotifs} />
+  <CrudControls {selectedMotifs} />
+  <DownloadControls {selectedMotifs} />
 </section>

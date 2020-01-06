@@ -7,6 +7,7 @@
   export let view = "";
   export let openSection = "";
   export let motifSelected = false;
+  export let settings = [];
   export let motifs = [];
   let showSectionMap = { motifs: true, randomizer: true, transformer: true };
   function updateDisplayState(openSection) {

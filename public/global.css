@@ -142,8 +142,7 @@ h1, h2, h3, h4, p, div {
     display: none;
 }
 section {
-	margin: 0;
-    padding: 10px;
+	margin: 0;    
     flex-direction: column;    
     justify-content: center;
     align-items: center;

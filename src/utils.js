@@ -532,6 +532,10 @@ const Utils = {
             }
             return html;
         },
+
+        getItems: function (type, filterFn) {
+            return win[Config.nameSpace].user[type].filter(filterFn);
+        }
     },
     storage: {
         init: function () {

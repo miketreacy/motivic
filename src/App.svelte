@@ -5,6 +5,7 @@
   import Footer from "./Footer.svelte";
   export let view = "";
   let motifs = [];
+  let settings = [];
 
   function updateGlobalUserData(items, type) {
     let initGlobal = window.MOTIVIC || { user: { motifs: [], settings: [] } };
@@ -13,16 +14,18 @@
     if (type === "motifs") {
       motifs = items;
     }
+    if (type === "settings") {
+      settings = items;
+    }
   }
 
   function handleViewChange(event) {
     view = event.detail.view;
   }
-$: {
-  updateGlobalUserData($motifStore, "motifs");
-  updateGlobalUserData($settingStore, "settings");
-}
-  
+  $: {
+    updateGlobalUserData($motifStore, "motifs");
+    updateGlobalUserData($settingStore, "settings");
+  }
 </script>
 
 <style>
@@ -30,5 +33,5 @@ $: {
 </style>
 
 <Header {view} on:viewChange={handleViewChange} />
-<Main {view} {motifs} />
+<Main {view} {motifs} {settings} />
 <Footer />
