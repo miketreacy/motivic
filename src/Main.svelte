@@ -22,8 +22,6 @@
         return obj;
       }, {});
     }
-    console.info(`openSection = ${openSection}`);
-    console.dir(showSectionMap);
   }
   function handleDisplayToggle(event) {
     let section = event.detail.section;
