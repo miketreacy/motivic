@@ -60,7 +60,10 @@
   {/if}
   {#if view === 'studio'}
     {#if showSectionMap.motifs}
-      <MotifList {motifs} on:displayToggle={handleDisplayToggle} />
+      <MotifList
+        {motifs}
+        on:displayToggle={handleDisplayToggle}
+        on:displayModal />
     {/if}
     {#if !openSection}
       <!-- <SelectedMotif {motifSelected} /> -->

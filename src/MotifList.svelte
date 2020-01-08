@@ -20,9 +20,9 @@
   $: selectedMotifIds = handleSelectAll(allSelected);
   $: selectedMotifs = selectedMotifIds.map(id => motifs.find(m => m.id === id));
   $: console.log(`selectedMotifIds = [${selectedMotifIds.join(",")}]`);
-  $: console.log(
-    `selectedMotifs = [${selectedMotifs.map(m => m.name).join(",")}]`
-  );
+  // $: console.log(
+  //   `selectedMotifs = [${selectedMotifs.map(m => m.name).join(",")}]`
+  // );
 </script>
 
 <style>
@@ -230,7 +230,7 @@
 <section {id} class="sidebar motifs" data-closed={!listOpen}>
   <h2 on:click={toggleOpen}>My Motifs ({motifs.length})</h2>
   {#if listOpen}
-    <MotifControls {selectedMotifs} />
+    <MotifControls {selectedMotifs} on:displayModal />
     <div class="list-row">
       <div class="select-all">
         <input type="checkbox" id="select-all" bind:checked={allSelected} />

@@ -514,13 +514,26 @@ const Utils = {
          */
         persist: function (item, type, store = false) {
             const validatedItem = this.validate.bind(this)(item, type);
-            // Storing the motif in active memory state
-            // APP.user[type] = this.mutateList.bind(this)(APP.user[type], validatedItem);
+            // Storing the item in active memory           
             const itemStoreMap = { motifs: motifStore, settings: settingStore };
             itemStoreMap[type].add(item);
             if (store) {
                 this.store.bind(this)(item, type);
             }
+        },
+
+        /**
+         * Saves user data items to memory and localStorage if indicated
+         * @param {Object} item Item to store
+         * @param {string} type Type of item (motifs, settings, etc)
+         * @param {boolean} store Should this motif be persisted to localStorage?
+         */
+        remove: function (item, type) {
+            // Removing the item from active memory            
+            const itemStoreMap = { motifs: motifStore, settings: settingStore };
+            itemStoreMap[type].remove(item);
+            // deleting the item from localStorage
+            this.store.bind(this)(item, type, false);
         },
 
         getSettingHTML: function (item) {

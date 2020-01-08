@@ -8,6 +8,7 @@
   import DownloadControls from "./DownloadControls.svelte";
 
   export let selectedMotifs = [];
+  let type = "motifs";
 </script>
 
 <style>
@@ -27,6 +28,6 @@
 <section class="motif-controls">
   <!--TODO: convert this to a <fieldset> so I can disable them all at once-->
   <AudioControls {selectedMotifs} />
-  <CrudControls {selectedMotifs} />
+  <CrudControls {selectedMotifs} {type} on:displayModal />
   <DownloadControls {selectedMotifs} />
 </section>
