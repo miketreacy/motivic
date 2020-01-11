@@ -41,6 +41,7 @@
   header {
     box-sizing: border-box;
     display: flex;
+    z-index: var(--middle);
   }
 
   header {

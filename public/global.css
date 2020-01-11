@@ -1,16 +1,19 @@
 /* GLOBAL CSS VARIABLES */
 :root {
 	/* aka HTML color deepskyblue*/
-	--theme_color_1: #00bfff;
-	--theme_color_2: #fff;
-	--theme_color_3: black;
-	--theme_color_4: #eefaff;
-	--theme_color_5: #eee;
-	--theme_color_6: #ccc014;
-	--theme_color_7: #b2a709;
-	--theme_color_8: #ff1954;
-	--theme_color_9: #FFFF00;
-	--theme_color_10: rgb(192, 192, 192);
+	--theme_color_1: rgba(0, 191, 255, 1);
+	--theme_color_2: rgba(255, 255, 255, 1);
+	--theme_color_2b:rgba(255, 255, 255, 0);
+	--theme_color_3: rgba(0, 0, 0, 1);
+	--theme_color_3b: rgba(0, 0, 0, 0);
+	--theme_color_4: rgba(238, 250, 255,1);
+	--theme_color_5: rgba(238, 238, 238, 1);
+	--theme_color_6: rgba(204, 192, 20, 1);
+	--theme_color_7: rgba(178, 167, 9, 1);
+	--theme_color_8: rgba(255, 25, 84, 1);
+	--theme_color_9: rgba(255, 255, 0, 1);
+	--theme_color_10: rgba(192, 192, 192, 1);
+	
 	--theme_font_1: 'Helvetica';
 	/* prevents auto input-zoom on mobile
     http://blog.osmosys.asia/2017/01/05/prevent-ios-from-zooming-in-on-input-fields/*/
@@ -48,6 +51,7 @@
 
 body {
 	display: flex;
+	z-index: var(--middle);
 	flex-direction: column;
 	text-align: center;
 	background-color: var(--theme_color_2);

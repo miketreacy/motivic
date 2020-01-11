@@ -1,37 +1,48 @@
 <script>
   import { createEventDispatcher } from "svelte";
   import Input from "./Input.svelte";
-  import ItemDeleteForm from "./ItemDeleteForm.svelte";
-  import ItemSaveForm from "./ItemSaveForm.svelte";
   export let type = "";
   export let saveMode = "local";
-  export let selectedMotifs = [];
-  const modalMap = {
-    "save-motif": ItemSaveForm,
-    "delete-motif": ItemDeleteForm
-  };
+  export let selectedItems = [];
+
   const dispatch = createEventDispatcher();
   function dispatchDisplayModal(event) {
-    dispatch("displayModal", {
+    console.log(`dispatchDisplayModal() called (CrudControls.svelte)`);
+    console.dir(event);
+    console.log(`displayCrudModal event dispatched (CrudControls.svelte)`);
+    console.dir({
       display: true,
-      view: modalMap[event.target.id],
-      item: selectedMotifs[0],
-      type: type
+      modalProps: {
+        itemType: type,
+        item: selectedItems[0],
+        formType: event.target.dataset.action
+      }
+    });
+    dispatch("displayCrudModal", {
+      modalProps: {
+        show: true,
+        itemType: type,
+        item: selectedItems[0],
+        formType: event.target.dataset.action
+      }
     });
   }
 </script>
 
 <style>
-
+  span {
+    pointer-events: none;
+  }
 </style>
 
 <div class="motif-controls">
   <button
     id="save-motif"
     class="save"
+    data-action="save"
     data-save-mode={saveMode}
-    disabled={selectedMotifs.length !== 1}
-    on:click={dispatchDisplayModal}>
+    disabled={selectedItems.length !== 1}
+    on:click|self={dispatchDisplayModal}>
     <span>
       {#if saveMode === 'cloud'}&#9729;{:else}&#9745;{/if}
     </span>
@@ -40,8 +51,9 @@
   <button
     id="delete-motif"
     class="delete"
-    disabled={!selectedMotifs.length}
-    on:click={dispatchDisplayModal}>
+    data-action="delete"
+    disabled={!selectedItems.length}
+    on:click|self={dispatchDisplayModal}>
     <span>&#9747;</span>
     <span>delete</span>
   </button>

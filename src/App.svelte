@@ -5,17 +5,31 @@
   import Main from "./Main.svelte";
   import Footer from "./Footer.svelte";
   import Modal from "./Modal.svelte";
+  import ItemCrudModal from "./ItemCrudModal.svelte";
   export let view = "";
 
   const dispatch = createEventDispatcher();
 
   let motifs = [];
+  let selectedMotifIds;
+  let allSelected;
   let settings = [];
-  let showModal = false;
   let ModalView = "";
   let modalItem = null;
   let modalType = "";
+  let modalActionComplete = false;
+  let modalFormType = "";
+  let defaultModalProps = {
+    itemType: "",
+    item: null,
+    formType: "",
+    show: false
+  };
+  let modalProps = Object.assign({}, defaultModalProps);
 
+  /**
+   * Updates user data in memory in the global MOTIVIC namespace and in the component waterfall
+   */
   function updateGlobalUserData(items, type) {
     let initGlobal = window.MOTIVIC || { user: { motifs: [], settings: [] } };
     initGlobal.user[type] = items;
@@ -29,30 +43,12 @@
   }
 
   function handleModalDisplay(event) {
-    if (event.detail.display) {
-      ModalView = event.detail.view;
-      modalItem = event.detail.item;
-      modalType = event.detail.type;
-      showModal = true;
-    } else {
-      showModal = false;
-      ModalView = "";
-      modalItem = null;
-      modalType = "";
-    }
-  }
-
-  function dismissModal() {
-    showModal = false;
-    ModalView = "";
-    modalItem = null;
-    modalType = "";
-  }
-
-  function dispatchDismissModal() {
-    dispatch("displayModal", {
-      display: false
-    });
+    console.log(`handleModalDisplay() called (App.svelte)`);
+    console.dir(event.detail);
+    modalProps = event.detail.modalProps;
+    // de-select everything when modal is displayed
+    // selectedMotifIds = [];
+    // allSelected = false;
   }
 
   function handleViewChange(event) {
@@ -68,14 +64,12 @@
 </style>
 
 <Header {view} on:viewChange={handleViewChange} />
-<Main {view} {motifs} {settings} on:displayModal={handleModalDisplay} />
+<Main
+  {view}
+  {motifs}
+  {allSelected}
+  {selectedMotifIds}
+  {settings}
+  on:displayCrudModal={handleModalDisplay} />
 <Footer />
-{#if showModal}
-  <Modal on:displayModal={handleModalDisplay}>
-    <ModalView
-      item={modalItem}
-      type={modalType}
-      submitCallback={dismissModal}
-      on:displayModal />
-  </Modal>
-{/if}
+<ItemCrudModal {...modalProps} on:displayCrudModal={handleModalDisplay} />

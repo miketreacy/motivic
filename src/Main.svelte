@@ -4,6 +4,8 @@
   import RandomizerForm from "./RandomizerForm.svelte";
   import TransformerForm from "./TransformerForm.svelte";
   import MotifList from "./MotifList.svelte";
+  export let selectedMotifIds = [];
+  export let allSelected = false;
   export let view = "";
   export let openSection = "";
   export let motifSelected = false;
@@ -40,6 +42,7 @@
 <style>
   main {
     display: flex;
+    z-index: var(--middle);
     flex-wrap: wrap;
     flex-direction: column;
     background-color: var(--theme_color_2);
@@ -62,8 +65,10 @@
     {#if showSectionMap.motifs}
       <MotifList
         {motifs}
+        {selectedMotifIds}
+        {allSelected}
         on:displayToggle={handleDisplayToggle}
-        on:displayModal />
+        on:displayCrudModal />
     {/if}
     {#if !openSection}
       <!-- <SelectedMotif {motifSelected} /> -->

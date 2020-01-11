@@ -28,6 +28,6 @@
 <section class="motif-controls">
   <!--TODO: convert this to a <fieldset> so I can disable them all at once-->
   <AudioControls {selectedMotifs} />
-  <CrudControls {selectedMotifs} {type} on:displayModal />
+  <CrudControls selectedItems={selectedMotifs} {type} on:displayCrudModal />
   <DownloadControls {selectedMotifs} />
 </section>

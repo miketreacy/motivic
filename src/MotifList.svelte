@@ -5,8 +5,8 @@
   export let selectedMotifs = [];
   export let listOpen = false;
   export let id = "motifs";
-  let selectedMotifIds = [];
-  let allSelected = false;
+  export let selectedMotifIds = [];
+  export let allSelected = false;
   const dispatch = createEventDispatcher();
 
   function toggleOpen(e) {
@@ -20,9 +20,6 @@
   $: selectedMotifIds = handleSelectAll(allSelected);
   $: selectedMotifs = selectedMotifIds.map(id => motifs.find(m => m.id === id));
   $: console.log(`selectedMotifIds = [${selectedMotifIds.join(",")}]`);
-  // $: console.log(
-  //   `selectedMotifs = [${selectedMotifs.map(m => m.name).join(",")}]`
-  // );
 </script>
 
 <style>
@@ -230,7 +227,7 @@
 <section {id} class="sidebar motifs" data-closed={!listOpen}>
   <h2 on:click={toggleOpen}>My Motifs ({motifs.length})</h2>
   {#if listOpen}
-    <MotifControls {selectedMotifs} on:displayModal />
+    <MotifControls {selectedMotifs} on:displayCrudModal />
     <div class="list-row">
       <div class="select-all">
         <input type="checkbox" id="select-all" bind:checked={allSelected} />
