@@ -74,7 +74,10 @@
       <RandomizerForm on:displayToggle={handleDisplayToggle} />
     {/if}
     {#if showSectionMap.transformer}
-      <TransformerForm {motifs} on:displayToggle={handleDisplayToggle} />
+      <TransformerForm
+        {motifs}
+        selectedMotifId={motifs.length ? motifs[0].id : ''}
+        on:displayToggle={handleDisplayToggle} />
     {/if}
   {/if}
 </main>

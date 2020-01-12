@@ -5,6 +5,7 @@
   export let selectedMotifs = [];
   export let listOpen = false;
   export let id = "motifs";
+  export let title = "My Motifs";
   export let selectedMotifIds = [];
   export let allSelected = false;
   const dispatch = createEventDispatcher();
@@ -69,7 +70,7 @@
   }
   .motif {
     border: 1px solid var(--theme_color_7);
-    padding: 7px;
+    padding: 10px;
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: repeat(2, auto);
@@ -138,6 +139,11 @@
     padding: 0 10px;
   }
 
+  .motif .name {
+    /* padding: 0px; */
+    text-align: left;
+  }
+
   .transformations-header {
     display: none;
     grid-column: 3 / span 2;
@@ -173,10 +179,11 @@
     font-style: italic;
     flex-direction: column;
     align-items: flex-start;
+    padding-top: 5px;
   }
 
   .selection label {
-    max-height: 20px;
+    /* max-height: 20px; */
     flex-direction: row;
     align-items: flex-end;
     display: none;
@@ -194,6 +201,10 @@
 
   .selection input {
     margin: 0;
+    padding: 0px;
+    width: 20px;
+    min-height: unset;
+    height: 20px;
   }
 
   label.select-theme span,
@@ -225,7 +236,7 @@
 </style>
 
 <section {id} class="sidebar motifs" data-closed={!listOpen}>
-  <h2 on:click={toggleOpen}>My Motifs ({motifs.length})</h2>
+  <h2 on:click={toggleOpen}>{title} ({motifs.length})</h2>
   {#if listOpen}
     <MotifControls {selectedMotifs} on:displayCrudModal />
     <div class="list-row">
@@ -235,59 +246,65 @@
       </div>
     </div>
     <ol class="motif-list item-list" data-type="motifs">
-      {#each motifs as { id, name, role, parent, tempo, notes, saved, variations, transformations }}
-        <li class="motif" id="motif_{id}" data-id={id} data-saved={saved.local}>
-          <div class="selection">
-            <label class="select-theme">
-              <input
-                class="select"
-                type="checkbox"
-                bind:group={selectedMotifIds}
-                value={id} />
-              <span>theme</span>
-            </label>
-            {#if variations && variations.length}
-              <label class="select-all-variations">
+      {#each motifs as { motifId, name, role, parent, tempo, notes, saved, variations, transformations }}
+        {#if role === 'theme'}
+          <li
+            class="motif"
+            id="motif_{motifId}"
+            data-id={motifId}
+            data-saved={saved.local}>
+            <div class="selection">
+              <label class="select-theme">
                 <input
-                  class="select-all-variations"
+                  class="select"
                   type="checkbox"
-                  data-action="multi"
-                  checked={false}
-                  value="off" />
-                <span>variations</span>
+                  bind:group={selectedMotifIds}
+                  value={motifId} />
+                <span>theme</span>
               </label>
+              {#if variations && variations.length}
+                <label class="select-all-variations">
+                  <input
+                    class="select-all-variations"
+                    type="checkbox"
+                    data-action="multi"
+                    checked={false}
+                    value="off" />
+                  <span>variations</span>
+                </label>
+              {/if}
+            </div>
+            <h3 class="name">{name}</h3>
+            {#if saved.local}
+              <span class="saved">(saved)</span>
             {/if}
-          </div>
-          <h3 class="name">{name}</h3>
-          {#if saved.local}
-            <span class="saved">(saved)</span>
-          {/if}
-          <div class="rename hide">
-            <input type="text" value="" />
-            <button class="rename-cancel">cancel</button>
-            <button class="rename-submit">save</button>
-          </div>
-          <button class="remove">&#9747;</button>
-          <div class="motif-display">display motif here</div>
-          {#if transformations && transformations.length}
-            <h4 class="transformations-header">transformations:</h4>
-            <!-- TODO: refine this recursion -->
-            <ol class="transformations">
-              {#each transformations as transformation, i}
-                <svelte:self {...transformation} />
-              {/each}
-            </ol>
-          {/if}
-          {#if variations && variations.length}
-            <h4 class="variations-header">variations:</h4>
-            <!-- TODO: refine this recursion -->
-            <ol class="variations">
-              {#each variations as variation, i}
-                <svelte:self {...variation} />
-              {/each}
-            </ol>
-          {/if}
-        </li>
+            <div class="rename hide">
+              <input type="text" value="" />
+              <button class="rename-cancel">cancel</button>
+              <button class="rename-submit">save</button>
+            </div>
+            <button class="remove">&#9747;</button>
+            <div class="motif-display">display motif here</div>
+            {#if transformations && transformations.length}
+              <h4 class="transformations-header">transformations:</h4>
+              <!-- TODO: refine this recursion -->
+              <ol class="transformations">
+                {#each transformations as { type, params }, i}
+                  <li class="transformation">{type}: {params.join(', ')}</li>
+                {/each}
+              </ol>
+            {/if}
+            {#if variations && variations.length}
+              <svelte:self
+                id={`${motifId}_variations`}
+                title="variations"
+                motifs={variations}
+                {selectedMotifIds}
+                {allSelected}
+                on:displayCrudModal />
+            {/if}
+          </li>
+        {/if}
       {/each}
     </ol>
   {/if}

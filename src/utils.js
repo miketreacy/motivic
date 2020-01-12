@@ -418,25 +418,52 @@ const Utils = {
       }, {});
     },
 
+    /**
+     * Adds a newly-created item or updates an existing one.
+     * @param {Object} item New or updated item
+     * @param {string} type Plural item type ('motifs', 'settings') etc
+     * @param {string} name Item name
+     * @param {string} role Transformation role: Enum('theme', 'variation')
+     * @param {string} parentId Id of relative theme motif if item is variation
+     * @param {Array} transformations List of transformations applied if item is variation
+     * @param {Array} variations List of child variations if item is theme
+     * @param {boolean} store Should item be persisted in localStorage?
+     */
     processNewItem: function(
       item,
       type,
       name = "",
       role = "theme",
-      parentId = null,
+      parentId = "",
+      transformations = [],
+      variations = [],
       store = false
     ) {
-      let newItem = this.initSavedItem(item, name, role, parentId);
+      let newItem = this.initSavedItem(
+        item,
+        name,
+        role,
+        parentId,
+        transformations,
+        variations
+      );
       this.persist(newItem, type, store);
     },
 
-    initSavedItem: function(item, name, role = "theme", parentId = "") {
+    initSavedItem: function(
+      item,
+      name,
+      role = "theme",
+      parentId = "",
+      transformations,
+      variations
+    ) {
       let savedItem = Utils.general.clone(item);
       let initMap = {
         role,
         name,
-        variations: [],
-        transformations: [],
+        variations,
+        transformations,
         id: Utils.general.randomString(8),
         parent: parentId,
         saved: { local: false, cloud: false }
@@ -504,17 +531,19 @@ const Utils = {
      * @returns {Array} Updated item list
      */
     mutateList: function(list, item, remove = false) {
-      const idx = list.findIndex(i => i.id === item.id);
+      const itemIdx = list.findIndex(listItem => listItem.id === item.id);
       if (remove) {
-        if (idx > -1) {
-          list[idx] = null;
-          list = list.filter(m => m);
+        if (itemIdx > -1) {
+          // list[idx] = null;
+          // list = list.filter(m => m);
+          list = list.filter((_, i) => i !== itemIdx);
         }
       } else {
-        if (idx > -1) {
-          list[idx] = item;
+        if (itemIdx > -1) {
+          // list[idx] = item;
+          list = list.map((listItem, i) => (i === itemIdx ? item : listItem));
         } else {
-          list.push(item);
+          list = [...list, item];
         }
       }
       return list;

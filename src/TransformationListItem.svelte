@@ -1,3 +1,10 @@
-<li class="transformation" id="user-motif-transformation">
+<script>
+  export let type = "";
+  export let params = [];
+</script>
 
-</li>
+<style>
+
+</style>
+
+<li class="transformation">{type}: {params.join(', ')}</li>

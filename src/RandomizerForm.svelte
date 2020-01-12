@@ -131,7 +131,7 @@
   ];
   const submitOptions = Config.api.operations.randomizer;
 
-  function submitCallbackFn(data) {
+  function responseCallbackFn(data) {
     const motif = data && data.response ? data.response : null;
     console.info(`SUCCESS response from ${formId.toUpperCase()} API`);
     console.dir(motif);
@@ -168,7 +168,7 @@
     formInfo,
     formState,
     fieldRows,
-    submitCallbackFn,
+    responseCallbackFn,
     submitOptions,
     getRequestBodyFn,
     formCanSubmitDefault

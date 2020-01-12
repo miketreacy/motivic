@@ -12,7 +12,7 @@
   export let formState = {};
   export let fieldRows = [];
   export let submitOptions = null;
-  export let submitCallbackFn = Function.prototype;
+  export let responseCallbackFn = Function.prototype;
   export let getRequestBodyFn = Function.prototype;
   export let formCanSubmitDefault = false;
   const apiUrl = `${Config.api.baseURL}${submitOptions.path}`;
@@ -161,7 +161,7 @@
     console.dir(reqBody);
     // rollDice();
     // toggleLoader(doc.querySelector("#randomize .dice"), true);
-    // let data = await Utils.http.awaitFetch(apiUrl, getApiParams(reqBody));
+    let data = await Utils.http.awaitFetch(apiUrl, getApiParams(reqBody));
     // let melody = data.response;
     // toggleLoader(doc.querySelector("#randomize .dice"), false);
     // processNewMotif(
@@ -173,7 +173,7 @@
     // );
     // toggleDetails("randomizer", true);
     // toggleSection("randomizer", true);
-    // submitCallbackFn(data);
+    responseCallbackFn(data);
   }
 
   onMount(() => {

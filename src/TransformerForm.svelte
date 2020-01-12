@@ -1,15 +1,18 @@
 <script>
   import Config from "./Config.js";
+  import Utils from "./Utils";
   import MotifForm from "./MotifForm.svelte";
   import ItemSelector from "./ItemSelector.svelte";
   export let motif = null;
   export let motifs = [];
+  export let selectedMotifId = "";
   const formId = "transformer";
   const formTitle = "Transformer";
   const formInfo =
     "applies transformations to an existing melody to produce counterpoint";
   const formCanSubmitDefault = false;
   let formState = {
+    motif: null,
     transpose: 0,
     invert: false,
     reverse_rhythm_0: false,
@@ -92,10 +95,31 @@
 
   const submitOptions = Config.api.operations.transformer;
 
-  let selectedMotifId = "";
-  function submitCallbackFn(melody) {
+  function responseCallbackFn(data) {
+    const newMotif = data && data.response ? data.response : null;
     console.info(`SUCCESS response from ${formId.toUpperCase()} API`);
-    console.dir(melody);
+    console.dir(newMotif);
+    let { transformations, melody: parentMotif } = data.request.body;
+    // add the newly-created variation motif
+    Utils.userData.processNewItem(
+      newMotif,
+      "motifs",
+      `${motif.name}_var_1`,
+      "variation",
+      parentMotif.id,
+      transformations
+    );
+
+    // update the existing theme motif to reflect its new variation
+    Utils.userData.processNewItem(
+      parentMotif,
+      "motifs",
+      parentMotif.name,
+      "theme",
+      "",
+      transformations,
+      [...(parentMotif.variations || []), newMotif]
+    );
   }
 
   function getTransformations(state) {
@@ -136,7 +160,9 @@
   }
 
   function selectMotif(motifId) {
+    console.log(`selectMotif() called`);
     motif = motifs.find(m => m.id === motifId);
+    return motif;
   }
 
   let props = {
@@ -145,14 +171,15 @@
     formInfo,
     formState,
     fieldRows,
-    submitCallbackFn,
+    responseCallbackFn,
     submitOptions,
     getRequestBodyFn,
     formCanSubmitDefault
   };
 
-  $: motif = motifs.find(m => m.id === selectedMotifId);
+  $: motif = selectMotif(selectedMotifId);
   $: console.dir(motif);
+  $: console.log(`selectedMotifId = ${selectedMotifId}`);
 </script>
 
 <style>
@@ -164,6 +191,6 @@
     {formId}
     items={motifs}
     itemType="motifs"
-    selectedItemId={motifs.length ? motifs[0].id : ''}
+    selectedItemId={selectedMotifId}
     on:itemSelection={handleItemSelection} />
 </MotifForm>
