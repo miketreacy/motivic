@@ -1,8 +1,9 @@
 <script>
   import Config from "./Config.js";
   import MotifForm from "./MotifForm.svelte";
-  import SelectedMotif from "./SelectedMotif.svelte";
+  import ItemSelector from "./ItemSelector.svelte";
   export let motif = null;
+  export let motifs = [];
   const formId = "transformer";
   const formTitle = "Transformer";
   const formInfo =
@@ -90,6 +91,8 @@
   ];
 
   const submitOptions = Config.api.operations.transformer;
+
+  let selectedMotifId = "";
   function submitCallbackFn(melody) {
     console.info(`SUCCESS response from ${formId.toUpperCase()} API`);
     console.dir(melody);
@@ -128,6 +131,14 @@
     return { melody: motif, transformations: getTransformations(state) };
   }
 
+  function handleItemSelection(event) {
+    selectedMotifId = event.detail.itemId;
+  }
+
+  function selectMotif(motifId) {
+    motif = motifs.find(m => m.id === motifId);
+  }
+
   let props = {
     formId,
     formTitle,
@@ -139,6 +150,9 @@
     getRequestBodyFn,
     formCanSubmitDefault
   };
+
+  $: motif = motifs.find(m => m.id === selectedMotifId);
+  $: console.dir(motif);
 </script>
 
 <style>
@@ -146,5 +160,10 @@
 </style>
 
 <MotifForm {...props} on:displayToggle>
-  <SelectedMotif />
+  <ItemSelector
+    {formId}
+    items={motifs}
+    itemType="motifs"
+    selectedItemId={motifs.length ? motifs[0].id : ''}
+    on:itemSelection={handleItemSelection} />
 </MotifForm>

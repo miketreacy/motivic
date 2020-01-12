@@ -52,7 +52,7 @@
     id="delete-motif"
     class="delete"
     data-action="delete"
-    disabled={!selectedItems.length}
+    disabled={selectedItems.length !== 1}
     on:click|self={dispatchDisplayModal}>
     <span>&#9747;</span>
     <span>delete</span>

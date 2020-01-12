@@ -14,6 +14,7 @@
   export let value = null;
   export let accept = "";
   export let wrap = true;
+  export let form = "";
 </script>
 
 <style>
@@ -55,6 +56,7 @@
       <label for={id}>{label}</label>
     {/if}
     <Input
+      {form}
       {type}
       {apiField}
       {id}
@@ -72,6 +74,7 @@
     <label for={id}>{label}</label>
   {/if}
   <Input
+    {form}
     {type}
     {apiField}
     {id}

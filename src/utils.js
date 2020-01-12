@@ -569,7 +569,6 @@ const Utils = {
      * Saves user data items to memory and localStorage if indicated
      * @param {Object} item Item to store
      * @param {string} type Type of item (motifs, settings, etc)
-     * @param {boolean} store Should this motif be persisted to localStorage?
      */
     remove: function(item, type) {
       // Removing the item from active memory

@@ -16,8 +16,8 @@
   .form-controls {
     flex-direction: row !important;
     border-style: none;
-    padding: 4px 12px 6px;
-    margin: 5px;
+    padding: 0px;
+    margin: 0px;
     display: flex;
     flex-direction: column;
     transition: background-color 0.5s ease;

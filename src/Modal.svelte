@@ -22,7 +22,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    z-index: var(--back);
+    z-index: var(--obscured);
     background-color: rgba(0, 0, 0, 0);
     transition-property: background-color;
     transition-duration: var(--timing_fastest);

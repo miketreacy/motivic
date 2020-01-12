@@ -1,6 +1,5 @@
 <script>
   import About from "./About.svelte";
-  import SelectedMotif from "./SelectedMotif.svelte";
   import RandomizerForm from "./RandomizerForm.svelte";
   import TransformerForm from "./TransformerForm.svelte";
   import MotifList from "./MotifList.svelte";
@@ -42,7 +41,7 @@
 <style>
   main {
     display: flex;
-    z-index: var(--middle);
+    z-index: var(--back);
     flex-wrap: wrap;
     flex-direction: column;
     background-color: var(--theme_color_2);
@@ -70,14 +69,12 @@
         on:displayToggle={handleDisplayToggle}
         on:displayCrudModal />
     {/if}
-    {#if !openSection}
-      <!-- <SelectedMotif {motifSelected} /> -->
-    {/if}
+
     {#if showSectionMap.randomizer}
       <RandomizerForm on:displayToggle={handleDisplayToggle} />
     {/if}
     {#if showSectionMap.transformer}
-      <TransformerForm on:displayToggle={handleDisplayToggle} />
+      <TransformerForm {motifs} on:displayToggle={handleDisplayToggle} />
     {/if}
   {/if}
 </main>

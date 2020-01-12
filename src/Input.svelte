@@ -15,6 +15,9 @@
   export let displayClass = "display-block";
 
   function dispatchValueChange(val) {
+    console.log(
+      `dispatchValueChange() called value: ${val} apiField: ${apiField}`
+    );
     if (apiField) {
       dispatch("inputValueChange", { value: val, field: id, form });
     }

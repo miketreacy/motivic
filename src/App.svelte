@@ -47,8 +47,7 @@
     console.dir(event.detail);
     modalProps = event.detail.modalProps;
     // de-select everything when modal is displayed
-    // selectedMotifIds = [];
-    // allSelected = false;
+    selectedMotifIds = [];
   }
 
   function handleViewChange(event) {

@@ -16,13 +16,10 @@
   }
 
   function deleteItem() {
-    let [success, msg] = Utils.userData.remove(item, itemType, false);
+    let [success, msg] = Utils.userData.remove(item, itemType);
     responseMsg = msg;
     actionComplete = true;
-    console.log(`submitCallback`);
-    console.dir(submitCallback);
     timeoutId = window.setTimeout(submitCallback, 2000);
-    console.log(`delete setTimeout()`);
   }
 </script>
 

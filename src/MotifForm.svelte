@@ -27,10 +27,10 @@
   }
 
   function logAll() {
-    // console.log("formState");
-    // console.dir(formState);
-    // console.log("formStateDefault");
-    // console.dir(formStateDefault);
+    console.log("formState");
+    console.dir(formState);
+    console.log("formStateDefault");
+    console.dir(formStateDefault);
   }
 
   function validateOctaves(field, newState, oldState) {
@@ -50,6 +50,7 @@
   }
 
   function getNewState(field, value) {
+    console.log(`getNewState() field: ${field} : ${value}`);
     let oldState = Utils.general.clone(formState);
     let newState = { [field]: value };
 
@@ -93,6 +94,8 @@
     const fieldForm = event.detail.form;
     const fieldId = event.detail.field;
     const fieldValue = event.detail.value;
+    console.log(`formChange()`);
+    console.dir(event.detail);
     if (fieldForm === formId) {
       let newState = getNewState(fieldId, fieldValue);
       formState = newState;
@@ -158,7 +161,7 @@
     console.dir(reqBody);
     // rollDice();
     // toggleLoader(doc.querySelector("#randomize .dice"), true);
-    let data = await Utils.http.awaitFetch(apiUrl, getApiParams(reqBody));
+    // let data = await Utils.http.awaitFetch(apiUrl, getApiParams(reqBody));
     // let melody = data.response;
     // toggleLoader(doc.querySelector("#randomize .dice"), false);
     // processNewMotif(
@@ -170,7 +173,7 @@
     // );
     // toggleDetails("randomizer", true);
     // toggleSection("randomizer", true);
-    submitCallbackFn(data);
+    // submitCallbackFn(data);
   }
 
   onMount(() => {
@@ -184,6 +187,7 @@
     formCanSubmit = canFormSubmit(formInDefaultState);
     fieldRows = getUpdatedFieldRows(formState);
   }
+  $: console.dir(formState);
 </script>
 
 <style>
@@ -236,7 +240,7 @@
       {#each fieldRows as fields}
         <div class="form-row">
           {#each fields as field}
-            <Field {...field} on:inputValueChange={formChange} />
+            <Field {...field} form={formId} on:inputValueChange={formChange} />
           {/each}
         </div>
       {/each}

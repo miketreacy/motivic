@@ -14,9 +14,15 @@
   };
   function toggleNavMenu() {
     showNav = !showNav;
+    if (showNav) {
+      showUpload = false;
+    }
   }
   function toggleUploadMenu() {
     showUpload = !showUpload;
+    if (showUpload) {
+      showNav = false;
+    }
   }
   function uploadFile(event) {
     let files = event.detail.value;
