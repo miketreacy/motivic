@@ -8,11 +8,16 @@
   export let title = "My Motifs";
   export let selectedMotifIds = [];
   export let allSelected = false;
+  let listView = "nested";
   const dispatch = createEventDispatcher();
 
   function toggleOpen(e) {
     listOpen = !listOpen;
     dispatch("displayToggle", { section: id, open: listOpen });
+  }
+
+  function toggleListView(e) {
+    listView = listView === "nested" ? "flat" : "nested";
   }
 
   function handleSelectAll(all) {
@@ -21,6 +26,7 @@
   $: selectedMotifIds = handleSelectAll(allSelected);
   $: selectedMotifs = selectedMotifIds.map(id => motifs.find(m => m.id === id));
   $: console.log(`selectedMotifIds = [${selectedMotifIds.join(",")}]`);
+  $: console.log(`listView = ${listView}`);
 </script>
 
 <style>
@@ -56,6 +62,19 @@
     padding: 0 10px;
   }
   .select-all input {
+    width: 20px;
+    max-width: 20px;
+  }
+  .list-view {
+    flex-direction: row;
+  }
+  .list-view input,
+  .list-view label {
+    display: flex;
+    flex: 1 1 0;
+    padding: 0 5px;
+  }
+  .list-view input {
     width: 20px;
     max-width: 20px;
   }
@@ -244,10 +263,29 @@
         <input type="checkbox" id="select-all" bind:checked={allSelected} />
         <label for="select-all">select all</label>
       </div>
+      <div class="list-view">
+        <input
+          type="radio"
+          name="list-view"
+          id="list-view-nested"
+          value="nested"
+          checked
+          bind:group={listView}
+          on:click={toggleListView} />
+        <label for="list-view-nested">nested</label>
+        <input
+          type="radio"
+          name="list-view"
+          id="list-view-flat"
+          value="flat"
+          bind:group={listView}
+          on:click={toggleListView} />
+        <label for="list-view-flat">flat</label>
+      </div>
     </div>
     <ol class="motif-list item-list" data-type="motifs">
-      {#each motifs as { motifId, name, role, parent, tempo, notes, saved, variations, transformations }}
-        {#if role === 'theme'}
+      {#each motifs as { id: motifId, name, role, parent, tempo, notes, saved, variations, transformations }}
+        {#if listView === 'flat' || (listView === 'nested' && role === 'theme')}
           <li
             class="motif"
             id="motif_{motifId}"
@@ -294,7 +332,7 @@
                 {/each}
               </ol>
             {/if}
-            {#if variations && variations.length}
+            {#if listView === 'nested' && variations && variations.length}
               <svelte:self
                 id={`${motifId}_variations`}
                 title="variations"
