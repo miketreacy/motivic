@@ -33,9 +33,8 @@
       openSection = "";
     }
   }
-  $: {
-    updateDisplayState(openSection);
-  }
+  $: updateDisplayState(openSection);
+  $: console.info(`openSection: ${openSection}`);
 </script>
 
 <style>
@@ -63,6 +62,7 @@
   {#if view === 'studio'}
     {#if showSectionMap.motifs}
       <MotifList
+        id="motifs"
         {motifs}
         {selectedMotifIds}
         {allSelected}

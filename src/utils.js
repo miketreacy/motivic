@@ -423,6 +423,7 @@ const Utils = {
      * @param {Object} item New or updated item
      * @param {string} type Plural item type ('motifs', 'settings') etc
      * @param {string} name Item name
+     * @param {string} id Item id, if item is pre-existing
      * @param {string} role Transformation role: Enum('theme', 'variation')
      * @param {string} parentId Id of relative theme motif if item is variation
      * @param {Array} transformations List of transformations applied if item is variation
@@ -433,26 +434,41 @@ const Utils = {
       item,
       type,
       name = "",
+      id = "",
       role = "theme",
       parentId = "",
       transformations = [],
       variations = [],
       store = false
     ) {
+      console.log(`Utils.processNewItem()`);
+      console.dir({
+        item,
+        type,
+        name,
+        role,
+        parentId,
+        transformations,
+        variations,
+        store
+      });
       let newItem = this.initSavedItem(
         item,
         name,
+        id,
         role,
         parentId,
         transformations,
         variations
       );
-      this.persist(newItem, type, store);
+      console.dir(newItem);
+      return this.persist(newItem, type, store);
     },
 
     initSavedItem: function(
       item,
       name,
+      id,
       role = "theme",
       parentId = "",
       transformations,
@@ -464,7 +480,7 @@ const Utils = {
         name,
         variations,
         transformations,
-        id: Utils.general.randomString(8),
+        id: id || Utils.general.randomString(8),
         parent: parentId,
         saved: { local: false, cloud: false }
       };
@@ -511,14 +527,16 @@ const Utils = {
           true,
           `${Utils.general.singularize(type)} ${
             item.name
-          } ${action} successfully!`
+          } ${action} successfully!`,
+          item
         ];
       } catch (e) {
         return [
           false,
           `${Utils.general.singularize(type)} ${
             item.name
-          } could not be ${action} due to an error.`
+          } could not be ${action} due to an error.`,
+          item
         ];
       }
     },
@@ -590,7 +608,8 @@ const Utils = {
             true,
             `${Utils.general.singularize(type)} ${
               item.name
-            } saved to memory successfully!`
+            } saved to memory successfully!`,
+            item
           ];
     },
 

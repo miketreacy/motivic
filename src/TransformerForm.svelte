@@ -101,25 +101,20 @@
     console.dir(newMotif);
     let { transformations, melody: parentMotif } = data.request.body;
     // add the newly-created variation motif
-    Utils.userData.processNewItem(
+    let [success, msg, savedVariationMotif] = Utils.userData.processNewItem(
       newMotif,
       "motifs",
       `${motif.name}_var_1`,
+      "",
       "variation",
       parentMotif.id,
-      transformations
+      transformations,
+      []
     );
 
     // update the existing theme motif to reflect its new variation
-    Utils.userData.processNewItem(
-      parentMotif,
-      "motifs",
-      parentMotif.name,
-      "theme",
-      "",
-      transformations,
-      [...(parentMotif.variations || []), newMotif]
-    );
+    parentMotif.variations = [...parentMotif.variations, savedVariationMotif];
+    Utils.userData.persist(parentMotif, "motifs");
   }
 
   function getTransformations(state) {

@@ -1,10 +1,11 @@
 <script>
+  import { onMount } from "svelte";
   import { createEventDispatcher } from "svelte";
   import MotifControls from "./MotifControls.svelte";
   export let motifs = [];
   export let selectedMotifs = [];
   export let listOpen = false;
-  export let id = "motifs";
+  export let id = "";
   export let title = "My Motifs";
   export let selectedMotifIds = [];
   export let allSelected = false;
@@ -23,6 +24,12 @@
   function handleSelectAll(all) {
     return all ? motifs.map(m => m.id) : [];
   }
+
+  onMount(() => {
+    console.info(`onMount() props: ${id}`);
+    console.dir({ id, selectedMotifIds, allSelected, motifs });
+  });
+
   $: selectedMotifIds = handleSelectAll(allSelected);
   $: selectedMotifs = selectedMotifIds.map(id => motifs.find(m => m.id === id));
   $: console.log(`selectedMotifIds = [${selectedMotifIds.join(",")}]`);
