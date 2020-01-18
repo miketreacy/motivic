@@ -20,6 +20,8 @@
   --theme_font_size_base: 16px;
   --theme_font_size_1: 0.75rem;
   --theme_font_size_2: 1rem;
+  --theme_font_size_3: 1.5rem;
+  --theme_font_size_4: 2rem;
 
   --header_offset: 59px;
   --nav_offset: 0px;
@@ -98,6 +100,18 @@ summary {
   align-items: center;
   flex-wrap: wrap;
   box-sizing: border-box;
+}
+
+h1 {
+  font-size: var(--theme_font_size_4);
+}
+
+h2 {
+  font-size: var(--theme_font_size_3);
+}
+
+h3 {
+  font-size: var(--theme_font_size_2);
 }
 
 button,

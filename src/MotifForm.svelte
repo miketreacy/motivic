@@ -108,7 +108,7 @@
     if (!(state && stateDefault)) {
       return result;
     }
-    logAll();
+    // logAll();
     Object.entries(formState).forEach(([k, v]) => {
       if (stateDefault[k] !== v) {
         let diffKey = [k, stateDefault[k], v];
@@ -154,8 +154,8 @@
   }
 
   async function submitFormFn() {
-    console.info(`formState`);
-    console.info(formState);
+    // console.info(`formState`);
+    // console.info(formState);
     const reqBody = getRequestBodyFn(formState);
     console.info(`${submitOptions.method} ${submitOptions.path} request body:`);
     console.dir(reqBody);
@@ -179,7 +179,7 @@
   onMount(() => {
     // store initial values as defaults
     formStateDefault = Utils.general.clone(formState);
-    logAll();
+    // logAll();
   });
 
   $: {

@@ -6,13 +6,16 @@
   export let selectedMotifs = [];
   export let listOpen = false;
   export let id = "";
-  export let title = "My Motifs";
+  export let title = "";
   export let selectedMotifIds = [];
   export let allSelected = false;
-  let listView = "nested";
+  export let listView = "nested";
+  export let isRootList = false;
+  let root = "";
   const dispatch = createEventDispatcher();
 
   function toggleOpen(e) {
+    console.log(`MotifList.toggleOpen() called listOpen=${listOpen}`);
     listOpen = !listOpen;
     dispatch("displayToggle", { section: id, open: listOpen });
   }
@@ -27,7 +30,7 @@
 
   onMount(() => {
     console.info(`onMount() props: ${id}`);
-    console.dir({ id, selectedMotifIds, allSelected, motifs });
+    console.dir($$props);
   });
 
   $: selectedMotifIds = handleSelectAll(allSelected);
@@ -74,6 +77,13 @@
   }
   .list-view {
     flex-direction: row;
+    padding: 0;
+    position: absolute;
+    right: 0px;
+    top: 7px;
+  }
+  .list-view span {
+    padding: 0 5px;
   }
   .list-view input,
   .list-view label {
@@ -150,7 +160,7 @@
     font-size: var(--theme_font_size_2);
   }
 
-  variations .motif .name,
+  .variations .motif .name,
   .variations .motif .transformations,
   .variations .motif .rename input {
     font-size: var(--theme_font_size_1);
@@ -160,40 +170,25 @@
     grid-column: 6 / span 1;
     grid-row: 1 / span 1;
     margin: 0;
-    max-height: 10px;
+    width: auto;
     justify-self: end;
     padding: 0 10px;
   }
 
   .motif .name {
-    /* padding: 0px; */
     text-align: left;
   }
 
   .transformations-header {
-    display: none;
+    display: flex;
     grid-column: 3 / span 2;
     grid-row: 3 / span 1;
     align-items: flex-start;
   }
 
   .transformations {
-    display: none;
+    display: flex;
     grid-column: 2 / span 4;
-    grid-row: 4 / span 1;
-    align-items: flex-start;
-  }
-
-  .variations-header {
-    display: none;
-    grid-column: 2 / span 2;
-    grid-row: 3 / span 1;
-    align-items: flex-start;
-  }
-
-  .variations {
-    display: none;
-    grid-column: 2 / span 5;
     grid-row: 4 / span 1;
     align-items: flex-start;
   }
@@ -209,20 +204,13 @@
   }
 
   .selection label {
-    /* max-height: 20px; */
+    display: flex;
     flex-direction: row;
     align-items: flex-end;
-    display: none;
   }
 
   .selection label span {
     padding-left: 5px;
-  }
-
-  .selection label.select-theme {
-    display: flex;
-    grid-column: 1 / span 1;
-    grid-row: 1 / span 1;
   }
 
   .selection input {
@@ -233,19 +221,8 @@
     height: 20px;
   }
 
-  label.select-theme span,
   label.select-all-variations {
-    grid-column: 1 / span 1;
-    grid-row: 2 / span 1;
-    display: none;
-  }
-
-  .transformations-header,
-  .transformations,
-  .variations-header,
-  .variations,
-  label.select-all-variations {
-    display: flex;
+    margin-top: 5px;
   }
 
   .motif.has-variations > .selection {
@@ -259,40 +236,54 @@
   .motif.has-variations > .selection label.select-theme span {
     display: inline;
   }
+
+  .nested {
+    grid-column: 2 / span 5;
+    grid-row: 3 / span 5;
+    align-items: flex-start;
+  }
+
+  .nested h2 {
+    font-size: var(--theme_font_size_2);
+  }
 </style>
 
-<section {id} class="sidebar motifs" data-closed={!listOpen}>
+<section {id} class="motifs" class:nested={!isRootList} data-closed={!listOpen}>
   <h2 on:click={toggleOpen}>{title} ({motifs.length})</h2>
   {#if listOpen}
-    <MotifControls {selectedMotifs} on:displayCrudModal />
-    <div class="list-row">
-      <div class="select-all">
-        <input type="checkbox" id="select-all" bind:checked={allSelected} />
-        <label for="select-all">select all</label>
+    {#if isRootList}
+      <MotifControls {selectedMotifs} on:displayCrudModal />
+      <div class="list-row">
+        <div class="select-all">
+          <input type="checkbox" id="select-all" bind:checked={allSelected} />
+          <label for="select-all">select all</label>
+        </div>
+        <div class="list-view">
+          <span>list view:</span>
+          <input
+            type="radio"
+            name="list-view"
+            id="list-view-nested"
+            value="nested"
+            checked={listView == 'nested'}
+            bind:group={listView}
+            on:click={toggleListView} />
+          <label for="list-view-nested">nested</label>
+          <input
+            type="radio"
+            name="list-view"
+            id="list-view-flat"
+            value="flat"
+            checked={listView == 'flat'}
+            bind:group={listView}
+            on:click={toggleListView} />
+          <label for="list-view-flat">flat</label>
+        </div>
       </div>
-      <div class="list-view">
-        <input
-          type="radio"
-          name="list-view"
-          id="list-view-nested"
-          value="nested"
-          checked
-          bind:group={listView}
-          on:click={toggleListView} />
-        <label for="list-view-nested">nested</label>
-        <input
-          type="radio"
-          name="list-view"
-          id="list-view-flat"
-          value="flat"
-          bind:group={listView}
-          on:click={toggleListView} />
-        <label for="list-view-flat">flat</label>
-      </div>
-    </div>
+    {/if}
     <ol class="motif-list item-list" data-type="motifs">
       {#each motifs as { id: motifId, name, role, parent, tempo, notes, saved, variations, transformations }}
-        {#if listView === 'flat' || (listView === 'nested' && role === 'theme')}
+        {#if listView === 'flat' || (listView === 'nested' && role === 'theme') || !isRootList}
           <li
             class="motif"
             id="motif_{motifId}"
@@ -305,17 +296,19 @@
                   type="checkbox"
                   bind:group={selectedMotifIds}
                   value={motifId} />
-                <span>theme</span>
+                {#if listView === 'nested' && variations && variations.length}
+                  <span>theme</span>
+                {/if}
               </label>
-              {#if variations && variations.length}
+              {#if listView === 'nested' && variations && variations.length}
                 <label class="select-all-variations">
                   <input
                     class="select-all-variations"
                     type="checkbox"
                     data-action="multi"
-                    checked={false}
+                    bind:group={selectedMotifIds}
                     value="off" />
-                  <span>variations</span>
+                  <span>all</span>
                 </label>
               {/if}
             </div>
@@ -343,9 +336,13 @@
               <svelte:self
                 id={`${motifId}_variations`}
                 title="variations"
+                {listOpen}
+                {listView}
                 motifs={variations}
                 {selectedMotifIds}
                 {allSelected}
+                isRootList={false}
+                on:displayToggle
                 on:displayCrudModal />
             {/if}
           </li>

@@ -6,7 +6,7 @@
 
 </style>
 
-<section class="section sidebar show motif-controls">
+<section class="section show motif-controls">
   <div class="controls motif-actions" data-action="multi">
     <button class="play" autocomplete="off">
       <span>&#9658;</span>

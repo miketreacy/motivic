@@ -25,6 +25,8 @@
     }
   }
   function handleDisplayToggle(event) {
+    console.log(`handleDisplayToggle() called`);
+    console.dir(event.detail);
     let section = event.detail.section;
     let open = event.detail.open;
     if (open) {
@@ -35,6 +37,7 @@
   }
   $: updateDisplayState(openSection);
   $: console.info(`openSection: ${openSection}`);
+  $: console.dir(showSectionMap);
 </script>
 
 <style>
@@ -63,6 +66,10 @@
     {#if showSectionMap.motifs}
       <MotifList
         id="motifs"
+        title="My Motifs"
+        listOpen={openSection === 'motifs'}
+        listView="nested"
+        isRootList={true}
         {motifs}
         {selectedMotifIds}
         {allSelected}
