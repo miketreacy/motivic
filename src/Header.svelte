@@ -1,5 +1,5 @@
 <script>
-  import Utils from "./utils";
+  import Utils from "./Utils";
   import Nav from "./Nav.svelte";
   import Field from "./Field.svelte";
 

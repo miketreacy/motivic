@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { createEventDispatcher } from "svelte";
   import Config from "./Config.js";
-  import Utils from "./utils";
+  import Utils from "./Utils";
   import Field from "./Field.svelte";
   import MotifFormHeader from "./MotifFormHeader.svelte";
   import MotifFormControls from "./MotifFormControls.svelte";

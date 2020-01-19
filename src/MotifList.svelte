@@ -131,9 +131,10 @@
   .motif .saved {
     display: flex;
     align-items: center;
+    justify-content: center;
     padding: 2px;
     color: var(--theme_color_1);
-    font-size: var(--theme_font_size_1);
+    font-size: var(--theme_font_size_3);
     grid-column: 5 / span 1;
     grid-row: 1 / span 1;
   }
@@ -321,7 +322,7 @@
             </div>
             <h3 class="name">{name}</h3>
             {#if saved.local}
-              <span class="saved">(saved)</span>
+              <span class="saved">&#9745;</span>
             {/if}
             <div class="rename hide">
               <input type="text" value="" />

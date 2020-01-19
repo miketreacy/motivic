@@ -40,7 +40,7 @@ function popState(e) {
 }
 // TODO: move this to App.svelte to update URL when view changes?
 function updateURL(view = "", query = "", stateMap = {}, pagination = null) {
-  let newURL = Utils.utils.get(window);
+  let newURL = Utils.url.get(window);
   newURL.hash = query ? `${view}?${query}` : `${view}`;
   stateMap.view = view;
   Utils.url.create(window, {
