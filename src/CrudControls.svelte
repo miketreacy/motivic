@@ -7,23 +7,13 @@
 
   const dispatch = createEventDispatcher();
   function dispatchDisplayModal(event) {
-    console.log(`dispatchDisplayModal() called (CrudControls.svelte)`);
-    console.dir(event);
-    console.log(`displayCrudModal event dispatched (CrudControls.svelte)`);
-    console.dir({
-      display: true,
-      modalProps: {
-        itemType: type,
-        item: selectedItems[0],
-        formType: event.target.dataset.action
-      }
-    });
     dispatch("displayCrudModal", {
       modalProps: {
         show: true,
         itemType: type,
         item: selectedItems[0],
-        formType: event.target.dataset.action
+        formType: event.target.dataset.action,
+        actionComplete: false
       }
     });
   }

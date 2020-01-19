@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from "svelte";
   import Utils from "./Utils";
   export let item = null;
   export let itemType = "";
@@ -17,10 +18,15 @@
 
   function deleteItem() {
     let [success, msg] = Utils.userData.remove(item, itemType);
+    // TODO: update child variations to remove child.parent => id reference and child.role == variation
     responseMsg = msg;
     actionComplete = true;
     timeoutId = window.setTimeout(submitCallback, 2000);
   }
+  onMount(() => {
+    console.info(`ItemCrudForm onMount() props`);
+    console.dir($$props);
+  });
 </script>
 
 <style>

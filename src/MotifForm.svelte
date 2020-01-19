@@ -22,8 +22,13 @@
   let formCanSubmit = true;
   const dispatch = createEventDispatcher();
 
-  function dispatchFormToggle(formId, formOpen) {
-    dispatch("displayToggle", { section: formId, open: formOpen });
+  function dispatchFormToggle(open) {
+    dispatch("displayToggle", { section: formId, open: open });
+  }
+
+  function toggleFormFn() {
+    formOpen = !formOpen;
+    dispatchFormToggle(formOpen);
   }
 
   function logAll() {
@@ -138,11 +143,6 @@
     formState = formStateDefault;
   }
 
-  function toggleFormFn() {
-    formOpen = !formOpen;
-    dispatchFormToggle(formId, formOpen);
-  }
-
   function getApiParams(payload) {
     let { method, mode, headers } = submitOptions;
     return {
@@ -174,6 +174,9 @@
     // toggleDetails("randomizer", true);
     // toggleSection("randomizer", true);
     responseCallbackFn(data);
+    if (formOpen) {
+      toggleFormFn();
+    }
   }
 
   onMount(() => {

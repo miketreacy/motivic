@@ -6,14 +6,15 @@
   export let itemType = "";
   export let formType = "";
   export let item = null;
-  let actionComplete = false;
+  export let actionComplete = false;
   //   export let submitCallback = Function.prototype;
 
   let defaultModalProps = {
     itemType: "",
     item: null,
     formType: "",
-    show: false
+    show: false,
+    actionComplete: false
   };
   const dispatch = createEventDispatcher();
   function submitCallback() {

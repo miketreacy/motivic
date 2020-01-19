@@ -38,6 +38,8 @@
   $: updateDisplayState(openSection);
   $: console.info(`openSection: ${openSection}`);
   $: console.dir(showSectionMap);
+  $: openSection =
+    openSection === "motifs" && !motifs.length ? "" : openSection;
 </script>
 
 <style>

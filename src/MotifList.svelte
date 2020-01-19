@@ -16,8 +16,10 @@
 
   function toggleOpen(e) {
     console.log(`MotifList.toggleOpen() called listOpen=${listOpen}`);
-    listOpen = !listOpen;
-    dispatch("displayToggle", { section: id, open: listOpen });
+    if (motifs.length) {
+      listOpen = !listOpen;
+      dispatch("displayToggle", { section: id, open: listOpen });
+    }
   }
 
   function toggleListView(e) {
@@ -26,6 +28,11 @@
 
   function handleSelectAll(all) {
     return all ? motifs.map(m => m.id) : [];
+  }
+
+  function motifIsRootNode(motifParentId) {
+    let parent = motifs.find(m => m.id === motifParentId);
+    return Boolean(!parent);
   }
 
   onMount(() => {
@@ -250,7 +257,7 @@
 
 <section {id} class="motifs" class:nested={!isRootList} data-closed={!listOpen}>
   <h2 on:click={toggleOpen}>{title} ({motifs.length})</h2>
-  {#if listOpen}
+  {#if listOpen && motifs.length}
     {#if isRootList}
       <MotifControls {selectedMotifs} on:displayCrudModal />
       <div class="list-row">
@@ -283,7 +290,7 @@
     {/if}
     <ol class="motif-list item-list" data-type="motifs">
       {#each motifs as { id: motifId, name, role, parent, tempo, notes, saved, variations, transformations }}
-        {#if listView === 'flat' || (listView === 'nested' && role === 'theme') || !isRootList}
+        {#if listView === 'flat' || (listView === 'nested' && motifIsRootNode(parent)) || !isRootList}
           <li
             class="motif"
             id="motif_{motifId}"

@@ -71,4 +71,7 @@
   {settings}
   on:displayCrudModal={handleModalDisplay} />
 <Footer />
-<ItemCrudModal {...modalProps} on:displayCrudModal={handleModalDisplay} />
+{#if modalProps.show}
+  <!-- TODO: mount empty Modal here but mount the child content componenets separately to preserve modal fade in but keep form state clearn -->
+  <ItemCrudModal {...modalProps} on:displayCrudModal={handleModalDisplay} />
+{/if}

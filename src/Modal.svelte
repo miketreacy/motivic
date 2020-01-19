@@ -7,7 +7,13 @@
   let modal;
   let actionComplete = false;
   const dispatch = createEventDispatcher();
-  let modalProps = { itemType: "", item: null, formType: "", show: false };
+  let modalProps = {
+    itemType: "",
+    item: null,
+    formType: "",
+    show: false,
+    actionComplete: false
+  };
   function dispatchDismissModal() {
     dispatch("displayCrudModal", {
       modalProps
