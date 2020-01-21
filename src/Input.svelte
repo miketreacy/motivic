@@ -76,17 +76,6 @@
     {/each}
   </select>
 {:else if type == 'number'}
-  <!-- <input
-    type="number"
-    {id}
-    class={displayClass}
-    bind:value
-    {required}
-    {min}
-    {max}
-    {step}
-    inputmode="numeric"
-    pattern="[0-9]*" /> -->
   <NumberInput
     {id}
     {form}

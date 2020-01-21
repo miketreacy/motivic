@@ -51,7 +51,7 @@
   /*Desktop*/
   @media (min-width: 1025px) {
     :root {
-      --header_offset: 113px;
+      --header_offset: 83px;
       --nav_offset: 0px;
     }
 

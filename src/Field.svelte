@@ -27,6 +27,10 @@
     justify-content: space-between;
   }
 
+  .input-wrap.hidden {
+    display: none;
+  }
+
   label {
     display: block;
     padding: 5px;
@@ -51,7 +55,7 @@
 </style>
 
 {#if wrap}
-  <div class="input-wrap">
+  <div class="input-wrap" class:hidden={type === 'hidden'}>
     {#if label}
       <label for={id}>{label}</label>
     {/if}

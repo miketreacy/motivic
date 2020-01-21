@@ -150,5 +150,6 @@
   {#if showUpload}
     <Field {...fileUploadField} on:valueChange={uploadFile} />
   {/if}
-  <Nav show={showNav} {view} on:viewChange />
+  <!-- Hiding nav due to new SPA approach - no need for page-like paradigm to navigate views -->
+  <!-- <Nav show={showNav} {view} on:viewChange /> -->
 </header>

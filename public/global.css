@@ -146,6 +146,12 @@ select:disabled {
   color: var(--theme_color_6);
 }
 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 ul {
   list-style: none;
 }
@@ -241,8 +247,8 @@ section {
 /*Desktop*/
 @media (min-width: var(--layout_desktop_width)) {
   :root {
-    --header_offset: 113px;
-    --nav_offset: 72px;
+    --header_offset: 83px;
+    --nav_offset: 0px;
   }
 }
 
