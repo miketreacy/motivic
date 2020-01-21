@@ -18,7 +18,7 @@
 
   function deleteItem() {
     let [success, msg] = Utils.userData.remove(item, itemType);
-    // TODO: update child variations to remove child.parent => id reference and child.role == variation
+    // TODO: update child variations to remove child.parent => id reference
     responseMsg = msg;
     actionComplete = true;
     timeoutId = window.setTimeout(submitCallback, 2000);

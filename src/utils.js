@@ -313,8 +313,8 @@ const Utils = {
       getTrack: function(melody) {
         let track = new Midi.Track();
         let midiNotes = this.getMelody(melody);
-        track.setTempo(melody.bpm);
 
+        track.setTempo(melody.bpm);
         midiNotes.forEach(note => {
           track.addNote(note.channel, note.pitch, note.duration, note.time);
         });
@@ -326,13 +326,8 @@ const Utils = {
         let a = doc.createElement("a");
         let motifs = ids.map(Utils.motif.getById.bind(Utils.motif));
         let file = new Midi.File();
-        if (ids.length) {
-          motifs.forEach(m => file.addTrack(this.getTrack(m)));
-        } else {
-          file.addTrack(
-            this.getTrack(Utils.motif.getByPropVal("role", "theme"))
-          );
-        }
+
+        motifs.forEach(m => file.addTrack(this.getTrack(m)));
         a.download = `${motifs[0].name}.midi`;
         a.href = "data:audio/midi;base64," + win.btoa(file.toBytes());
         a.click();
@@ -345,6 +340,7 @@ const Utils = {
         let motifs = ids.map(Utils.motif.getById.bind(Utils.motif));
         let data = JSON.stringify(motifs, undefined, 4);
         let blob = new Blob([data], { type: "text/json" });
+
         a.id = "FUCK";
         a.download = `${motifs[0].name}.json`;
         a.href = win.URL.createObjectURL(blob);
@@ -424,10 +420,8 @@ const Utils = {
      * @param {string} type Plural item type ('motifs', 'settings') etc
      * @param {string} name Item name
      * @param {string} id Item id, if item is pre-existing
-     * @param {string} role Transformation role: Enum('theme', 'variation')
      * @param {string} parentId Id of relative theme motif if item is variation
      * @param {Array} transformations List of transformations applied if item is variation
-     * @param {Array} variations List of child variations if item is theme
      * @param {boolean} store Should item be persisted in localStorage?
      */
     processNewItem: function(
@@ -435,10 +429,8 @@ const Utils = {
       type,
       name = "",
       id = "",
-      role = "theme",
       parentId = "",
       transformations = [],
-      variations = [],
       store = false
     ) {
       console.log(`Utils.processNewItem()`);
@@ -446,39 +438,25 @@ const Utils = {
         item,
         type,
         name,
-        role,
         parentId,
         transformations,
-        variations,
         store
       });
       let newItem = this.initSavedItem(
         item,
         name,
         id,
-        role,
         parentId,
-        transformations,
-        variations
+        transformations
       );
       console.dir(newItem);
       return this.persist(newItem, type, store);
     },
 
-    initSavedItem: function(
-      item,
-      name,
-      id,
-      role = "theme",
-      parentId = "",
-      transformations,
-      variations
-    ) {
+    initSavedItem: function(item, name, id, parentId = "", transformations) {
       let savedItem = Utils.general.clone(item);
       let initMap = {
-        role,
         name,
-        variations,
         transformations,
         id: id || Utils.general.randomString(8),
         parent: parentId,

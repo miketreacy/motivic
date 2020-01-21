@@ -154,25 +154,12 @@
   }
 
   async function submitFormFn() {
-    // console.info(`formState`);
-    // console.info(formState);
     const reqBody = getRequestBodyFn(formState);
     console.info(`${submitOptions.method} ${submitOptions.path} request body:`);
     console.dir(reqBody);
     // rollDice();
     // toggleLoader(doc.querySelector("#randomize .dice"), true);
     let data = await Utils.http.awaitFetch(apiUrl, getApiParams(reqBody));
-    // let melody = data.response;
-    // toggleLoader(doc.querySelector("#randomize .dice"), false);
-    // processNewMotif(
-    //   melody,
-    //   "My Random Motif",
-    //   "theme",
-    //   "",
-    //   "Random melody generated"
-    // );
-    // toggleDetails("randomizer", true);
-    // toggleSection("randomizer", true);
     responseCallbackFn(data);
     if (formOpen) {
       toggleFormFn();

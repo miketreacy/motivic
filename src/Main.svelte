@@ -71,12 +71,13 @@
         title="My Motifs"
         listOpen={openSection === 'motifs'}
         listView="nested"
-        isRootList={true}
         {motifs}
         {selectedMotifIds}
         {allSelected}
+        parentId=""
         on:displayToggle={handleDisplayToggle}
-        on:displayCrudModal />
+        on:displayCrudModal
+        on:motifSelection />
     {/if}
 
     {#if showSectionMap.randomizer}

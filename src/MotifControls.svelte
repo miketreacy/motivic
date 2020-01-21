@@ -9,6 +9,12 @@
 
   export let selectedMotifs = [];
   let type = "motifs";
+
+  $: console.log(
+    `MotifControls: selectedMotifs = [${selectedMotifs
+      .map(m => m.id)
+      .join(",")}]`
+  );
 </script>
 
 <style>

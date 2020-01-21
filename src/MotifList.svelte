@@ -10,8 +10,9 @@
   export let selectedMotifIds = [];
   export let allSelected = false;
   export let listView = "nested";
-  export let isRootList = false;
-  let root = "";
+  export let parentId = "";
+
+  let displayMotifs = [];
   const dispatch = createEventDispatcher();
 
   function toggleOpen(e) {
@@ -22,12 +23,15 @@
     }
   }
 
-  function toggleListView(e) {
-    listView = listView === "nested" ? "flat" : "nested";
+  function motifSelection(e) {
+    let selectAll = e.target.id === "select-all";
+    let add = e.target.checked;
+    let newIds = selectAll ? motifs.map(m => m.id) : [e.target.value];
+    dispatch("motifSelection", { existingIds: selectedMotifIds, newIds, add });
   }
 
-  function handleSelectAll(all) {
-    return all ? motifs.map(m => m.id) : [];
+  function toggleListView(e) {
+    listView = listView === "nested" ? "flat" : "nested";
   }
 
   function motifIsRootNode(motifParentId) {
@@ -35,15 +39,87 @@
     return Boolean(!parent);
   }
 
+  function toggleAllVariations(e) {
+    let add = e.target.checked;
+    let themeId = e.target.dataset.motifId;
+    let childVariationIds = motifs
+      .filter(m => m.parent === themeId)
+      .map(m => m.id);
+
+    selectedMotifIds = updateSelectedMotifIds(childVariationIds, add);
+  }
+
+  function updateSelectedMotifIds(motifIds, add = true) {
+    if (add) {
+      return [...new Set([...selectedMotifIds, ...motifIds])];
+    } else {
+      return selectedMotifIds.filter(id => !motifIds.includes(id));
+    }
+  }
+
+  function allVariationsAreSelected(themeId) {
+    let childVariationIds = motifs
+      .filter(m => m.parent === themeId)
+      .map(m => m.id);
+    if (selectedMotifIds.length && childVariationIds.length) {
+      return childVariationIds.every(id => selectedMotifIds.includes(id));
+    } else {
+      return false;
+    }
+  }
+
+  function motifHasVariations(motifId) {
+    let childVariations = motifs.filter(m => m.parent === motifId);
+    return Boolean(childVariations.length);
+  }
+
+  function motifVariationCount(motifId) {
+    let childVariations = motifs.filter(m => m.parent === motifId);
+    return childVariations.length;
+  }
+
+  function updateSelectedMotifs(ids) {
+    console.log(`updateSelectedMotifs()called with ids: ${ids.join(",")}`);
+    return ids.map(id => motifs.find(m => m.id === id));
+  }
+
+  function displayMotif(motif) {
+    console.log(`displayMotif: listView = ${listView}`);
+    if (listView === "flat") {
+      // display all motifs in flat view
+      return true;
+    }
+
+    if (listView === "nested") {
+      if (parentId) {
+        // this is a nested variations list - only display children
+        return motif.parent === parentId;
+      } else {
+        // this is the root list - display any motifs without parents
+        let parent = motifs.find(m => m.id === motif.parent);
+        return Boolean(!parent);
+      }
+    }
+  }
+
+  function getDisplayMotifs(listView) {
+    return motifs.filter(displayMotif);
+  }
+
   onMount(() => {
     console.info(`onMount() props: ${id}`);
     console.dir($$props);
   });
 
-  $: selectedMotifIds = handleSelectAll(allSelected);
-  $: selectedMotifs = selectedMotifIds.map(id => motifs.find(m => m.id === id));
+  $: selectedMotifs = updateSelectedMotifs(selectedMotifIds);
   $: console.log(`selectedMotifIds = [${selectedMotifIds.join(",")}]`);
   $: console.log(`listView = ${listView}`);
+  $: console.log(`allMotifIds = [${motifs.map(m => m.id).join(",")}]`);
+  $: {
+    console.log(`selectedMotifs changed`);
+    console.dir(selectedMotifs);
+  }
+  $: displayMotifs = getDisplayMotifs(listView);
 </script>
 
 <style>
@@ -105,12 +181,6 @@
   .motif-list {
     width: 100%;
   }
-  .selected-motif-ids {
-    position: absolute;
-    right: 0;
-    display: flex;
-    flex-direction: column;
-  }
   .motif {
     border: 1px solid var(--theme_color_7);
     padding: 10px;
@@ -130,11 +200,11 @@
 
   .motif .saved {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     padding: 2px;
     color: var(--theme_color_1);
-    font-size: var(--theme_font_size_3);
+    font-size: var(--theme_font_size_2);
     grid-column: 5 / span 1;
     grid-row: 1 / span 1;
   }
@@ -233,10 +303,6 @@
     margin-top: 5px;
   }
 
-  .motif.has-variations > .selection {
-    display: grid;
-  }
-
   .motif.has-variations > .selection label {
     align-items: center;
   }
@@ -256,14 +322,21 @@
   }
 </style>
 
-<section {id} class="motifs" class:nested={!isRootList} data-closed={!listOpen}>
+<section
+  {id}
+  class="motifs"
+  class:nested={Boolean(parentId)}
+  data-closed={!listOpen}>
   <h2 on:click={toggleOpen}>{title} ({motifs.length})</h2>
   {#if listOpen && motifs.length}
-    {#if isRootList}
+    {#if !parentId}
       <MotifControls {selectedMotifs} on:displayCrudModal />
       <div class="list-row">
         <div class="select-all">
-          <input type="checkbox" id="select-all" bind:checked={allSelected} />
+          <input
+            type="checkbox"
+            id="select-all"
+            on:click|self|stopPropagation={motifSelection} />
           <label for="select-all">select all</label>
         </div>
         <div class="list-view">
@@ -290,71 +363,71 @@
       </div>
     {/if}
     <ol class="motif-list item-list" data-type="motifs">
-      {#each motifs as { id: motifId, name, role, parent, tempo, notes, saved, variations, transformations }}
-        {#if listView === 'flat' || (listView === 'nested' && motifIsRootNode(parent)) || !isRootList}
-          <li
-            class="motif"
-            id="motif_{motifId}"
-            data-id={motifId}
-            data-saved={saved.local}>
-            <div class="selection">
-              <label class="select-theme">
-                <input
-                  class="select"
-                  type="checkbox"
-                  bind:group={selectedMotifIds}
-                  value={motifId} />
-                {#if listView === 'nested' && variations && variations.length}
-                  <span>theme</span>
-                {/if}
-              </label>
-              {#if listView === 'nested' && variations && variations.length}
-                <label class="select-all-variations">
-                  <input
-                    class="select-all-variations"
-                    type="checkbox"
-                    data-action="multi"
-                    bind:group={selectedMotifIds}
-                    value="off" />
-                  <span>all</span>
-                </label>
+      {#each displayMotifs as { id: motifId, name, parent: motifParentId, tempo, notes, saved, transformations }}
+        <li
+          class="motif"
+          id="motif_{motifId}"
+          data-id={motifId}
+          data-saved={saved.local}>
+          <div class="selection">
+            <label class="select-theme">
+              <input
+                class="select"
+                type="checkbox"
+                on:click|self|stopPropagation={motifSelection}
+                value={motifId}
+                checked={selectedMotifIds.includes(motifId)} />
+              {#if listView === 'nested' && motifVariationCount(motifId)}
+                <span>theme</span>
               {/if}
-            </div>
-            <h3 class="name">{name}</h3>
-            {#if saved.local}
-              <span class="saved">&#9745;</span>
+            </label>
+            {#if listView === 'nested' && motifVariationCount(motifId) > 1}
+              <label class="select-all-variations">
+                <input
+                  class="select-all-variations"
+                  type="checkbox"
+                  data-motif-id={motifId}
+                  on:click={toggleAllVariations}
+                  checked={allVariationsAreSelected(motifId)} />
+                <span>all</span>
+              </label>
             {/if}
-            <div class="rename hide">
-              <input type="text" value="" />
-              <button class="rename-cancel">cancel</button>
-              <button class="rename-submit">save</button>
-            </div>
-            <button class="remove">&#9747;</button>
-            <div class="motif-display">display motif here</div>
-            {#if transformations && transformations.length}
-              <h4 class="transformations-header">transformations:</h4>
-              <!-- TODO: refine this recursion -->
-              <ol class="transformations">
-                {#each transformations as { type, params }, i}
-                  <li class="transformation">{type}: {params.join(', ')}</li>
-                {/each}
-              </ol>
-            {/if}
-            {#if listView === 'nested' && variations && variations.length}
-              <svelte:self
-                id={`${motifId}_variations`}
-                title="variations"
-                {listOpen}
-                {listView}
-                motifs={variations}
-                {selectedMotifIds}
-                {allSelected}
-                isRootList={false}
-                on:displayToggle
-                on:displayCrudModal />
-            {/if}
-          </li>
-        {/if}
+          </div>
+          <h3 class="name">{name}</h3>
+          {#if saved.local}
+            <span class="saved">&#128190;</span>
+          {/if}
+          <div class="rename hide">
+            <input type="text" value="" />
+            <button class="rename-cancel">cancel</button>
+            <button class="rename-submit">save</button>
+          </div>
+          <button class="remove">&#9747;</button>
+          <div class="motif-display">display motif here</div>
+          {#if transformations && transformations.length}
+            <h4 class="transformations-header">transformations:</h4>
+            <!-- TODO: refine this recursion -->
+            <ol class="transformations">
+              {#each transformations as { type, params }, i}
+                <li class="transformation">{type}: {params.join(', ')}</li>
+              {/each}
+            </ol>
+          {/if}
+          {#if listView === 'nested' && motifVariationCount(motifId)}
+            <svelte:self
+              id={`${motifId}_variations`}
+              title="variations"
+              {listOpen}
+              {listView}
+              {motifs}
+              parentId={motifId}
+              {selectedMotifIds}
+              {allSelected}
+              on:displayToggle
+              on:displayCrudModal
+              on:motifSelection />
+          {/if}
+        </li>
       {/each}
     </ol>
   {/if}

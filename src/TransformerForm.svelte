@@ -106,15 +106,13 @@
       "motifs",
       `${motif.name}_var_1`,
       "",
-      "variation",
       parentMotif.id,
-      transformations,
-      []
+      transformations
     );
 
     // update the existing theme motif to reflect its new variation
-    parentMotif.variations = [...parentMotif.variations, savedVariationMotif];
-    Utils.userData.persist(parentMotif, "motifs");
+    // parentMotif.variations = [...parentMotif.variations, savedVariationMotif];
+    // Utils.userData.persist(parentMotif, "motifs");
   }
 
   function getTransformations(state) {

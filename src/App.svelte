@@ -42,6 +42,16 @@
     }
   }
 
+  function handleMotifSelection(event) {
+    let { existingIds, newIds, add } = event.detail;
+
+    if (add) {
+      selectedMotifIds = [...new Set([...existingIds, ...newIds])];
+    } else {
+      selectedMotifIds = existingIds.filter(id => !newIds.includes(id));
+    }
+  }
+
   function handleModalDisplay(event) {
     console.log(`handleModalDisplay() called (App.svelte)`);
     console.dir(event.detail);
@@ -69,7 +79,8 @@
   {allSelected}
   {selectedMotifIds}
   {settings}
-  on:displayCrudModal={handleModalDisplay} />
+  on:displayCrudModal={handleModalDisplay}
+  on:motifSelection={handleMotifSelection} />
 <Footer />
 {#if modalProps.show}
   <!-- TODO: mount empty Modal here but mount the child content componenets separately to preserve modal fade in but keep form state clearn -->

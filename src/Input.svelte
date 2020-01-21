@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
+  import NumberInput from "./NumberInput.svelte";
   const dispatch = createEventDispatcher();
   export let type = "";
   export let apiField = true;
@@ -75,7 +76,7 @@
     {/each}
   </select>
 {:else if type == 'number'}
-  <input
+  <!-- <input
     type="number"
     {id}
     class={displayClass}
@@ -85,7 +86,18 @@
     {max}
     {step}
     inputmode="numeric"
-    pattern="[0-9]*" />
+    pattern="[0-9]*" /> -->
+  <NumberInput
+    {id}
+    {form}
+    {displayClass}
+    {value}
+    {required}
+    {min}
+    {max}
+    {step}
+    {apiField}
+    on:inputValueChange />
 {:else if type == 'text'}
   <input
     type="text"
