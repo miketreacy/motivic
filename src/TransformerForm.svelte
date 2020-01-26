@@ -1,4 +1,5 @@
 <script>
+  import { createEventDispatcher } from "svelte";
   import Config from "./Config.js";
   import Utils from "./Utils";
   import MotifForm from "./MotifForm.svelte";
@@ -94,6 +95,7 @@
   ];
 
   const submitOptions = Config.api.operations.transformer;
+  const dispatch = createEventDispatcher();
 
   function responseCallbackFn(data) {
     const newMotif = data && data.response ? data.response : null;
@@ -113,6 +115,13 @@
     // update the existing theme motif to reflect its new variation
     // parentMotif.variations = [...parentMotif.variations, savedVariationMotif];
     // Utils.userData.persist(parentMotif, "motifs");
+    dispatch("displayAlert", {
+      visible: true,
+      type: success ? "success" : "error",
+      message: msg,
+      displayTimeMs: 3000,
+      dismissable: false
+    });
   }
 
   function getTransformations(state) {

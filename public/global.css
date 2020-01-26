@@ -127,7 +127,6 @@ select {
   outline: none;
   padding: 5px;
   height: 30px;
-  border: 1px solid var(--theme_color_10);
   width: 40%;
   margin: 0;
 }

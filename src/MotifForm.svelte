@@ -162,7 +162,7 @@
     let data = await Utils.http.awaitFetch(apiUrl, getApiParams(reqBody));
     responseCallbackFn(data);
     if (formOpen) {
-      toggleFormFn();
+      // toggleFormFn();
     }
   }
 

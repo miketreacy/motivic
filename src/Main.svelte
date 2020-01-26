@@ -1,4 +1,5 @@
 <script>
+  import Alert from "./Alert.svelte";
   import About from "./About.svelte";
   import RandomizerForm from "./RandomizerForm.svelte";
   import TransformerForm from "./TransformerForm.svelte";
@@ -11,6 +12,14 @@
   export let settings = [];
   export let motifs = [];
   let showSectionMap = { motifs: true, randomizer: true, transformer: true };
+  let displayAlert = false;
+  let alertProps = {
+    visible: false,
+    message: "",
+    type: "",
+    displayTimeMs: 0,
+    dismissable: false
+  };
   function updateDisplayState(openSection) {
     if (openSection) {
       showSectionMap = Object.keys(showSectionMap).reduce((obj, key) => {
@@ -34,6 +43,12 @@
     } else {
       openSection = "";
     }
+  }
+  function handleDisplayAlert(event) {
+    console.log(`handleDisplayAlert() called`);
+    console.dir(event.detail);
+    alertProps = event.detail;
+    displayAlert = alertProps.visible;
   }
   $: updateDisplayState(openSection);
   $: console.info(`openSection: ${openSection}`);
@@ -61,6 +76,10 @@
 </style>
 
 <main>
+  {#if displayAlert}
+    <Alert {...alertProps} on:displayAlert={handleDisplayAlert} />
+  {/if}
+
   {#if view === 'about'}
     <About />
   {/if}
@@ -77,17 +96,21 @@
         parentId=""
         on:displayToggle={handleDisplayToggle}
         on:displayCrudModal
-        on:motifSelection />
+        on:motifSelection
+        on:displayAlert={handleDisplayAlert} />
     {/if}
 
     {#if showSectionMap.randomizer}
-      <RandomizerForm on:displayToggle={handleDisplayToggle} />
+      <RandomizerForm
+        on:displayToggle={handleDisplayToggle}
+        on:displayAlert={handleDisplayAlert} />
     {/if}
     {#if showSectionMap.transformer}
       <TransformerForm
         {motifs}
         selectedMotifId={motifs.length ? motifs[0].id : ''}
-        on:displayToggle={handleDisplayToggle} />
+        on:displayToggle={handleDisplayToggle}
+        on:displayAlert={handleDisplayAlert} />
     {/if}
   {/if}
 </main>

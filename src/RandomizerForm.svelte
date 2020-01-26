@@ -1,4 +1,5 @@
 <script>
+  import { createEventDispatcher } from "svelte";
   import MotifForm from "./MotifForm.svelte";
   import Config from "./Config.js";
   import Utils from "./Utils";
@@ -130,12 +131,24 @@
     ]
   ];
   const submitOptions = Config.api.operations.randomizer;
+  const dispatch = createEventDispatcher();
 
   function responseCallbackFn(data) {
     const motif = data && data.response ? data.response : null;
     console.info(`SUCCESS response from ${formId.toUpperCase()} API`);
     console.dir(motif);
-    Utils.userData.processNewItem(motif, "motifs", "my motif");
+    let [success, msg, newMotif] = Utils.userData.processNewItem(
+      motif,
+      "motifs",
+      "my motif"
+    );
+    dispatch("displayAlert", {
+      visible: true,
+      type: success ? "success" : "error",
+      message: msg,
+      displayTimeMs: 3000,
+      dismissable: false
+    });
   }
 
   function getRequestBodyFn(state) {
