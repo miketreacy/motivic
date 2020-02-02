@@ -15,7 +15,7 @@
   let disabled = true;
 
   const waveFormIcon = {
-    saw: "&#8961",
+    sawtooth: "&#8961",
     sine: "&#8767;",
     square: "&#9633;",
     triangle: "&#9651;"
@@ -79,11 +79,11 @@
 
 <div class="motif-controls">
   <select bind:value={selectedVoice} {disabled}>
-    {#each Config.voices.map(v => (v === 'sawtooth' ? 'saw' : v)) as voice}
+    {#each Config.voices as voice}
       <option value={voice}>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;voice&nbsp;&#13;&#10;&nbsp;
         {@html waveFormIcon[voice]}
-        {voice}
+        {voice === 'sawtooth' ? 'saw' : voice}
       </option>
     {/each}
   </select>
