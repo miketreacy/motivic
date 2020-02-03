@@ -322,9 +322,8 @@ const Utils = {
         return track;
       },
 
-      download: function(ids = []) {
+      download: function(motifs = []) {
         let a = doc.createElement("a");
-        let motifs = ids.map(Utils.motif.getById.bind(Utils.motif));
         let file = new Midi.File();
 
         motifs.forEach(m => file.addTrack(this.getTrack(m)));
@@ -335,9 +334,8 @@ const Utils = {
     },
 
     json: {
-      download: function(ids = []) {
+      download: function(motifs = []) {
         let a = doc.createElement("a");
-        let motifs = ids.map(Utils.motif.getById.bind(Utils.motif));
         let data = JSON.stringify(motifs, undefined, 4);
         let blob = new Blob([data], { type: "text/json" });
 
@@ -358,6 +356,13 @@ const Utils = {
           });
           Utils.file.parseCallback(motifs);
         };
+      }
+    },
+
+    wav: {
+      download: function(motifs = []) {
+        // TODO: wire up call to motivic_convertor WAV API
+        console.log(`Call motivic_convertor API once deployed`);
       }
     },
 

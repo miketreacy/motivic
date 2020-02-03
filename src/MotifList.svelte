@@ -1,6 +1,8 @@
 <script>
   import { onMount } from "svelte";
   import { createEventDispatcher } from "svelte";
+  import CrudControls from "./CrudControls.svelte";
+  import DownloadControls from "./DownloadControls.svelte";
   import MotifControls from "./MotifControls.svelte";
   export let motifs = [];
   export let selectedMotifs = [];
@@ -11,6 +13,7 @@
   export let allSelected = false;
   export let listView = "nested";
   export let parentId = "";
+  let downloadMenuDisplayMotifId = "";
 
   let displayMotifs = [];
   const dispatch = createEventDispatcher();
@@ -111,6 +114,21 @@
     console.dir($$props);
   });
 
+  function toggleDownloadMenu(e) {
+    let thisMotifId = e.target.dataset.motifId;
+    downloadMenuDisplayMotifId =
+      downloadMenuDisplayMotifId === thisMotifId ? "" : thisMotifId;
+  }
+
+  function timeoutDownloadDisplay(motifId) {
+    console.log(`timeoutDownloadDisplay() called with ${motifId}`);
+    if (motifId) {
+      setTimeout(() => {
+        downloadMenuDisplayMotifId = "";
+      }, 3000);
+    }
+  }
+
   $: selectedMotifs = updateSelectedMotifs(selectedMotifIds);
   $: console.log(`selectedMotifIds = [${selectedMotifIds.join(",")}]`);
   $: console.log(`listView = ${listView}`);
@@ -120,6 +138,7 @@
     console.dir(selectedMotifs);
   }
   $: displayMotifs = getDisplayMotifs(listView);
+  $: timeoutDownloadDisplay(downloadMenuDisplayMotifId);
 </script>
 
 <style>
@@ -192,28 +211,40 @@
     justify-items: stretch;
     width: 100%;
     margin: 5px 0;
+    position: relative;
   }
 
   .motif div {
     padding: 0px;
   }
 
-  .motif .saved {
+  .motif .saved,
+  .motif .save {
     display: flex;
     align-items: flex-start;
     justify-content: center;
     padding: 2px;
     color: var(--theme_color_1);
-    font-size: var(--theme_font_size_2);
+    font-size: var(--theme_font_size_1);
     grid-column: 5 / span 1;
     grid-row: 1 / span 1;
+    width: 90%;
+    justify-self: end;
+  }
+
+  .motif .save {
+    color: var(--theme_color_2);
   }
 
   .motif .name {
     padding-top: 5px;
-    grid-column: 2 / span 4;
+    grid-column: 2 / span 3;
     grid-row: 1 / span 1;
     cursor: text;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
   }
 
   .motif .id {
@@ -223,8 +254,22 @@
   }
 
   .motif .motif-display {
-    grid-column: 1 / span 6;
+    grid-column: 1 / span 3;
     grid-row: 2 / span 1;
+  }
+
+  .download {
+    grid-column: 4 / span 3;
+    grid-row: 2 / span 1;
+  }
+
+  .download-controls-wrap {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: 50vw;
+    z-index: var(--front);
+    background-color: var(--theme_color_2);
   }
 
   .motif .rename {
@@ -248,7 +293,7 @@
     grid-column: 6 / span 1;
     grid-row: 1 / span 1;
     margin: 0;
-    width: auto;
+    width: 90%;
     justify-self: end;
     padding: 0 10px;
   }
@@ -377,9 +422,6 @@
                 on:click|self|stopPropagation={motifSelection}
                 value={motifId}
                 checked={selectedMotifIds.includes(motifId)} />
-              {#if listView === 'nested' && motifVariationCount(motifId)}
-                <span>theme</span>
-              {/if}
             </label>
             {#if listView === 'nested' && motifVariationCount(motifId) > 1}
               <label class="select-all-variations">
@@ -389,13 +431,15 @@
                   data-motif-id={motifId}
                   on:click={toggleAllVariations}
                   checked={allVariationsAreSelected(motifId)} />
-                <span>all</span>
+                <span>all variations</span>
               </label>
             {/if}
           </div>
           <h3 class="name">{name}</h3>
           {#if saved.local}
-            <span class="saved">&#128190;</span>
+            <span class="saved">saved</span>
+          {:else}
+            <button class="save">save</button>
           {/if}
           <div class="rename hide">
             <input type="text" value="" />
@@ -404,6 +448,17 @@
           </div>
           <button class="remove">&#9747;</button>
           <div class="motif-display">display motif here</div>
+          <div class="download">
+            <button data-motif-id={motifId} on:click={toggleDownloadMenu}>
+              &#8681;
+            </button>
+            {#if downloadMenuDisplayMotifId === motifId}
+              <div class="download-controls-wrap">
+                <DownloadControls
+                  selectedMotifs={[displayMotifs.find(m => m.id === motifId)]} />
+              </div>
+            {/if}
+          </div>
           {#if transformations && transformations.length}
             <h4 class="transformations-header">transformations:</h4>
             <!-- TODO: refine this recursion -->

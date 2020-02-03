@@ -119,7 +119,7 @@
       visible: true,
       type: success ? "success" : "error",
       message: msg,
-      displayTimeMs: 3000,
+      displayTimeMs: 2000,
       dismissable: false
     });
   }

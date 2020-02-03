@@ -4,8 +4,6 @@
   import Field from "./Field.svelte";
   import Input from "./Input.svelte";
   import AudioControls from "./AudioControls.svelte";
-  import CrudControls from "./CrudControls.svelte";
-  import DownloadControls from "./DownloadControls.svelte";
 
   export let selectedMotifs = [];
   let type = "motifs";
@@ -32,8 +30,8 @@
 <!--TODO: and one universal motif crud section (local save, )-->
 <!--TODO: this section defines what you can do with a newly-created motif (note-grid, randomize, upload)-->
 <section class="motif-controls">
-  <!--TODO: convert this to a <fieldset> so I can disable them all at once-->
   <AudioControls {selectedMotifs} />
-  <CrudControls selectedItems={selectedMotifs} {type} on:displayCrudModal />
-  <DownloadControls {selectedMotifs} />
+  <!-- moving these to indovidal motif items because they can't be batched-->
+  <!-- <CrudControls selectedItems={selectedMotifs} {type} on:displayCrudModal />
+  <DownloadControls {selectedMotifs} /> -->
 </section>
