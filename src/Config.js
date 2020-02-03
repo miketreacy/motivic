@@ -320,6 +320,7 @@ const Config = {
   paginationViews: { motifs: `${nameSpace}.user.motifs` },
   pagination: {
     itemsPerPage: 10
-  }
+  },
+  downloadFileTypes: ["midi", "json", "wav"]
 };
 export default Config;

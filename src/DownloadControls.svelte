@@ -2,43 +2,40 @@
   import Utils from "./Utils.js";
   import Config from "./Config.js";
   import Input from "./Input.svelte";
-
-  export let saveMode = "local";
   export let selectedMotifs = [];
+  let fileType;
 
-  function downloadFileHandler(fileType) {
-    return function downloadFile(e) {
-      Utils.file[fileType].download.bind(Utils.file[fileType])(selectedMotifs);
-    };
+  function downloadFile(e) {
+    Utils.file[fileType].download.bind(Utils.file[fileType])(selectedMotifs);
   }
 </script>
 
 <style>
   div {
-    flex-direction: row;
     width: 100%;
-    justify-content: space-between;
+    border-radius: 5px;
+    background-color: var(--theme_color_1);
   }
   button {
     flex-direction: column;
     flex: 1 1 0;
-    height: 40px;
-    max-width: 60px;
+    width: 100%;
+    font-size: var(--theme_font_size_1);
+  }
+  select {
+    flex: 1 1 0;
+    width: 100%;
     font-size: var(--theme_font_size_1);
   }
 </style>
 
 <div class="download-controls">
-  <button class="wav" on:click={downloadFileHandler('wav')}>
+  <select bind:value={fileType}>
+    {#each Config.downloadFileTypes as fileType}
+      <option>{fileType}</option>
+    {/each}
+  </select>
+  <button class="wav" on:click={downloadFile}>
     <span>&#8681;</span>
-    <span>WAV</span>
-  </button>
-  <button class="midi" on:click={downloadFileHandler('midi')}>
-    <span>&#8681;</span>
-    <span>MIDI</span>
-  </button>
-  <button class="json" on:click={downloadFileHandler('json')}>
-    <span>&#8681;</span>
-    <span>JSON</span>
   </button>
 </div>

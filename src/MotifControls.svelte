@@ -23,6 +23,11 @@
     flex-wrap: wrap;
     padding: 0;
     border: 2px solid var(--theme_color_6);
+    position: sticky;
+    /* TODO: write a css variable for this offset */
+    top: 58px;
+    background-color: var(--theme_color_2);
+    z-index: var(--front);
   }
 </style>
 

@@ -158,6 +158,12 @@
     position: relative;
     width: 100%;
     height: 40px;
+
+    position: sticky;
+    /* TODO: write a css variable for this offset */
+    top: 112px;
+    background-color: var(--theme_color_2);
+    z-index: var(--front);
   }
   .select-all {
     display: flex;
@@ -259,17 +265,8 @@
   }
 
   .download {
-    grid-column: 4 / span 3;
+    grid-column: 5 / span 2;
     grid-row: 2 / span 1;
-  }
-
-  .download-controls-wrap {
-    position: absolute;
-    top: 1px;
-    right: 1px;
-    width: 50vw;
-    z-index: var(--front);
-    background-color: var(--theme_color_2);
   }
 
   .motif .rename {
@@ -449,15 +446,8 @@
           <button class="remove">&#9747;</button>
           <div class="motif-display">display motif here</div>
           <div class="download">
-            <button data-motif-id={motifId} on:click={toggleDownloadMenu}>
-              &#8681;
-            </button>
-            {#if downloadMenuDisplayMotifId === motifId}
-              <div class="download-controls-wrap">
-                <DownloadControls
-                  selectedMotifs={[displayMotifs.find(m => m.id === motifId)]} />
-              </div>
-            {/if}
+            <DownloadControls
+              selectedMotifs={[displayMotifs.find(m => m.id === motifId)]} />
           </div>
           {#if transformations && transformations.length}
             <h4 class="transformations-header">transformations:</h4>
