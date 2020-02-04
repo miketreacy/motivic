@@ -1,6 +1,9 @@
 <script>
   import { createEventDispatcher } from "svelte";
   import MotifForm from "./MotifForm.svelte";
+  import MotifList from "./MotifList.svelte";
+  import AudioControls from "./AudioControls.svelte";
+  import CrudControls from "./CrudControls.svelte";
   import Config from "./Config.js";
   import Utils from "./Utils";
   import { motifStore } from "./Stores.js";
@@ -24,6 +27,8 @@
     length_type: "measures",
     length_units: 2
   };
+  let displayNewMotif = false;
+  let newRandomMotif = null;
   const fieldRows = [
     [
       {
@@ -146,9 +151,11 @@
       visible: true,
       type: success ? "success" : "error",
       message: msg,
-      displayTimeMs: 2000,
+      displayTimeMs: 1500,
       dismissable: false
     });
+    displayNewMotif = true;
+    newRandomMotif = newMotif;
   }
 
   function getRequestBodyFn(state) {
@@ -189,7 +196,38 @@
 </script>
 
 <style>
-
+  .motif-audition {
+    border: 2px dotted var(--theme_color_1);
+    position: relative;
+    padding: 5px;
+  }
+  .new-motif {
+    font-style: italic;
+  }
+  .dismiss {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 30px;
+  }
 </style>
 
-<MotifForm {...props} on:displayToggle />
+<MotifForm {...props} {displayNewMotif} on:displayToggle>
+  {#if displayNewMotif}
+    <div class="motif-audition">
+      <div class="motif-controls">
+        <AudioControls displayIcons={false} selectedMotifs={[newRandomMotif]} />
+        <CrudControls
+          displayIcons={false}
+          type="motifs"
+          saveMode="local"
+          selectedItems={[newRandomMotif]} />
+      </div>
+      <div class="new-motif">
+        {newRandomMotif.name}
+        <button class="dismiss">X</button>
+      </div>
+
+    </div>
+  {/if}
+</MotifForm>

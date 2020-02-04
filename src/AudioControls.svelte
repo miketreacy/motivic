@@ -12,6 +12,7 @@
   export let selectedMotifs = [];
   export let isPlaying = false;
   export let isLooping = false;
+  export let displayIcons = true;
   let disabled = true;
 
   const waveFormIcon = {
@@ -77,30 +78,34 @@
   }
 </style>
 
-<div class="motif-controls">
-  <select bind:value={selectedVoice} {disabled}>
-    {#each Config.voices as voice}
-      <option value={voice}>
+<select bind:value={selectedVoice} {disabled}>
+  {#each Config.voices as voice}
+    <option value={voice}>
+      {#if displayIcons}
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;voice&nbsp;&#13;&#10;&nbsp;
         {@html waveFormIcon[voice]}
-        {voice === 'sawtooth' ? 'saw' : voice}
-      </option>
-    {/each}
-  </select>
-  <button
-    class="play"
-    class:playing={isPlaying}
-    {disabled}
-    on:click={playClickHandler}>
+      {/if}
+      {voice === 'sawtooth' ? 'saw' : voice}
+    </option>
+  {/each}
+</select>
+<button
+  class="play"
+  class:playing={isPlaying}
+  {disabled}
+  on:click={playClickHandler}>
+  {#if displayIcons}
     <span>&#9658;</span>
-    <span>play</span>
-  </button>
-  <button
-    class="loop"
-    class:playing={isLooping}
-    {disabled}
-    on:click={loopClickHandler}>
+  {/if}
+  <span>play</span>
+</button>
+<button
+  class="loop"
+  class:playing={isLooping}
+  {disabled}
+  on:click={loopClickHandler}>
+  {#if displayIcons}
     <span>&infin;</span>
-    <span>loop</span>
-  </button>
-</div>
+  {/if}
+  <span>loop</span>
+</button>

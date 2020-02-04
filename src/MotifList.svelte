@@ -129,6 +129,18 @@
     }
   }
 
+  function dispatchDisplayModal(event) {
+    dispatch("displayCrudModal", {
+      modalProps: {
+        show: true,
+        itemType: "motifs",
+        item: displayMotifs.find(m => m.id === event.target.dataset.motifId),
+        formType: event.target.dataset.action,
+        actionComplete: false
+      }
+    });
+  }
+
   $: selectedMotifs = updateSelectedMotifs(selectedMotifIds);
   $: console.log(`selectedMotifIds = [${selectedMotifIds.join(",")}]`);
   $: console.log(`listView = ${listView}`);
@@ -155,14 +167,14 @@
     border: 1px solid var(--theme_color_6);
   }
   .list-row {
-    position: relative;
     width: 100%;
     height: 40px;
-
     position: sticky;
     /* TODO: write a css variable for this offset */
     top: 112px;
     background-color: var(--theme_color_2);
+    border: 2px solid var(--theme_color_6);
+    border-top: none;
     z-index: var(--front);
   }
   .select-all {
@@ -171,8 +183,8 @@
     font-size: var(--theme_font_size_2);
     padding: 0;
     position: absolute;
-    left: 0px;
-    top: 7px;
+    left: 10px;
+    top: 6px;
   }
   .select-all input,
   .select-all label {
@@ -187,8 +199,8 @@
     flex-direction: row;
     padding: 0;
     position: absolute;
-    right: 0px;
-    top: 7px;
+    right: 4px;
+    top: 6px;
   }
   .list-view span {
     padding: 0 5px;
@@ -286,7 +298,7 @@
     font-size: var(--theme_font_size_1);
   }
 
-  .motif .remove {
+  .motif .delete {
     grid-column: 6 / span 1;
     grid-row: 1 / span 1;
     margin: 0;
@@ -436,14 +448,26 @@
           {#if saved.local}
             <span class="saved">saved</span>
           {:else}
-            <button class="save">save</button>
+            <button
+              class="save"
+              data-action="save"
+              data-motif-id={motifId}
+              on:click|self={dispatchDisplayModal}>
+              save
+            </button>
           {/if}
           <div class="rename hide">
             <input type="text" value="" />
             <button class="rename-cancel">cancel</button>
             <button class="rename-submit">save</button>
           </div>
-          <button class="remove">&#9747;</button>
+          <button
+            class="delete"
+            data-action="delete"
+            data-motif-id={motifId}
+            on:click|self={dispatchDisplayModal}>
+            &#9747;
+          </button>
           <div class="motif-display">display motif here</div>
           <div class="download">
             <DownloadControls

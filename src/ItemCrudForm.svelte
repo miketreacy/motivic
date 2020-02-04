@@ -60,7 +60,7 @@
     font-weight: bold;
   }
   .item-name {
-    font-size: var(--theme_font_size_3);
+    font-size: var(--theme_font_size_2);
   }
   .item-id {
     font-style: italic;

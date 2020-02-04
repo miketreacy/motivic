@@ -6,6 +6,7 @@
   import Field from "./Field.svelte";
   import MotifFormHeader from "./MotifFormHeader.svelte";
   import MotifFormControls from "./MotifFormControls.svelte";
+  import MotifList from "./MotifList.svelte";
   export let formId;
   export let formTitle;
   export let formInfo;
@@ -15,6 +16,7 @@
   export let responseCallbackFn = Function.prototype;
   export let getRequestBodyFn = Function.prototype;
   export let formCanSubmitDefault = false;
+  export let displayNewMotif = false;
   const apiUrl = `${Config.api.baseURL}${submitOptions.path}`;
   let formStateDefault = {};
   let formOpen = false;

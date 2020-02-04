@@ -4,6 +4,7 @@
   export let type = "";
   export let saveMode = "local";
   export let selectedItems = [];
+  export let displayIcons = true;
 
   const dispatch = createEventDispatcher();
   function dispatchDisplayModal(event) {
@@ -25,26 +26,28 @@
   }
 </style>
 
-<div class="motif-controls">
-  <button
-    id="save-motif"
-    class="save"
-    data-action="save"
-    data-save-mode={saveMode}
-    disabled={selectedItems.length !== 1}
-    on:click|self={dispatchDisplayModal}>
+<button
+  id="save-motif"
+  class="save"
+  data-action="save"
+  data-save-mode={saveMode}
+  disabled={selectedItems.length !== 1}
+  on:click|self={dispatchDisplayModal}>
+  {#if displayIcons}
     <span>
       {#if saveMode === 'cloud'}&#9729;{:else}&#9745;{/if}
     </span>
-    <span>save</span>
-  </button>
-  <button
-    id="delete-motif"
-    class="delete"
-    data-action="delete"
-    disabled={selectedItems.length !== 1}
-    on:click|self={dispatchDisplayModal}>
+  {/if}
+  <span>save</span>
+</button>
+<button
+  id="delete-motif"
+  class="delete"
+  data-action="delete"
+  disabled={selectedItems.length !== 1}
+  on:click|self={dispatchDisplayModal}>
+  {#if displayIcons}
     <span>&#9747;</span>
-    <span>delete</span>
-  </button>
-</div>
+  {/if}
+  <span>delete</span>
+</button>
