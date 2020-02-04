@@ -103,14 +103,16 @@
     {#if showSectionMap.randomizer}
       <RandomizerForm
         on:displayToggle={handleDisplayToggle}
-        on:displayAlert={handleDisplayAlert} />
+        on:displayAlert={handleDisplayAlert}
+        on:displayCrudModal />
     {/if}
     {#if showSectionMap.transformer}
       <TransformerForm
         {motifs}
         selectedMotifId={motifs.length ? motifs[0].id : ''}
         on:displayToggle={handleDisplayToggle}
-        on:displayAlert={handleDisplayAlert} />
+        on:displayAlert={handleDisplayAlert}
+        on:displayCrudModal />
     {/if}
   {/if}
 </main>

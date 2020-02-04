@@ -22,6 +22,7 @@
     diminish: 0,
     stagger: 0
   };
+  let newMotif = null;
   const fieldRows = [
     [
       {
@@ -98,13 +99,13 @@
   const dispatch = createEventDispatcher();
 
   function responseCallbackFn(data) {
-    const newMotif = data && data.response ? data.response : null;
+    const motif = data && data.response ? data.response : null;
     console.info(`SUCCESS response from ${formId.toUpperCase()} API`);
-    console.dir(newMotif);
+    console.dir(motif);
     let { transformations, melody: parentMotif } = data.request.body;
     // add the newly-created variation motif
     let [success, msg, savedVariationMotif] = Utils.userData.processNewItem(
-      newMotif,
+      motif,
       "motifs",
       `${motif.name}_var_1`,
       "",
@@ -122,6 +123,7 @@
       displayTimeMs: 1500,
       dismissable: false
     });
+    newMotif = savedVariationMotif;
   }
 
   function getTransformations(state) {
@@ -188,7 +190,7 @@
 
 </style>
 
-<MotifForm {...props} on:displayToggle>
+<MotifForm {...props} {newMotif} on:displayToggle>
   <ItemSelector
     {formId}
     items={motifs}

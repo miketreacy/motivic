@@ -4,6 +4,8 @@
   import Config from "./Config.js";
   import Utils from "./Utils";
   import Field from "./Field.svelte";
+  import AudioControls from "./AudioControls.svelte";
+  import CrudControls from "./CrudControls.svelte";
   import MotifFormHeader from "./MotifFormHeader.svelte";
   import MotifFormControls from "./MotifFormControls.svelte";
   import MotifList from "./MotifList.svelte";
@@ -16,7 +18,7 @@
   export let responseCallbackFn = Function.prototype;
   export let getRequestBodyFn = Function.prototype;
   export let formCanSubmitDefault = false;
-  export let displayNewMotif = false;
+  export let newMotif = null;
   const apiUrl = `${Config.api.baseURL}${submitOptions.path}`;
   let formStateDefault = {};
   let formOpen = false;
@@ -174,6 +176,10 @@
     // logAll();
   });
 
+  function dismissAudition() {
+    newMotif = null;
+  }
+
   $: {
     formInDefaultState = isInDefaultState(formState, formStateDefault);
     formCanSubmit = canFormSubmit(formInDefaultState);
@@ -211,6 +217,30 @@
   .form-row:last-of-type {
     border-bottom: none;
   }
+  .motif-audition {
+    border: 2px dotted var(--theme_color_1);
+    position: relative;
+    padding: 5px;
+  }
+  .new-motif {
+    height: 35px;
+    color: var(--theme_color_6);
+  }
+  .new-motif span {
+    display: flex;
+  }
+  .motif-name {
+    padding-left: 5px;
+    font-style: italic;
+    font-weight: bold;
+    color: var(--theme_color_3);
+  }
+  .dismiss {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 30px;
+  }
 </style>
 
 <section id={formId} data-closed={!formOpen}>
@@ -225,6 +255,24 @@
       {resetFormFn}
       {submitFormFn}
       {formCanSubmit} />
+    {#if newMotif}
+      <div class="motif-audition">
+        <div class="new-motif">
+          <span>audition new motif:</span>
+          <span class="motif-name">{newMotif.name}</span>
+          <button class="dismiss" on:click={dismissAudition}>X</button>
+        </div>
+        <div class="motif-controls">
+          <AudioControls displayIcons={false} selectedMotifs={[newMotif]} />
+          <CrudControls
+            displayIcons={false}
+            type="motifs"
+            saveMode="local"
+            selectedItems={[newMotif]}
+            on:displayCrudModal />
+        </div>
+      </div>
+    {/if}
     <slot />
     <fieldset class="user-input">
       <legend>Settings</legend>

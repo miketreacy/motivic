@@ -27,8 +27,7 @@
     length_type: "measures",
     length_units: 2
   };
-  let displayNewMotif = false;
-  let newRandomMotif = null;
+  let newMotif = null;
   const fieldRows = [
     [
       {
@@ -142,7 +141,7 @@
     const motif = data && data.response ? data.response : null;
     console.info(`SUCCESS response from ${formId.toUpperCase()} API`);
     console.dir(motif);
-    let [success, msg, newMotif] = Utils.userData.processNewItem(
+    let [success, msg, createdMotif] = Utils.userData.processNewItem(
       motif,
       "motifs",
       "my motif"
@@ -154,8 +153,7 @@
       displayTimeMs: 1500,
       dismissable: false
     });
-    displayNewMotif = true;
-    newRandomMotif = newMotif;
+    newMotif = createdMotif;
   }
 
   function getRequestBodyFn(state) {
@@ -196,38 +194,7 @@
 </script>
 
 <style>
-  .motif-audition {
-    border: 2px dotted var(--theme_color_1);
-    position: relative;
-    padding: 5px;
-  }
-  .new-motif {
-    font-style: italic;
-  }
-  .dismiss {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 30px;
-  }
+
 </style>
 
-<MotifForm {...props} {displayNewMotif} on:displayToggle>
-  {#if displayNewMotif}
-    <div class="motif-audition">
-      <div class="motif-controls">
-        <AudioControls displayIcons={false} selectedMotifs={[newRandomMotif]} />
-        <CrudControls
-          displayIcons={false}
-          type="motifs"
-          saveMode="local"
-          selectedItems={[newRandomMotif]} />
-      </div>
-      <div class="new-motif">
-        {newRandomMotif.name}
-        <button class="dismiss">X</button>
-      </div>
-
-    </div>
-  {/if}
-</MotifForm>
+<MotifForm {...props} {newMotif} on:displayToggle on:displayCrudModal />

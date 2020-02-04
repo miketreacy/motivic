@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import { createEventDispatcher } from "svelte";
+  import Config from "./Config.js";
   import CrudControls from "./CrudControls.svelte";
   import DownloadControls from "./DownloadControls.svelte";
   import MotifControls from "./MotifControls.svelte";
@@ -14,8 +15,9 @@
   export let listView = "nested";
   export let parentId = "";
   let downloadMenuDisplayMotifId = "";
-
   let displayMotifs = [];
+  let selectedSortType = "created";
+  let selectedSortOrder = "asc";
   const dispatch = createEventDispatcher();
 
   function toggleOpen(e) {
@@ -105,8 +107,14 @@
     }
   }
 
-  function getDisplayMotifs(listView) {
-    return motifs.filter(displayMotif);
+  function motifSorter(key, order) {
+    return order === "asc"
+      ? (a, b) => a[key] - b[key]
+      : (a, b) => b[key] - a[key];
+  }
+
+  function getDisplayMotifs(listView, sortType, sortOrder) {
+    return motifs.filter(displayMotif).sort(motifSorter(sortType, sortOrder));
   }
 
   onMount(() => {
@@ -149,7 +157,11 @@
     console.log(`selectedMotifs changed`);
     console.dir(selectedMotifs);
   }
-  $: displayMotifs = getDisplayMotifs(listView);
+  $: displayMotifs = getDisplayMotifs(
+    listView,
+    selectedSortType,
+    selectedSortOrder
+  );
   $: timeoutDownloadDisplay(downloadMenuDisplayMotifId);
 </script>
 
@@ -267,13 +279,21 @@
 
   .motif .id {
     grid-column: 2 / span 4;
-    grid-row: 2 / span 1;
+    grid-row: 3 / span 1;
     font-size: var(--theme_font_size_1);
   }
 
   .motif .motif-display {
-    grid-column: 1 / span 3;
+    grid-column: 1 / span 5;
+    grid-row: 3 / span 1;
+  }
+
+  .motif .motif-created {
+    grid-column: 2 / span 3;
     grid-row: 2 / span 1;
+    font-size: var(--theme_font_size_1);
+    display: block;
+    text-align: left;
   }
 
   .download {
@@ -283,7 +303,7 @@
 
   .motif .rename {
     padding-top: 5px;
-    grid-column: 3 / span 2;
+    grid-column: 2 / span 2;
     grid-row: 1 / span 1;
   }
 
@@ -314,7 +334,7 @@
   .transformations-header {
     display: flex;
     grid-column: 3 / span 2;
-    grid-row: 3 / span 1;
+    grid-row: 4 / span 1;
     align-items: flex-start;
   }
 
@@ -367,12 +387,16 @@
 
   .nested {
     grid-column: 2 / span 5;
-    grid-row: 3 / span 5;
+    grid-row: 4 / span 5;
     align-items: flex-start;
   }
 
   .nested h2 {
     font-size: var(--theme_font_size_2);
+  }
+
+  select {
+    width: auto;
   }
 </style>
 
@@ -391,10 +415,10 @@
             type="checkbox"
             id="select-all"
             on:click|self|stopPropagation={motifSelection} />
-          <label for="select-all">select all</label>
+          <label for="select-all">all</label>
         </div>
         <div class="list-view">
-          <span>list view:</span>
+          <!-- <span>list view:</span> -->
           <input
             type="radio"
             name="list-view"
@@ -413,11 +437,20 @@
             bind:group={listView}
             on:click={toggleListView} />
           <label for="list-view-flat">flat</label>
+          <select bind:value={selectedSortType}>
+            {#each Config.motifSorts as sort}
+              <option value={sort}>{sort}</option>
+            {/each}
+          </select>
+          <select bind:value={selectedSortOrder}>
+            <option value="asc">&#8679;</option>
+            <option value="desc">&#8681;</option>
+          </select>
         </div>
       </div>
     {/if}
     <ol class="motif-list item-list" data-type="motifs">
-      {#each displayMotifs as { id: motifId, name, parent: motifParentId, tempo, notes, saved, transformations }}
+      {#each displayMotifs as { id: motifId, name, created, parent: motifParentId, tempo, notes, saved, transformations }}
         <li
           class="motif"
           id="motif_{motifId}"
@@ -468,6 +501,7 @@
             on:click|self={dispatchDisplayModal}>
             &#9747;
           </button>
+          <div class="motif-created">{created}</div>
           <div class="motif-display">display motif here</div>
           <div class="download">
             <DownloadControls

@@ -466,7 +466,7 @@ const Utils = {
         id: id || Utils.general.randomString(8),
         parent: parentId,
         saved: { local: false, cloud: false },
-        createdTS: new Date(item.createdTS).toLocaleString()
+        created: new Date(item.createdTS).toLocaleString()
       };
 
       return Object.assign(savedItem, initMap);

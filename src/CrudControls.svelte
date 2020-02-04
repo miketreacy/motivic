@@ -8,7 +8,8 @@
 
   const dispatch = createEventDispatcher();
   function dispatchDisplayModal(event) {
-    dispatch("displayCrudModal", {
+    console.info(`dispatchDisplayModal() called`);
+    let payload = {
       modalProps: {
         show: true,
         itemType: type,
@@ -16,7 +17,9 @@
         formType: event.target.dataset.action,
         actionComplete: false
       }
-    });
+    };
+    console.dir(payload);
+    dispatch("displayCrudModal", payload);
   }
 </script>
 

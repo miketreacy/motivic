@@ -72,13 +72,18 @@
   select {
     width: 50%;
     white-space: normal;
+    min-width: 58.2px;
+  }
+  .compact {
+    padding: 7px;
+    padding-top: 12px;
   }
   .playing {
     color: var(--theme_color_9);
   }
 </style>
 
-<select bind:value={selectedVoice} {disabled}>
+<select bind:value={selectedVoice} class:compact={!displayIcons} {disabled}>
   {#each Config.voices as voice}
     <option value={voice}>
       {#if displayIcons}
