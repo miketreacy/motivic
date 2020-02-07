@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { createEventDispatcher } from "svelte";
   import Config from "./Config.js";
+  import Utils from "./Utils.js";
   import CrudControls from "./CrudControls.svelte";
   import DownloadControls from "./DownloadControls.svelte";
   import MotifControls from "./MotifControls.svelte";
@@ -116,16 +117,14 @@
 
   function motifSorter(key, order) {
     console.info(`motifSorter(${key}, ${order})`);
-    let sorterFn =
-      order === "asc"
-        ? function ascender(a, b) {
-            return a[key] - b[key];
-          }
-        : function descender(a, b) {
-            return b[key] - a[key];
-          };
-    console.info(sorterFn.toString());
-    return sorterFn;
+    if (key === "createdTS") {
+      return Utils.general.objectKeySorterNum(key, order, ts =>
+        new Date(ts).getTime()
+      );
+    } else {
+      // assume key value is string
+      return Utils.general.objectKeySorterAlpha(key, order);
+    }
   }
 
   onMount(() => {
@@ -443,7 +442,7 @@
         .filter(displayMotif)
         .sort(
           motifSorter(sortType, sortOrder)
-        ) as { id: motifId, name, created, parent: motifParentId, tempo, notes, saved, transformations }}
+        ) as { id: motifId, name, createdTS, parent: motifParentId, tempo, notes, saved, transformations }}
         <li
           class="motif"
           id="motif_{motifId}"
@@ -494,7 +493,9 @@
             on:click|self={dispatchDisplayModal}>
             &#9747;
           </button>
-          <div class="motif-created">{created}</div>
+          <div class="motif-created">
+            {new Date(createdTS).toLocaleString()}
+          </div>
           <div class="motif-display">display motif here</div>
           <div class="download">
             <DownloadControls

@@ -41,6 +41,60 @@ const Utils = {
     singularize: function(str) {
       let split = str.split("");
       return split.filter((char, i, arr) => i < arr.length - 1).join("");
+    },
+    /**
+     * An immutable wrapper around Array.prototype.sort() that doesn't mutate the original array.
+     * @param {*} arr
+     */
+    immutableSort: function(arr) {
+      return arr.concat().sort();
+    },
+    /**
+     * Sorts objects alphabetically by a string property
+     * @param {*} key
+     * @param {*} sortOrder
+     * @returns {Function} compareFunction to be passed to Array.prototype.sort()
+     */
+    objectKeySorterAlpha: function(key, sortOrder = "asc") {
+      const alphaSortMap = {
+        asc: (a, b) => {
+          if (a[key] < b[key]) {
+            return -1;
+          }
+          if (a[key] > b[key]) {
+            return 1;
+          }
+          return 0;
+        },
+        desc: (a, b) => {
+          if (a[key] > b[key]) {
+            return -1;
+          }
+          if (a[key] < b[key]) {
+            return 1;
+          }
+          return 0;
+        }
+      };
+      return alphaSortMap[sortOrder];
+    },
+    /**
+     * Sorts objects numerically by a numerical property (or a property that can be converted to a numerical value)
+     * @param {*} key
+     * @param {*} sortOrder
+     * @param {*} convertorFn
+     * @returns {Function} compareFunction to be passed to Array.prototype.sort()
+     */
+    objectKeySorterNum: function(key, sortOrder = "asc", convertorFn = x => x) {
+      const alphaSortMap = {
+        asc: (a, b) => {
+          return convertorFn(a[key]) - convertorFn(b[key]);
+        },
+        desc: (a, b) => {
+          return convertorFn(b[key]) - convertorFn(a[key]);
+        }
+      };
+      return alphaSortMap[sortOrder];
     }
   },
   http: {
@@ -465,8 +519,7 @@ const Utils = {
         transformations,
         id: id || Utils.general.randomString(8),
         parent: parentId,
-        saved: { local: false, cloud: false },
-        created: new Date(item.createdTS).toLocaleString()
+        saved: { local: false, cloud: false }
       };
 
       return Object.assign(savedItem, initMap);
