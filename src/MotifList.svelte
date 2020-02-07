@@ -12,12 +12,11 @@
   export let title = "";
   export let selectedMotifIds = [];
   export let allSelected = false;
-  export let listView = "nested";
+  export let viewType;
   export let parentId = "";
-  let downloadMenuDisplayMotifId = "";
-  let displayMotifs = [];
-  let selectedSortType = "created";
-  let selectedSortOrder = "asc";
+  export let sortType;
+  export let sortOrder;
+
   const dispatch = createEventDispatcher();
 
   function toggleOpen(e) {
@@ -35,8 +34,16 @@
     dispatch("motifSelection", { existingIds: selectedMotifIds, newIds, add });
   }
 
-  function toggleListView(e) {
-    listView = listView === "nested" ? "flat" : "nested";
+  // function toggleviewType(e) {
+  //   viewType = viewType === "nested" ? "flat" : "nested";
+  // }
+
+  function dispatchListViewChange(viewType, sortType, sortOrder) {
+    dispatch("listViewChange", {
+      viewType,
+      sortType,
+      sortOrder
+    });
   }
 
   function motifIsRootNode(motifParentId) {
@@ -89,13 +96,13 @@
   }
 
   function displayMotif(motif) {
-    console.log(`displayMotif: listView = ${listView}`);
-    if (listView === "flat") {
+    console.log(`displayMotif: viewType = ${viewType}`);
+    if (viewType === "flat") {
       // display all motifs in flat view
       return true;
     }
 
-    if (listView === "nested") {
+    if (viewType === "nested") {
       if (parentId) {
         // this is a nested variations list - only display children
         return motif.parent === parentId;
@@ -108,13 +115,17 @@
   }
 
   function motifSorter(key, order) {
-    return order === "asc"
-      ? (a, b) => a[key] - b[key]
-      : (a, b) => b[key] - a[key];
-  }
-
-  function getDisplayMotifs(listView, sortType, sortOrder) {
-    return motifs.filter(displayMotif).sort(motifSorter(sortType, sortOrder));
+    console.info(`motifSorter(${key}, ${order})`);
+    let sorterFn =
+      order === "asc"
+        ? function ascender(a, b) {
+            return a[key] - b[key];
+          }
+        : function descender(a, b) {
+            return b[key] - a[key];
+          };
+    console.info(sorterFn.toString());
+    return sorterFn;
   }
 
   onMount(() => {
@@ -122,27 +133,12 @@
     console.dir($$props);
   });
 
-  function toggleDownloadMenu(e) {
-    let thisMotifId = e.target.dataset.motifId;
-    downloadMenuDisplayMotifId =
-      downloadMenuDisplayMotifId === thisMotifId ? "" : thisMotifId;
-  }
-
-  function timeoutDownloadDisplay(motifId) {
-    console.log(`timeoutDownloadDisplay() called with ${motifId}`);
-    if (motifId) {
-      setTimeout(() => {
-        downloadMenuDisplayMotifId = "";
-      }, 3000);
-    }
-  }
-
   function dispatchDisplayModal(event) {
     dispatch("displayCrudModal", {
       modalProps: {
         show: true,
         itemType: "motifs",
-        item: displayMotifs.find(m => m.id === event.target.dataset.motifId),
+        item: motifs.find(m => m.id === event.target.dataset.motifId),
         formType: event.target.dataset.action,
         actionComplete: false
       }
@@ -151,18 +147,13 @@
 
   $: selectedMotifs = updateSelectedMotifs(selectedMotifIds);
   $: console.log(`selectedMotifIds = [${selectedMotifIds.join(",")}]`);
-  $: console.log(`listView = ${listView}`);
+  $: console.log(`viewType = ${viewType}`);
   $: console.log(`allMotifIds = [${motifs.map(m => m.id).join(",")}]`);
   $: {
     console.log(`selectedMotifs changed`);
     console.dir(selectedMotifs);
   }
-  $: displayMotifs = getDisplayMotifs(
-    listView,
-    selectedSortType,
-    selectedSortOrder
-  );
-  $: timeoutDownloadDisplay(downloadMenuDisplayMotifId);
+  $: dispatchListViewChange(viewType, sortType, sortOrder);
 </script>
 
 <style>
@@ -424,25 +415,23 @@
             name="list-view"
             id="list-view-nested"
             value="nested"
-            checked={listView == 'nested'}
-            bind:group={listView}
-            on:click={toggleListView} />
+            checked={viewType == 'nested'}
+            bind:group={viewType} />
           <label for="list-view-nested">nested</label>
           <input
             type="radio"
             name="list-view"
             id="list-view-flat"
             value="flat"
-            checked={listView == 'flat'}
-            bind:group={listView}
-            on:click={toggleListView} />
+            checked={viewType == 'flat'}
+            bind:group={viewType} />
           <label for="list-view-flat">flat</label>
-          <select bind:value={selectedSortType}>
+          <select bind:value={sortType}>
             {#each Config.motifSorts as sort}
               <option value={sort}>{sort}</option>
             {/each}
           </select>
-          <select bind:value={selectedSortOrder}>
+          <select bind:value={sortOrder}>
             <option value="asc">&#8679;</option>
             <option value="desc">&#8681;</option>
           </select>
@@ -450,7 +439,11 @@
       </div>
     {/if}
     <ol class="motif-list item-list" data-type="motifs">
-      {#each displayMotifs as { id: motifId, name, created, parent: motifParentId, tempo, notes, saved, transformations }}
+      {#each motifs
+        .filter(displayMotif)
+        .sort(
+          motifSorter(sortType, sortOrder)
+        ) as { id: motifId, name, created, parent: motifParentId, tempo, notes, saved, transformations }}
         <li
           class="motif"
           id="motif_{motifId}"
@@ -465,7 +458,7 @@
                 value={motifId}
                 checked={selectedMotifIds.includes(motifId)} />
             </label>
-            {#if listView === 'nested' && motifVariationCount(motifId) > 1}
+            {#if viewType === 'nested' && motifVariationCount(motifId) > 1}
               <label class="select-all-variations">
                 <input
                   class="select-all-variations"
@@ -505,7 +498,7 @@
           <div class="motif-display">display motif here</div>
           <div class="download">
             <DownloadControls
-              selectedMotifs={[displayMotifs.find(m => m.id === motifId)]} />
+              selectedMotifs={[motifs.find(m => m.id === motifId)]} />
           </div>
           {#if transformations && transformations.length}
             <h4 class="transformations-header">transformations:</h4>
@@ -516,12 +509,14 @@
               {/each}
             </ol>
           {/if}
-          {#if listView === 'nested' && motifVariationCount(motifId)}
+          {#if viewType === 'nested' && motifVariationCount(motifId)}
             <svelte:self
               id={`${motifId}_variations`}
               title="variations"
               {listOpen}
-              {listView}
+              {viewType}
+              {sortType}
+              {sortOrder}
               {motifs}
               parentId={motifId}
               {selectedMotifIds}

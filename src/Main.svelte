@@ -11,6 +11,9 @@
   export let motifSelected = false;
   export let settings = [];
   export let motifs = [];
+  let viewType = "nested";
+  let sortType = "created";
+  let sortOrder = "desc";
   let showSectionMap = { motifs: true, randomizer: true, transformer: true };
   let displayAlert = false;
   let alertProps = {
@@ -50,6 +53,17 @@
     alertProps = event.detail;
     displayAlert = alertProps.visible;
   }
+
+  function handleListViewChange(event) {
+    viewType = event.detail.viewType;
+    sortType = event.detail.sortType;
+    sortOrder = event.detail.sortOrder;
+    console.info(`handleListViewChange() called`);
+    console.info(`viewType = ${viewType}`);
+    console.info(`sortType = ${sortType}`);
+    console.info(`sortOrder = ${sortOrder}`);
+  }
+
   $: updateDisplayState(openSection);
   $: console.info(`openSection: ${openSection}`);
   $: console.dir(showSectionMap);
@@ -89,11 +103,14 @@
         id="motifs"
         title="My Motifs"
         listOpen={openSection === 'motifs'}
-        listView="nested"
         {motifs}
         {selectedMotifIds}
         {allSelected}
         parentId=""
+        {viewType}
+        {sortType}
+        {sortOrder}
+        on:listViewChange={handleListViewChange}
         on:displayToggle={handleDisplayToggle}
         on:displayCrudModal
         on:motifSelection
