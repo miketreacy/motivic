@@ -11,8 +11,8 @@
   export let motifSelected = false;
   export let settings = [];
   export let motifs = [];
-  let viewType = "nested";
-  let sortType = "createdTS";
+  let viewType = "flat";
+  let sortType = "created";
   let sortOrder = "desc";
   let showSectionMap = { motifs: true, randomizer: true, transformer: true };
   let displayAlert = false;

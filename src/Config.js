@@ -322,6 +322,6 @@ const Config = {
     itemsPerPage: 10
   },
   downloadFileTypes: ["midi", "json", "wav"],
-  motifSorts: ["createdTS", "name"]
+  motifSorts: ["created", "name"]
 };
 export default Config;

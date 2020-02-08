@@ -117,7 +117,7 @@
 
   function motifSorter(key, order) {
     console.info(`motifSorter(${key}, ${order})`);
-    if (key === "createdTS") {
+    if (key === "created") {
       return Utils.general.objectKeySorterNum(key, order, ts =>
         new Date(ts).getTime()
       );
@@ -168,7 +168,7 @@
     flex-direction: row;
     border: 1px solid var(--theme_color_6);
   }
-  .list-row {
+  .list-controls {
     width: 100%;
     height: 40px;
     position: sticky;
@@ -186,12 +186,11 @@
     padding: 0;
     position: absolute;
     left: 10px;
-    top: 6px;
   }
   .select-all input,
   .select-all label {
     display: block;
-    padding: 0 10px;
+    padding: 0 5px;
   }
   .select-all input {
     width: 20px;
@@ -201,12 +200,9 @@
     flex-direction: row;
     padding: 0;
     position: absolute;
-    right: 4px;
-    top: 6px;
+    left: 70px;
   }
-  .list-view span {
-    padding: 0 5px;
-  }
+
   .list-view input,
   .list-view label {
     display: flex;
@@ -216,6 +212,16 @@
   .list-view input {
     width: 20px;
     max-width: 20px;
+  }
+
+  .list-sort {
+    position: absolute;
+    right: 10px;
+  }
+  .sort-order {
+    -webkit-appearance: none;
+    margin-left: 5px;
+    padding: 0 11.5px;
   }
   .motif-list {
     width: 100%;
@@ -312,7 +318,7 @@
     grid-column: 6 / span 1;
     grid-row: 1 / span 1;
     margin: 0;
-    width: 90%;
+    width: 40px;
     justify-self: end;
     padding: 0 10px;
   }
@@ -323,15 +329,15 @@
 
   .transformations-header {
     display: flex;
-    grid-column: 3 / span 2;
+    grid-column: 2 / span 3;
     grid-row: 4 / span 1;
     align-items: flex-start;
   }
 
   .transformations {
     display: flex;
-    grid-column: 2 / span 4;
-    grid-row: 4 / span 1;
+    grid-column: 3 / span 4;
+    grid-row: 5 / span 1;
     align-items: flex-start;
   }
 
@@ -399,7 +405,7 @@
   {#if listOpen && motifs.length}
     {#if !parentId}
       <MotifControls {selectedMotifs} on:displayCrudModal />
-      <div class="list-row">
+      <div class="list-controls">
         <div class="select-all">
           <input
             type="checkbox"
@@ -412,25 +418,30 @@
           <input
             type="radio"
             name="list-view"
-            id="list-view-nested"
-            value="nested"
-            checked={viewType == 'nested'}
-            bind:group={viewType} />
-          <label for="list-view-nested">nested</label>
-          <input
-            type="radio"
-            name="list-view"
             id="list-view-flat"
             value="flat"
             checked={viewType == 'flat'}
             bind:group={viewType} />
           <label for="list-view-flat">flat</label>
+          {#if motifs.some(m => m.parent)}
+            <!-- only display if there are variations to nest -->
+            <input
+              type="radio"
+              name="list-view"
+              id="list-view-nested"
+              value="nested"
+              checked={viewType == 'nested'}
+              bind:group={viewType} />
+            <label for="list-view-nested">nested</label>
+          {/if}
+        </div>
+        <div class="list-sort">
           <select bind:value={sortType}>
             {#each Config.motifSorts as sort}
               <option value={sort}>{sort}</option>
             {/each}
           </select>
-          <select bind:value={sortOrder}>
+          <select class="sort-order" bind:value={sortOrder}>
             <option value="asc">&#8679;</option>
             <option value="desc">&#8681;</option>
           </select>
@@ -442,7 +453,7 @@
         .filter(displayMotif)
         .sort(
           motifSorter(sortType, sortOrder)
-        ) as { id: motifId, name, createdTS, parent: motifParentId, tempo, notes, saved, transformations }}
+        ) as { id: motifId, name, created, parent: motifParentId, tempo, notes, saved, transformations }}
         <li
           class="motif"
           id="motif_{motifId}"
@@ -494,7 +505,7 @@
             &#9747;
           </button>
           <div class="motif-created">
-            {new Date(createdTS).toLocaleString()}
+            {Utils.general.dateDisplay(new Date(created))}
           </div>
           <div class="motif-display">display motif here</div>
           <div class="download">

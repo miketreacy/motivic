@@ -95,6 +95,28 @@ const Utils = {
         }
       };
       return alphaSortMap[sortOrder];
+    },
+    /**
+     * Formats a Date as 'yyyy-mm-dd hh:mm:ss' without changing timezone
+     * @param {Date} date
+     * @param {boolean} displayTime
+     * @returns {string} formatted date string
+     */
+    dateDisplay: function(date, displayTime = true) {
+      const pad = n => (n < 10 ? "0" + n.toString() : n.toString());
+      let days = pad(date.getDate());
+      let mons = pad(date.getMonth() + 1);
+      let year = date.getFullYear();
+      let dateStr = `${year}-${mons}-${days}`;
+
+      if (!displayTime) {
+        return dateStr;
+      }
+      let hrs = pad(date.getHours());
+      let mins = pad(date.getMinutes());
+      let secs = pad(date.getSeconds());
+      let timeStr = `${hrs}:${mins}:${secs}`;
+      return `${dateStr} ${timeStr}`;
     }
   },
   http: {
