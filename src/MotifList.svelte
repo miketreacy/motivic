@@ -3,6 +3,7 @@
   import { createEventDispatcher } from "svelte";
   import Config from "./Config.js";
   import Utils from "./Utils.js";
+  import AudioControls from "./AudioControls.svelte";
   import CrudControls from "./CrudControls.svelte";
   import DownloadControls from "./DownloadControls.svelte";
   import MotifControls from "./MotifControls.svelte";
@@ -17,7 +18,8 @@
   export let parentId = "";
   export let sortType;
   export let sortOrder;
-
+  let renameFormOpenId = "";
+  let renameFormValue = "";
   const dispatch = createEventDispatcher();
 
   function toggleOpen(e) {
@@ -45,11 +47,6 @@
       sortType,
       sortOrder
     });
-  }
-
-  function motifIsRootNode(motifParentId) {
-    let parent = motifs.find(m => m.id === motifParentId);
-    return Boolean(!parent);
   }
 
   function toggleAllVariations(e) {
@@ -81,14 +78,12 @@
     }
   }
 
-  function motifHasVariations(motifId) {
-    let childVariations = motifs.filter(m => m.parent === motifId);
-    return Boolean(childVariations.length);
+  function getMotifVariations(motifId) {
+    return motifs.filter(m => m.parent === motifId);
   }
 
   function motifVariationCount(motifId) {
-    let childVariations = motifs.filter(m => m.parent === motifId);
-    return childVariations.length;
+    return getMotifVariations(motifId).length;
   }
 
   function updateSelectedMotifs(ids) {
@@ -97,22 +92,23 @@
   }
 
   function displayMotif(motif) {
-    console.log(`displayMotif: viewType = ${viewType}`);
+    let display = false;
     if (viewType === "flat") {
       // display all motifs in flat view
-      return true;
-    }
-
-    if (viewType === "nested") {
+      display = true;
+    } else if (viewType === "nested") {
       if (parentId) {
         // this is a nested variations list - only display children
-        return motif.parent === parentId;
+        display = motif.parent === parentId;
       } else {
         // this is the root list - display any motifs without parents
-        let parent = motifs.find(m => m.id === motif.parent);
-        return Boolean(!parent);
+        let parentExists = motif.parent
+          ? motifs.some(m => m.id === motif.parent)
+          : false;
+        display = !parentExists;
       }
     }
+    return display;
   }
 
   function motifSorter(key, order) {
@@ -144,6 +140,29 @@
     });
   }
 
+  function toggleSortOrder(e) {
+    sortOrder = sortOrder === "asc" ? "desc" : "asc";
+  }
+
+  function toggleRenameForm(e) {
+    let renamedMotifId = e.target.dataset.motifId;
+    if (renameFormOpenId === renamedMotifId) {
+      renameFormOpenId = "";
+      renameFormValue = "";
+    } else {
+      renameFormOpenId = renamedMotifId;
+    }
+  }
+
+  function renameMotif(e) {
+    let renameMotifId = e.target.dataset.motifId;
+    let renameMotif = motifs.find(m => m.id === renameMotifId);
+    renameMotif.name = renameFormValue;
+    renameFormValue = "";
+    let [success, msg] = Utils.userData.persist(renameMotif, "motifs", true);
+    toggleRenameForm(e);
+  }
+
   $: selectedMotifs = updateSelectedMotifs(selectedMotifIds);
   $: console.log(`selectedMotifIds = [${selectedMotifIds.join(",")}]`);
   $: console.log(`viewType = ${viewType}`);
@@ -168,6 +187,20 @@
     flex-direction: row;
     border: 1px solid var(--theme_color_6);
   }
+  .motif-controls {
+    background-color: var(--theme_color_2);
+    flex: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0;
+    border: 2px solid var(--theme_color_6);
+    position: sticky;
+    /* TODO: write a css variable for this offset */
+    top: 59px;
+    background-color: var(--theme_color_2);
+    z-index: var(--front);
+  }
+
   .list-controls {
     width: 100%;
     height: 40px;
@@ -222,6 +255,7 @@
     -webkit-appearance: none;
     margin-left: 5px;
     padding: 0 11.5px;
+    width: auto;
   }
   .motif-list {
     width: 100%;
@@ -298,9 +332,15 @@
   }
 
   .motif .rename {
-    padding-top: 5px;
-    grid-column: 2 / span 2;
-    grid-row: 1 / span 1;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .motif .rename button {
+    max-width: 40px;
+    font-size: var(--theme_font_size_1);
   }
 
   .motif .name,
@@ -404,49 +444,56 @@
   <h2 on:click={toggleOpen}>{title} ({motifs.length})</h2>
   {#if listOpen && motifs.length}
     {#if !parentId}
-      <MotifControls {selectedMotifs} on:displayCrudModal />
-      <div class="list-controls">
-        <div class="select-all">
-          <input
-            type="checkbox"
-            id="select-all"
-            on:click|self|stopPropagation={motifSelection} />
-          <label for="select-all">all</label>
-        </div>
-        <div class="list-view">
-          <!-- <span>list view:</span> -->
-          <input
-            type="radio"
-            name="list-view"
-            id="list-view-flat"
-            value="flat"
-            checked={viewType == 'flat'}
-            bind:group={viewType} />
-          <label for="list-view-flat">flat</label>
+      <section class="motif-controls">
+        <AudioControls {selectedMotifs} />
+      </section>
+      {#if motifs.length > 1}
+        <div class="list-controls">
+          <div class="select-all">
+            <input
+              type="checkbox"
+              id="select-all"
+              on:click|self|stopPropagation={motifSelection} />
+            <label for="select-all">all</label>
+          </div>
           {#if motifs.some(m => m.parent)}
             <!-- only display if there are variations to nest -->
-            <input
-              type="radio"
-              name="list-view"
-              id="list-view-nested"
-              value="nested"
-              checked={viewType == 'nested'}
-              bind:group={viewType} />
-            <label for="list-view-nested">nested</label>
+            <div class="list-view">
+              <!-- <span>list view:</span> -->
+              <input
+                type="radio"
+                name="list-view"
+                id="list-view-flat"
+                value="flat"
+                checked={viewType == 'flat'}
+                bind:group={viewType} />
+              <label for="list-view-flat">flat</label>
+              <input
+                type="radio"
+                name="list-view"
+                id="list-view-nested"
+                value="nested"
+                checked={viewType == 'nested'}
+                bind:group={viewType} />
+              <label for="list-view-nested">nested</label>
+            </div>
           {/if}
+          <div class="list-sort">
+            <select bind:value={sortType}>
+              {#each Config.motifSorts as sort}
+                <option value={sort}>{sort}</option>
+              {/each}
+            </select>
+            <button class="sort-order" on:click={toggleSortOrder}>
+              {#if sortOrder === 'asc'}
+                <span class="asc">&#8679;</span>
+              {:else}
+                <span class="desc">&#8681;</span>
+              {/if}
+            </button>
+          </div>
         </div>
-        <div class="list-sort">
-          <select bind:value={sortType}>
-            {#each Config.motifSorts as sort}
-              <option value={sort}>{sort}</option>
-            {/each}
-          </select>
-          <select class="sort-order" bind:value={sortOrder}>
-            <option value="asc">&#8679;</option>
-            <option value="desc">&#8681;</option>
-          </select>
-        </div>
-      </div>
+      {/if}
     {/if}
     <ol class="motif-list item-list" data-type="motifs">
       {#each motifs
@@ -480,7 +527,30 @@
               </label>
             {/if}
           </div>
-          <h3 class="name">{name}</h3>
+          <h3
+            class="name"
+            data-motif-id={motifId}
+            on:click|self|stopPropagation={toggleRenameForm}>
+            {name}
+          </h3>
+          <fieldset class="rename" class:hide={renameFormOpenId !== motifId}>
+            <input
+              type="text"
+              bind:value={renameFormValue}
+              placeholder={name} />
+            <button
+              class="rename-cancel"
+              data-motif-id={motifId}
+              on:click|self|stopPropagation={toggleRenameForm}>
+              cancel
+            </button>
+            <button
+              class="rename-submit"
+              data-motif-id={motifId}
+              on:click|self|stopPropagation={renameMotif}>
+              save
+            </button>
+          </fieldset>
           {#if saved.local}
             <span class="saved">saved</span>
           {:else}
@@ -492,11 +562,6 @@
               save
             </button>
           {/if}
-          <div class="rename hide">
-            <input type="text" value="" />
-            <button class="rename-cancel">cancel</button>
-            <button class="rename-submit">save</button>
-          </div>
           <button
             class="delete"
             data-action="delete"
@@ -529,7 +594,7 @@
               {viewType}
               {sortType}
               {sortOrder}
-              {motifs}
+              motifs={getMotifVariations(motifId)}
               parentId={motifId}
               {selectedMotifIds}
               {allSelected}

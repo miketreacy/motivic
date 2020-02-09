@@ -113,9 +113,6 @@
       transformations
     );
 
-    // update the existing theme motif to reflect its new variation
-    // parentMotif.variations = [...parentMotif.variations, savedVariationMotif];
-    // Utils.userData.persist(parentMotif, "motifs");
     dispatch("displayAlert", {
       visible: true,
       type: success ? "success" : "error",
@@ -164,7 +161,6 @@
   }
 
   function selectMotif(motifId) {
-    console.log(`selectMotif() called`);
     motif = motifs.find(m => m.id === motifId);
     return motif;
   }
@@ -182,8 +178,6 @@
   };
 
   $: motif = selectMotif(selectedMotifId);
-  $: console.dir(motif);
-  $: console.log(`selectedMotifId = ${selectedMotifId}`);
 </script>
 
 <style>

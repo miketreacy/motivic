@@ -3,6 +3,7 @@
   export let formTitle = "";
   export let formInfo = "";
   export let formOpen = false;
+  let showInfo = false;
   let iconMap = {
     randomizer: ["&#9861;"],
     transformer: ["&#10226;"]
@@ -32,6 +33,6 @@
     </span>
   {/if}
 </h2>
-{#if formOpen}
+{#if formOpen && showInfo}
   <p class="info">{formInfo}</p>
 {/if}

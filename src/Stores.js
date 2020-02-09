@@ -7,6 +7,7 @@ function createMotifStore() {
     add: motif =>
       update(motifs => {
         let newMotifs = [];
+
         if (motifs.map(m => m.id).includes(motif.id)) {
           // motif already exists, so update it
           console.info(`motif ${motif.id} updated in store`);
@@ -31,6 +32,7 @@ function createSettingsStore() {
     add: setting =>
       update(settings => {
         let newSettings = [];
+
         if (settings.map(s => s.id).includes(sotif.id)) {
           // setting already exists, so update it
           console.info(`setting ${setting.id} updated in store`);

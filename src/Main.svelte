@@ -58,6 +58,7 @@
     viewType = event.detail.viewType;
     sortType = event.detail.sortType;
     sortOrder = event.detail.sortOrder;
+    motifs = motifs;
     console.info(`handleListViewChange() called`);
     console.info(`viewType = ${viewType}`);
     console.info(`sortType = ${sortType}`);
@@ -65,8 +66,6 @@
   }
 
   $: updateDisplayState(openSection);
-  $: console.info(`openSection: ${openSection}`);
-  $: console.dir(showSectionMap);
   $: openSection =
     openSection === "motifs" && !motifs.length ? "" : openSection;
 </script>

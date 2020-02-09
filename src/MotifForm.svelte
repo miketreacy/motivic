@@ -24,6 +24,7 @@
   let formOpen = false;
   let formInDefaultState = true;
   let formCanSubmit = true;
+  let formIsSubmitting = false;
   const dispatch = createEventDispatcher();
 
   function dispatchFormToggle(open) {
@@ -135,8 +136,11 @@
     return result;
   }
 
-  function canFormSubmit(inDefaultState) {
+  function canFormSubmit(inDefaultState, isSubmitting) {
     let result = true;
+    if (isSubmitting) {
+      result = false;
+    }
     if (inDefaultState && !formCanSubmitDefault) {
       result = false;
     }
@@ -158,6 +162,7 @@
   }
 
   async function submitFormFn() {
+    formIsSubmitting = true;
     const reqBody = getRequestBodyFn(formState);
     console.info(`${submitOptions.method} ${submitOptions.path} request body:`);
     console.dir(reqBody);
@@ -168,6 +173,7 @@
     if (formOpen) {
       // toggleFormFn();
     }
+    formIsSubmitting = false;
   }
 
   onMount(() => {
@@ -182,10 +188,9 @@
 
   $: {
     formInDefaultState = isInDefaultState(formState, formStateDefault);
-    formCanSubmit = canFormSubmit(formInDefaultState);
+    formCanSubmit = canFormSubmit(formInDefaultState, formIsSubmitting);
     fieldRows = getUpdatedFieldRows(formState);
   }
-  $: console.dir(formState);
 </script>
 
 <style>

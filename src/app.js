@@ -58,7 +58,6 @@ function init() {
   localData.settings.forEach(s => settingStore.add(s));
   let [urlView, query, queryMap, pagination] = parseURL();
   view = urlView;
-  console.log(`parsed URL: view = ${view}`);
   window.addEventListener("popstate", popState, false);
 }
 

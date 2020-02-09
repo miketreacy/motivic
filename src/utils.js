@@ -523,7 +523,7 @@ const Utils = {
         transformations,
         store
       });
-      let newItem = this.initSavedItem(
+      let newItem = this._initSavedItem(
         item,
         name,
         id,
@@ -534,7 +534,13 @@ const Utils = {
       return this.persist(newItem, type, store);
     },
 
-    initSavedItem: function(item, name, id, parentId = "", transformations) {
+    _initSavedItem: function(
+      item,
+      name,
+      id,
+      parentId = "",
+      transformations = []
+    ) {
       let savedItem = Utils.general.clone(item);
       let initMap = {
         name,
@@ -611,13 +617,10 @@ const Utils = {
       const itemIdx = list.findIndex(listItem => listItem.id === item.id);
       if (remove) {
         if (itemIdx > -1) {
-          // list[idx] = null;
-          // list = list.filter(m => m);
           list = list.filter((_, i) => i !== itemIdx);
         }
       } else {
         if (itemIdx > -1) {
-          // list[idx] = item;
           list = list.map((listItem, i) => (i === itemIdx ? item : listItem));
         } else {
           list = [...list, item];
@@ -626,7 +629,7 @@ const Utils = {
       return list;
     },
     /**
-     * Validates user data item if necessary
+     * Validates user data item if necessary by versioning item names for uniqueness
      * @param {Object} item Item to store
      * @param {string} type Type of item (motifs, settings, etc)
      * @returns {Object} validated item
@@ -657,7 +660,6 @@ const Utils = {
      * @param {boolean} store Should this motif be persisted to localStorage?
      */
     persist: function(item, type, store = false) {
-      const validatedItem = this.validate.bind(this)(item, type);
       // Storing the item in active memory
       const itemStoreMap = { motifs: motifStore, settings: settingStore };
       itemStoreMap[type].add(item);
@@ -673,8 +675,8 @@ const Utils = {
     },
 
     /**
-     * Saves user data items to memory and localStorage if indicated
-     * @param {Object} item Item to store
+     * Removes user data items from memory and localStorage
+     * @param {Object} item Item to remove
      * @param {string} type Type of item (motifs, settings, etc)
      */
     remove: function(item, type) {
