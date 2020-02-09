@@ -43,6 +43,7 @@
     flex-direction: row;
     position: relative;
     width: 100%;
+    max-width: var(--max_main_width);
     min-height: 40px;
     display: block;
     box-sizing: border-box;

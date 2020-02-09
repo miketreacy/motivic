@@ -25,6 +25,8 @@
     width: 100%;
     position: relative;
     justify-content: space-between;
+    max-width: var(--max_main_width);
+    align-self: center;
   }
 
   .input-wrap.hidden {

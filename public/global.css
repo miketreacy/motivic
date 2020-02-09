@@ -26,6 +26,7 @@
   --header_offset: 59px;
   --nav_offset: 0px;
   --footer_offset: 54px;
+  --max_main_width: 540px;
 
   /*z-index Variables*/
   --front: 1000;

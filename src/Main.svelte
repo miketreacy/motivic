@@ -83,7 +83,7 @@
     padding: 10px 10px 0;
     margin-bottom: var(--footer_offset);
     width: 100%;
-    max-width: 540px;
+    max-width: var(--max_main_width);
     align-items: center;
     justify-content: center;
   }

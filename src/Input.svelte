@@ -58,6 +58,7 @@
 
   input[type="checkbox"] {
     width: 40px;
+    margin-right: -6px;
   }
 
   input[type="file"] {
