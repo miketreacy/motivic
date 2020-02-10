@@ -1,4 +1,5 @@
 <script>
+  import { createEventDispatcher } from "svelte";
   import Utils from "./Utils";
   import Nav from "./Nav.svelte";
   import Field from "./Field.svelte";
@@ -6,6 +7,9 @@
   export let showNav = false;
   export let showUpload = false;
   export let view = "";
+  export let motifs = [];
+  export let openSection = "";
+  const dispatch = createEventDispatcher();
   const fileUploadField = {
     type: "file",
     id: "upload",
@@ -38,6 +42,15 @@
       reader.readAsDataURL(file);
     }
   }
+
+  function toggleMotifList(e) {
+    if (motifs.length) {
+      motifListOpen = !motifListOpen;
+      dispatch("displayToggle", { section: "motifs", open: motifListOpen });
+    }
+  }
+
+  $: motifListOpen = openSection === "motifs";
 </script>
 
 <style>
@@ -81,10 +94,20 @@
     position: static;
   }
 
-  button#user,
-  button#upload-toggle {
+  #user,
+  #upload-toggle {
+    left: 10px;
+    top: 10px;
+  }
+
+  #motifs {
     right: 10px;
     top: 10px;
+  }
+
+  .motif-count {
+    padding-left: 2px;
+    font-size: var(--theme_font_size_1);
   }
 
   .scrolldown header > * {
@@ -126,8 +149,11 @@
 </style>
 
 <header class="show">
-  <button id="menu" on:click={toggleNavMenu}>
+  <!-- <button id="menu" on:click={toggleNavMenu}>
     <span>&#9776;</span>
+  </button> -->
+  <button id="upload-toggle" on:click={toggleUploadMenu}>
+    <span>&#8679;</span>
   </button>
   <h1>
     <a href="/">Motivic</a>
@@ -139,9 +165,12 @@
   <!--<button id="account-login">login</button>-->
   <!--<button id="account-logout">logout</button>-->
   <!--</section>-->
-  <button id="upload-toggle" on:click={toggleUploadMenu}>
-    <span>&#8679;</span>
-  </button>
+  {#if motifs.length}
+    <button id="motifs" on:click={toggleMotifList}>
+      <span>&#9835;</span>
+      <span class="motif-count">({motifs.length})</span>
+    </button>
+  {/if}
   <p class="subtitle">
     <span class="icons">&#9836;</span>
     tools for composers

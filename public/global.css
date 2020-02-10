@@ -18,6 +18,7 @@
   /* prevents auto input-zoom on mobile
     http://blog.osmosys.asia/2017/01/05/prevent-ios-from-zooming-in-on-input-fields/*/
   --theme_font_size_base: 16px;
+  --theme_font_size_0: 0.5rem;
   --theme_font_size_1: 0.75rem;
   --theme_font_size_2: 1rem;
   --theme_font_size_3: 1.5rem;

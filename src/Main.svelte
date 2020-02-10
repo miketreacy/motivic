@@ -8,7 +8,6 @@
   export let allSelected = false;
   export let view = "";
   export let openSection = "";
-  export let motifSelected = false;
   export let settings = [];
   export let motifs = [];
   let viewType = "flat";
@@ -34,17 +33,6 @@
         obj[key] = true;
         return obj;
       }, {});
-    }
-  }
-  function handleDisplayToggle(event) {
-    console.log(`handleDisplayToggle() called`);
-    console.dir(event.detail);
-    let section = event.detail.section;
-    let open = event.detail.open;
-    if (open) {
-      openSection = section;
-    } else {
-      openSection = "";
     }
   }
   function handleDisplayAlert(event) {
@@ -110,7 +98,7 @@
         {sortType}
         {sortOrder}
         on:listViewChange={handleListViewChange}
-        on:displayToggle={handleDisplayToggle}
+        on:displayToggle
         on:displayCrudModal
         on:motifSelection
         on:displayAlert={handleDisplayAlert} />
@@ -118,7 +106,7 @@
 
     {#if showSectionMap.randomizer}
       <RandomizerForm
-        on:displayToggle={handleDisplayToggle}
+        on:displayToggle
         on:displayAlert={handleDisplayAlert}
         on:displayCrudModal />
     {/if}
@@ -126,7 +114,7 @@
       <TransformerForm
         {motifs}
         selectedMotifId={motifs.length ? motifs[0].id : ''}
-        on:displayToggle={handleDisplayToggle}
+        on:displayToggle
         on:displayAlert={handleDisplayAlert}
         on:displayCrudModal />
     {/if}

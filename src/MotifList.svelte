@@ -7,6 +7,7 @@
   import CrudControls from "./CrudControls.svelte";
   import DownloadControls from "./DownloadControls.svelte";
   import MotifControls from "./MotifControls.svelte";
+  import ItemName from "./ItemName.svelte";
   export let motifs = [];
   export let selectedMotifs = [];
   export let listOpen = false;
@@ -18,8 +19,6 @@
   export let parentId = "";
   export let sortType;
   export let sortOrder;
-  let renameFormOpenId = "";
-  let renameFormValue = "";
   const dispatch = createEventDispatcher();
 
   function toggleOpen(e) {
@@ -36,10 +35,6 @@
     let newIds = selectAll ? motifs.map(m => m.id) : [e.target.value];
     dispatch("motifSelection", { existingIds: selectedMotifIds, newIds, add });
   }
-
-  // function toggleviewType(e) {
-  //   viewType = viewType === "nested" ? "flat" : "nested";
-  // }
 
   function dispatchListViewChange(viewType, sortType, sortOrder) {
     dispatch("listViewChange", {
@@ -142,25 +137,6 @@
 
   function toggleSortOrder(e) {
     sortOrder = sortOrder === "asc" ? "desc" : "asc";
-  }
-
-  function toggleRenameForm(e) {
-    let renamedMotifId = e.target.dataset.motifId;
-    if (renameFormOpenId === renamedMotifId) {
-      renameFormOpenId = "";
-      renameFormValue = "";
-    } else {
-      renameFormOpenId = renamedMotifId;
-    }
-  }
-
-  function renameMotif(e) {
-    let renameMotifId = e.target.dataset.motifId;
-    let renameMotif = motifs.find(m => m.id === renameMotifId);
-    renameMotif.name = renameFormValue;
-    renameFormValue = "";
-    let [success, msg] = Utils.userData.persist(renameMotif, "motifs", true);
-    toggleRenameForm(e);
   }
 
   $: selectedMotifs = updateSelectedMotifs(selectedMotifIds);
@@ -296,15 +272,9 @@
     color: var(--theme_color_2);
   }
 
-  .motif .name {
-    padding-top: 5px;
+  .name-wrap {
     grid-column: 2 / span 3;
     grid-row: 1 / span 1;
-    cursor: text;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
   }
 
   .motif .id {
@@ -331,26 +301,7 @@
     grid-row: 2 / span 1;
   }
 
-  .motif .rename {
-    position: absolute;
-    top: 0px;
-    width: 100%;
-    flex-direction: column;
-  }
-
-  .motif .rename button {
-    max-width: 40px;
-    font-size: var(--theme_font_size_1);
-  }
-
-  .motif .name,
-  .motif .rename input {
-    font-size: var(--theme_font_size_2);
-  }
-
-  .variations .motif .name,
-  .variations .motif .transformations,
-  .variations .motif .rename input {
+  .variations .motif .transformations {
     font-size: var(--theme_font_size_1);
   }
 
@@ -361,10 +312,6 @@
     width: 40px;
     justify-self: end;
     padding: 0 10px;
-  }
-
-  .motif .name {
-    text-align: left;
   }
 
   .transformations-header {
@@ -527,30 +474,12 @@
               </label>
             {/if}
           </div>
-          <h3
-            class="name"
-            data-motif-id={motifId}
-            on:click|self|stopPropagation={toggleRenameForm}>
-            {name}
-          </h3>
-          <fieldset class="rename" class:hide={renameFormOpenId !== motifId}>
-            <input
-              type="text"
-              bind:value={renameFormValue}
-              placeholder={name} />
-            <button
-              class="rename-cancel"
-              data-motif-id={motifId}
-              on:click|self|stopPropagation={toggleRenameForm}>
-              cancel
-            </button>
-            <button
-              class="rename-submit"
-              data-motif-id={motifId}
-              on:click|self|stopPropagation={renameMotif}>
-              save
-            </button>
-          </fieldset>
+          <div class="name-wrap">
+            <ItemName
+              itemType="motifs"
+              item={motifs.find(m => m.id === motifId)} />
+          </div>
+
           {#if saved.local}
             <span class="saved">saved</span>
           {:else}

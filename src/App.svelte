@@ -7,6 +7,7 @@
   import Modal from "./Modal.svelte";
   import ItemCrudModal from "./ItemCrudModal.svelte";
   export let view = "";
+  export let openSection = "";
 
   const dispatch = createEventDispatcher();
 
@@ -42,6 +43,18 @@
     }
   }
 
+  function handleDisplayToggle(event) {
+    console.log(`handleDisplayToggle() called`);
+    console.dir(event.detail);
+    let section = event.detail.section;
+    let open = event.detail.open;
+    if (open) {
+      openSection = section;
+    } else {
+      openSection = "";
+    }
+  }
+
   function handleMotifSelection(event) {
     let { existingIds, newIds, add } = event.detail;
 
@@ -72,13 +85,20 @@
 
 </style>
 
-<Header {view} on:viewChange={handleViewChange} />
+<Header
+  {view}
+  {motifs}
+  {openSection}
+  on:viewChange={handleViewChange}
+  on:displayToggle={handleDisplayToggle} />
 <Main
   {view}
   {motifs}
+  {openSection}
   {allSelected}
   {selectedMotifIds}
   {settings}
+  on:displayToggle={handleDisplayToggle}
   on:displayCrudModal={handleModalDisplay}
   on:motifSelection={handleMotifSelection} />
 <Footer />
