@@ -13,6 +13,7 @@
   export let isPlaying = false;
   export let isLooping = false;
   export let displayIcons = true;
+  export let displayCompact = false;
   let disabled = true;
 
   const waveFormIcon = {
@@ -73,6 +74,7 @@
     width: 50%;
     white-space: normal;
     min-width: 58.2px;
+    padding-top: 10px;
   }
   .compact {
     padding: 7px;
@@ -83,14 +85,19 @@
   }
 </style>
 
-<select bind:value={selectedVoice} class:compact={!displayIcons} {disabled}>
-  {#each Config.voices as voice}
+<select
+  bind:value={selectedVoice}
+  class:compact={!displayIcons}
+  {disabled}
+  data-char-length={selectedVoice ? selectedVoice.length : 0}>
+  {#each Config.voices as [voice, shortName]}
     <option value={voice}>
+      <span>{displayCompact ? shortName : voice}</span>
       {#if displayIcons}
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;voice&nbsp;&#13;&#10;&nbsp;
-        {@html waveFormIcon[voice]}
+        <span>
+          {@html waveFormIcon[voice]}
+        </span>
       {/if}
-      {voice === 'sawtooth' ? 'saw' : voice}
     </option>
   {/each}
 </select>

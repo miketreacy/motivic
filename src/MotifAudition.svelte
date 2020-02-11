@@ -44,7 +44,10 @@
   </div>
 
   <div class="motif-controls">
-    <AudioControls displayIcons={false} selectedMotifs={[motif]} />
+    <AudioControls
+      displayIcons={false}
+      displayCompact={true}
+      selectedMotifs={[motif]} />
     <CrudControls
       displayIcons={false}
       type="motifs"

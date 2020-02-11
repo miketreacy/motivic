@@ -27,6 +27,14 @@
     show: false
   };
   let modalProps = Object.assign({}, defaultModalProps);
+  let displayAlert = false;
+  let alertProps = {
+    visible: false,
+    message: "",
+    type: "",
+    displayTimeMs: 0,
+    dismissable: false
+  };
 
   /**
    * Updates user data in memory in the global MOTIVIC namespace and in the component waterfall
@@ -77,6 +85,13 @@
     view = event.detail.view;
   }
 
+  function handleDisplayAlert(event) {
+    console.log(`handleDisplayAlert() called`);
+    console.dir(event.detail);
+    alertProps = event.detail;
+    displayAlert = alertProps.visible;
+  }
+
   $: updateGlobalUserData($motifStore, "motifs");
   $: updateGlobalUserData($settingStore, "settings");
 </script>
@@ -90,7 +105,8 @@
   {motifs}
   {openSection}
   on:viewChange={handleViewChange}
-  on:displayToggle={handleDisplayToggle} />
+  on:displayToggle={handleDisplayToggle}
+  on:displayAlert={handleDisplayAlert} />
 <Main
   {view}
   {motifs}
@@ -98,6 +114,8 @@
   {allSelected}
   {selectedMotifIds}
   {settings}
+  {displayAlert}
+  {alertProps}
   on:displayToggle={handleDisplayToggle}
   on:displayCrudModal={handleModalDisplay}
   on:motifSelection={handleMotifSelection} />

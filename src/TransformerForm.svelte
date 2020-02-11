@@ -108,6 +108,7 @@
       motif,
       "motifs",
       `${motif.name}_var_1`,
+      motif.created,
       "",
       parentMotif.id,
       transformations

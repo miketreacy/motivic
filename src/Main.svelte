@@ -14,8 +14,8 @@
   let sortType = "created";
   let sortOrder = "desc";
   let showSectionMap = { motifs: true, randomizer: true, transformer: true };
-  let displayAlert = false;
-  let alertProps = {
+  export let displayAlert = false;
+  export let alertProps = {
     visible: false,
     message: "",
     type: "",

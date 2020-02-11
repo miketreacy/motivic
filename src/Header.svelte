@@ -28,17 +28,38 @@
       showNav = false;
     }
   }
+  function handleUploadedMotifs(results) {
+    showUpload = false;
+    results.forEach(result => {
+      let [success, msg, motif] = result;
+      dispatch("displayAlert", {
+        visible: true,
+        type: success ? "success" : "error",
+        message: msg,
+        displayTimeMs: 1500,
+        dismissable: false
+      });
+    });
+  }
   function uploadFile(event) {
+    console.log(`uploadFile() called`);
+    console.dir(event.detail);
     let files = event.detail.value;
     let file = files[0];
     let reader = new FileReader();
     let fileName = file.name.split(".")[0];
     let fileType = file.name.split(".")[1];
     if (fileType === "json") {
-      reader.addEventListener("load", Utils.file.json.handler(fileName));
+      reader.addEventListener(
+        "load",
+        Utils.file.json.uploadHandler(fileName, handleUploadedMotifs)
+      );
       reader.readAsText(file);
     } else if (fileType === "midi" || fileType === "mid") {
-      reader.addEventListener("load", Utils.file.midi.handler(fileName));
+      reader.addEventListener(
+        "load",
+        Utils.file.midi.uploadHandler(fileName, handleUploadedMotifs)
+      );
       reader.readAsDataURL(file);
     }
   }
@@ -177,7 +198,7 @@
     <span class="icons">&#9836;</span>
   </p>
   {#if showUpload}
-    <Field {...fileUploadField} on:valueChange={uploadFile} />
+    <Field {...fileUploadField} on:inputValueChange={uploadFile} />
   {/if}
   <!-- Hiding nav due to new SPA approach - no need for page-like paradigm to navigate views -->
   <!-- <Nav show={showNav} {view} on:viewChange /> -->

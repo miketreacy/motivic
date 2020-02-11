@@ -144,7 +144,8 @@
     let [success, msg, createdMotif] = Utils.userData.processNewItem(
       motif,
       "motifs",
-      "my motif"
+      "my motif",
+      motif.created
     );
     dispatch("displayAlert", {
       visible: true,

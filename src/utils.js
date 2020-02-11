@@ -356,13 +356,13 @@ const Utils = {
         return motifs;
       },
 
-      handler: function(fileName) {
+      uploadHandler: function(fileName, callBack) {
         return function(e) {
           let motifs = Utils.file.midi.parseFile.bind(Utils.file.midi)(
             e.target.result,
             fileName
           );
-          Utils.file.parseCallback(motifs);
+          Utils.file.parseCallback(motifs, callBack);
         };
       },
 
@@ -422,7 +422,7 @@ const Utils = {
         win.URL.revokeObjectURL(a.href);
       },
 
-      handler: function(fileName) {
+      uploadHandler: function(fileName, callBack) {
         return function(e) {
           let str = e.target.result;
           let json = JSON.parse(str);
@@ -430,7 +430,7 @@ const Utils = {
             m.name = `${m.name || fileName}_json-import`;
             return m;
           });
-          Utils.file.parseCallback(motifs);
+          Utils.file.parseCallback(motifs, callBack);
         };
       }
     },
@@ -442,12 +442,11 @@ const Utils = {
       }
     },
 
-    parseCallback: function(motifs) {
-      //TODO: call processNewMotif here
-      // motifs.forEach(Utils.motif.persist.bind(Utils.motif));
-      // Utils.motif.renderMotifs.bind(Utils.motif)();
-      // Utils.grid.displayMelody.bind(Utils.grid)(motifs[0]);
-      win.alert(`Motif: '${motifs[0].name}' uploaded successfully!`);
+    parseCallback: function(motifs, callBack = Function.prototype) {
+      let responses = motifs
+        .map(m => [m, "motifs", m.name, new Date().toISOString()])
+        .map(args => Utils.userData.processNewItem(...args));
+      callBack(responses);
     }
   },
   url: {
@@ -500,6 +499,7 @@ const Utils = {
      * @param {Object} item New or updated item
      * @param {string} type Plural item type ('motifs', 'settings') etc
      * @param {string} name Item name
+     * @param {string} created Created timestamp
      * @param {string} id Item id, if item is pre-existing
      * @param {string} parentId Id of relative theme motif if item is variation
      * @param {Array} transformations List of transformations applied if item is variation
@@ -509,6 +509,7 @@ const Utils = {
       item,
       type,
       name = "",
+      created = "",
       id = "",
       parentId = "",
       transformations = [],
@@ -549,7 +550,8 @@ const Utils = {
         parent: parentId,
         saved: { local: false, cloud: false }
       };
-
+      // add created timestamp if there is none
+      savedItem.created = savedItem.created || new Date().toISOString();
       return Object.assign(savedItem, initMap);
     },
 
