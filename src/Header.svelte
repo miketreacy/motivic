@@ -1,4 +1,4 @@
-<script> 
+<script>
   import { createEventDispatcher } from "svelte";
   import Utils from "./Utils";
   import Nav from "./Nav.svelte";
@@ -189,7 +189,9 @@
   {#if motifs.length}
     <button id="motifs" on:click={toggleMotifList}>
       <span>&#9835;</span>
-      <span class="motif-count" data-motif-count={motifs.length}>{motifs.length}</span>
+      <span class="motif-count" data-motif-count={motifs.length}>
+        {motifs.length}
+      </span>
     </button>
   {/if}
   <p class="subtitle">
@@ -198,8 +200,7 @@
     <span class="icons">&#9836;</span>
   </p>
   {#if showUpload}
-    <div
-      class="upload-controls"      
+    <div class="upload-controls">
       <Field {...fileUploadField} on:inputValueChange={uploadFile} />
     </div>
   {/if}
