@@ -1,4 +1,4 @@
-<script>
+<script> 
   import { createEventDispatcher } from "svelte";
   import Utils from "./Utils";
   import Nav from "./Nav.svelte";
@@ -14,7 +14,8 @@
     type: "file",
     id: "upload",
     label: "Upload file (MIDI or JSON)",
-    accept: ".json, .midi, .mid"
+    accept: ".json, .midi, .mid",
+    wrap: false
   };
   function toggleNavMenu() {
     showNav = !showNav;
@@ -100,8 +101,7 @@
 
   header button {
     position: absolute;
-    margin: 4px 10px 10px;
-    height: 30px;
+    height: 40px;
     width: 40px;
   }
 
@@ -128,7 +128,7 @@
 
   .motif-count {
     padding-left: 2px;
-    font-size: var(--theme_font_size_1);
+    font-size: var(--theme_font_size_2);
   }
 
   .scrolldown header > * {
@@ -158,7 +158,7 @@
     .upload-controls {
       display: flex;
       position: absolute;
-      right: 15vw;
+      left: 15vw;
       width: auto;
       top: 5px;
     }
@@ -189,7 +189,7 @@
   {#if motifs.length}
     <button id="motifs" on:click={toggleMotifList}>
       <span>&#9835;</span>
-      <span class="motif-count">({motifs.length})</span>
+      <span class="motif-count" data-motif-count={motifs.length}>{motifs.length}</span>
     </button>
   {/if}
   <p class="subtitle">
@@ -198,7 +198,10 @@
     <span class="icons">&#9836;</span>
   </p>
   {#if showUpload}
-    <Field {...fileUploadField} on:inputValueChange={uploadFile} />
+    <div
+      class="upload-controls"      
+      <Field {...fileUploadField} on:inputValueChange={uploadFile} />
+    </div>
   {/if}
   <!-- Hiding nav due to new SPA approach - no need for page-like paradigm to navigate views -->
   <!-- <Nav show={showNav} {view} on:viewChange /> -->
