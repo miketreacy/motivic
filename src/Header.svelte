@@ -122,6 +122,7 @@
   }
 
   #motifs {
+    flex-direction: row;
     right: 10px;
     top: 10px;
   }

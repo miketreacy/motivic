@@ -30,13 +30,13 @@
   .name-wrap {
     width: 100%;
     position: relative;
+    justify-content: left;
   }
   .name {
     cursor: text;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100%;
     font-size: var(--theme_font_size_2);
     text-align: left;
   }

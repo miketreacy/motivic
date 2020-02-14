@@ -119,6 +119,8 @@ h3 {
 button,
 input,
 select {
+  display: flex;
+  flex-direction: column;
   cursor: pointer;
   color: var(--theme_color_2);
   font-size: var(--theme_font_size_2);

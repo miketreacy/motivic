@@ -139,6 +139,12 @@
     sortOrder = sortOrder === "asc" ? "desc" : "asc";
   }
 
+  function toggleMotifFn(motifId) {
+    return function toggleHandler(e) {
+      // TODO: set up logic for motif list items to be collapsed/expanded
+    };
+  }
+
   $: selectedMotifs = updateSelectedMotifs(selectedMotifIds);
   $: console.log(`selectedMotifIds = [${selectedMotifIds.join(",")}]`);
   $: console.log(`viewType = ${viewType}`);
@@ -240,9 +246,8 @@
     border: 1px solid var(--theme_color_7);
     padding: 10px;
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(2, auto);
-    grid-column-gap: 2px;
+    grid-template-columns: 10% 15% 15% 15% 15% 15% 15%;
+    grid-template-rows: repeat(5, auto);
     grid-row-gap: 2px;
     justify-items: stretch;
     width: 100%;
@@ -257,15 +262,14 @@
   .motif .saved,
   .motif .save {
     display: flex;
-    align-items: flex-start;
+    flex-direction: column;
     justify-content: center;
     padding: 2px;
     color: var(--theme_color_1);
     font-size: var(--theme_font_size_1);
-    grid-column: 5 / span 1;
+    grid-column: 6 / span 1;
     grid-row: 1 / span 1;
     width: 90%;
-    justify-self: end;
   }
 
   .motif .save {
@@ -273,7 +277,7 @@
   }
 
   .name-wrap {
-    grid-column: 2 / span 3;
+    grid-column: 2 / span 4;
     grid-row: 1 / span 1;
   }
 
@@ -297,7 +301,7 @@
   }
 
   .download {
-    grid-column: 5 / span 2;
+    grid-column: 6 / span 2;
     grid-row: 2 / span 1;
   }
 
@@ -306,7 +310,7 @@
   }
 
   .motif .delete {
-    grid-column: 6 / span 1;
+    grid-column: 7 / span 1;
     grid-row: 1 / span 1;
     margin: 0;
     width: 40px;
@@ -369,7 +373,7 @@
   }
 
   .nested {
-    grid-column: 2 / span 5;
+    grid-column: 2 / span 6;
     grid-row: 4 / span 5;
     align-items: flex-start;
   }
@@ -474,7 +478,7 @@
               </label>
             {/if}
           </div>
-          <div class="name-wrap">
+          <div class="name-wrap" on:click={toggleMotifFn(motifId)}>
             <ItemName
               itemType="motifs"
               item={motifs.find(m => m.id === motifId)} />
