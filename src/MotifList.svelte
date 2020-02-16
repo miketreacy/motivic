@@ -19,6 +19,7 @@
   export let parentId = "";
   export let sortType;
   export let sortOrder;
+  export let expandedMotifId;
   const dispatch = createEventDispatcher();
 
   function toggleOpen(e) {
@@ -36,11 +37,17 @@
     dispatch("motifSelection", { existingIds: selectedMotifIds, newIds, add });
   }
 
-  function dispatchListViewChange(viewType, sortType, sortOrder) {
+  function dispatchListViewChange(
+    viewType,
+    sortType,
+    sortOrder,
+    expandedMotifId
+  ) {
     dispatch("listViewChange", {
       viewType,
       sortType,
-      sortOrder
+      sortOrder,
+      expandedMotifId
     });
   }
 
@@ -139,9 +146,9 @@
     sortOrder = sortOrder === "asc" ? "desc" : "asc";
   }
 
-  function toggleMotifFn(motifId) {
-    return function toggleHandler(e) {
-      // TODO: set up logic for motif list items to be collapsed/expanded
+  function getExpandMotifFn(motifId) {
+    return function expandMotif(e) {
+      expandedMotifId = expandedMotifId === motifId ? "" : motifId;
     };
   }
 
@@ -153,7 +160,7 @@
     console.log(`selectedMotifs changed`);
     console.dir(selectedMotifs);
   }
-  $: dispatchListViewChange(viewType, sortType, sortOrder);
+  $: dispatchListViewChange(viewType, sortType, sortOrder, expandedMotifId);
 </script>
 
 <style>
@@ -244,10 +251,10 @@
   }
   .motif {
     border: 1px solid var(--theme_color_7);
-    padding: 10px;
+    padding: 10px 5px 10px 10px;
     display: grid;
     grid-template-columns: 10% 15% 15% 15% 15% 15% 15%;
-    grid-template-rows: repeat(5, auto);
+    grid-template-rows: 30px 0px 0px 0px 0px;
     grid-row-gap: 2px;
     justify-items: stretch;
     width: 100%;
@@ -264,6 +271,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    justify-self: center;
     padding: 2px;
     color: var(--theme_color_1);
     font-size: var(--theme_font_size_1);
@@ -303,6 +311,8 @@
   .download {
     grid-column: 6 / span 2;
     grid-row: 2 / span 1;
+    width: 95%;
+    justify-self: center;
   }
 
   .variations .motif .transformations {
@@ -314,8 +324,10 @@
     grid-row: 1 / span 1;
     margin: 0;
     width: 40px;
-    justify-self: end;
+    width: 90%;
+    justify-self: center;
     padding: 0 10px;
+    background-color: var(--theme_color_10);
   }
 
   .transformations-header {
@@ -345,7 +357,7 @@
   .selection label {
     display: flex;
     flex-direction: row;
-    align-items: flex-end;
+    align-items: center;
   }
 
   .selection label span {
@@ -368,6 +380,10 @@
     align-items: center;
   }
 
+  label.select-theme {
+    height: 30px;
+  }
+
   .motif.has-variations > .selection label.select-theme span {
     display: inline;
   }
@@ -384,6 +400,13 @@
 
   select {
     width: auto;
+  }
+  .expanded {
+    grid-template-rows: 30px 30px 30px 30px 30px;
+  }
+
+  ul[data-view-type="flat"] > .expanded {
+    border: 1px solid var(--theme_color_1);
   }
 </style>
 
@@ -446,7 +469,10 @@
         </div>
       {/if}
     {/if}
-    <ol class="motif-list item-list" data-type="motifs">
+    <ul
+      class="motif-list item-list"
+      data-type="motifs"
+      data-view-type={viewType}>
       {#each motifs
         .filter(displayMotif)
         .sort(
@@ -454,6 +480,7 @@
         ) as { id: motifId, name, created, parent: motifParentId, tempo, notes, saved, transformations }}
         <li
           class="motif"
+          class:expanded={viewType === 'nested' || expandedMotifId === motifId}
           id="motif_{motifId}"
           data-id={motifId}
           data-saved={saved.local}>
@@ -472,16 +499,18 @@
                   class="select-all-variations"
                   type="checkbox"
                   data-motif-id={motifId}
-                  on:click={toggleAllVariations}
+                  on:click|self|stopPropagation={toggleAllVariations}
                   checked={allVariationsAreSelected(motifId)} />
                 <span>all variations</span>
               </label>
             {/if}
           </div>
-          <div class="name-wrap" on:click={toggleMotifFn(motifId)}>
+          <div class="name-wrap">
             <ItemName
               itemType="motifs"
-              item={motifs.find(m => m.id === motifId)} />
+              item={motifs.find(m => m.id === motifId)}
+              itemClickCallback={getExpandMotifFn(motifId)}
+              on:displayCrudModal />
           </div>
 
           {#if saved.local}
@@ -502,41 +531,44 @@
             on:click|self={dispatchDisplayModal}>
             &#9747;
           </button>
-          <div class="motif-created">
-            {Utils.general.dateDisplay(new Date(created))}
-          </div>
-          <div class="motif-display">display motif here</div>
-          <div class="download">
-            <DownloadControls
-              selectedMotifs={[motifs.find(m => m.id === motifId)]} />
-          </div>
-          {#if transformations && transformations.length}
-            <h4 class="transformations-header">transformations:</h4>
-            <!-- TODO: refine this recursion -->
-            <ol class="transformations">
-              {#each transformations as { type, params }, i}
-                <li class="transformation">{type}: {params.join(', ')}</li>
-              {/each}
-            </ol>
-          {/if}
-          {#if viewType === 'nested' && motifVariationCount(motifId)}
-            <svelte:self
-              id={`${motifId}_variations`}
-              title="variations"
-              {listOpen}
-              {viewType}
-              {sortType}
-              {sortOrder}
-              motifs={getMotifVariations(motifId)}
-              parentId={motifId}
-              {selectedMotifIds}
-              {allSelected}
-              on:displayToggle
-              on:displayCrudModal
-              on:motifSelection />
+          {#if viewType === 'nested' || expandedMotifId === motifId}
+            <div class="motif-created">
+              {Utils.general.dateDisplay(new Date(created))}
+            </div>
+            <div class="motif-display">display motif here</div>
+            <div class="download">
+              <DownloadControls
+                selectedMotifs={[motifs.find(m => m.id === motifId)]} />
+            </div>
+            {#if transformations && transformations.length}
+              <h4 class="transformations-header">transformations:</h4>
+              <!-- TODO: refine this recursion -->
+              <ul class="transformations">
+                {#each transformations as { type, params }, i}
+                  <li class="transformation">{type}: {params.join(', ')}</li>
+                {/each}
+              </ul>
+            {/if}
+            {#if viewType === 'nested' && motifVariationCount(motifId)}
+              <svelte:self
+                id={`${motifId}_variations`}
+                title="variations"
+                {listOpen}
+                {viewType}
+                {sortType}
+                {sortOrder}
+                motifs={getMotifVariations(motifId)}
+                parentId={motifId}
+                {expandedMotifId}
+                {selectedMotifIds}
+                {allSelected}
+                on:displayToggle
+                on:displayCrudModal
+                on:motifSelection />
+            {/if}
           {/if}
         </li>
       {/each}
-    </ol>
+    </ul>
   {/if}
 </section>

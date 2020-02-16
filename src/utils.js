@@ -58,19 +58,23 @@ const Utils = {
     objectKeySorterAlpha: function(key, sortOrder = "asc") {
       const alphaSortMap = {
         asc: (a, b) => {
-          if (a[key] < b[key]) {
+          let aVal = a[key].toLowerCase();
+          let bVal = b[key].toLowerCase();
+          if (aVal < bVal) {
             return -1;
           }
-          if (a[key] > b[key]) {
+          if (aVal > bVal) {
             return 1;
           }
           return 0;
         },
         desc: (a, b) => {
-          if (a[key] > b[key]) {
+          let aVal = a[key].toLowerCase();
+          let bVal = b[key].toLowerCase();
+          if (aVal > bVal) {
             return -1;
           }
-          if (a[key] < b[key]) {
+          if (aVal < bVal) {
             return 1;
           }
           return 0;

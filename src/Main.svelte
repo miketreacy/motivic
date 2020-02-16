@@ -13,6 +13,7 @@
   let viewType = "flat";
   let sortType = "created";
   let sortOrder = "desc";
+  let expandedMotifId = "";
   let showSectionMap = { motifs: true, randomizer: true, transformer: true };
   export let displayAlert = false;
   export let alertProps = {
@@ -46,11 +47,13 @@
     viewType = event.detail.viewType;
     sortType = event.detail.sortType;
     sortOrder = event.detail.sortOrder;
+    expandedMotifId = event.detail.expandedMotifId;
     motifs = motifs;
     console.info(`handleListViewChange() called`);
     console.info(`viewType = ${viewType}`);
     console.info(`sortType = ${sortType}`);
     console.info(`sortOrder = ${sortOrder}`);
+    console.info(`expandedMotifId = ${expandedMotifId}`);
   }
 
   $: updateDisplayState(openSection);
@@ -97,6 +100,7 @@
         {viewType}
         {sortType}
         {sortOrder}
+        {expandedMotifId}
         on:listViewChange={handleListViewChange}
         on:displayToggle
         on:displayCrudModal

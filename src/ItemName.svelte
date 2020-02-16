@@ -1,14 +1,17 @@
 <script>
+  import { createEventDispatcher } from "svelte";
   import Utils from "./Utils.js";
   export let item = null;
   export let itemType = "";
   export let saveEnabled = true;
+  export let itemClickCallback = Function.prototype;
   let displayRenameForm = false;
-  let renameFormValue = "";
+  let renameFormValue = item.name || "";
+  const dispatch = createEventDispatcher();
 
   function timeoutRenameForm() {
     // TODO: close form n seconds after the last change event fired on the input
-    displayRenameForm = false;
+    // displayRenameForm = false;
   }
 
   function toggleRenameForm() {
@@ -23,6 +26,18 @@
     renameFormValue = "";
     let [success, msg] = Utils.userData.persist(item, itemType, true);
     toggleRenameForm();
+  }
+
+  function dispatchDisplayModal(event) {
+    dispatch("displayCrudModal", {
+      modalProps: {
+        show: true,
+        itemType: "motifs",
+        item: item,
+        formType: "rename",
+        actionComplete: false
+      }
+    });
   }
 </script>
 
@@ -39,6 +54,7 @@
     text-overflow: ellipsis;
     font-size: var(--theme_font_size_2);
     text-align: left;
+    flex: 1 1 0;
   }
   .rename {
     padding: 10px;
@@ -68,14 +84,23 @@
     padding-top: 5px;
     justify-content: space-between;
   }
+  .toggle {
+    width: 40px;
+    height: 30px;
+    justify-self: center;
+  }
 </style>
 
 <div class="name-wrap">
-  <h3 class="name" on:click|self|stopPropagation={toggleRenameForm}>
+  <h3 class="name" on:click|self|stopPropagation={itemClickCallback}>
     {item.name}
   </h3>
+  <button class="toggle" on:click|self={dispatchDisplayModal}>&#9998;</button>
   <fieldset class="rename" class:hide={!displayRenameForm}>
-    <input type="text" bind:value={renameFormValue} placeholder={item.name} />
+    <input
+      type="text"
+      bind:value={renameFormValue}
+      placeholder={`rename ${Utils.general.singularize(itemType)}`} />
     <div class="rename-controls">
       <button
         class="rename-cancel"

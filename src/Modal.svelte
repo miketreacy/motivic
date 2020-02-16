@@ -47,7 +47,7 @@
     padding: 10px;
     box-sizing: border-box;
     text-align: center;
-    width: 40vw;
+    width: 90vw;
     z-index: var(--front);
     background-color: var(--theme_color_2);
     border: 1px solid var(--theme_color_2);
@@ -59,7 +59,7 @@
     max-width: 400px;
     min-width: 300px;
     position: fixed;
-    top: 20%;
+    top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
   }
@@ -70,13 +70,13 @@
   .dismiss {
     cursor: pointer;
     padding: 0px;
-    background-color: red;
+    background-color: var(--theme_color_10);
     color: white;
     position: absolute;
-    top: 0;
-    right: 0;
-    max-height: 25px;
-    max-width: 25px;
+    width: 40px;
+    height: 30px;
+    top: 10px;
+    right: 10px;
   }
 </style>
 

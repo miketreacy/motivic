@@ -185,7 +185,7 @@
 
 </style>
 
-<MotifForm {...props} {newMotif} on:displayToggle>
+<MotifForm {...props} {newMotif} on:displayToggle on:displayCrudModal>
   <ItemSelector
     {formId}
     items={motifs}
