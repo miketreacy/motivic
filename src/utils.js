@@ -586,9 +586,11 @@ const Utils = {
       let storedItems = Utils.storage.get.bind(Utils.storage)(type);
       const limit = Config.userData.savedItemLimit[type];
       const action = add ? "saved" : "deleted";
-      if (storedItems.length >= limit) {
-        const errMsg = `Saved ${type} limit met! You already have ${limit} saved ${type}. \nYou must delete existing ${type} before you can save new ones.`;
-        throw new Error(errMsg);
+      if (add && storedItems.length >= limit) {
+        const limitErrMsg = `Saved ${Utils.general.singularize(
+          type
+        )} limit met! You already have ${limit} saved ${type}. \nYou must delete existing ${type} before you can save new ones.`;
+        return [false, limitErrMsg, item];
       }
       item.saved.local = true;
       let newItemList = this.mutateList.bind(this)(storedItems, item, !add);

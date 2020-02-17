@@ -4,7 +4,6 @@
   export let item = null;
   export let itemType = "";
   export let saveEnabled = true;
-  export let itemClickCallback = Function.prototype;
   let displayRenameForm = false;
   let renameFormValue = item.name || "";
   const dispatch = createEventDispatcher();
@@ -91,10 +90,8 @@
   }
 </style>
 
-<div class="name-wrap">
-  <h3 class="name" on:click|self|stopPropagation={itemClickCallback}>
-    {item.name}
-  </h3>
+<div class="name-wrap" on:click>
+  <h3 class="name" data-item-id={item.id} on:click>{item.name}</h3>
   <button class="toggle" on:click|self={dispatchDisplayModal}>&#9998;</button>
   <fieldset class="rename" class:hide={!displayRenameForm}>
     <input

@@ -110,12 +110,6 @@
     height: auto;
   }
 
-  .upload-controls label,
-  .upload-controls input {
-    position: static;
-  }
-
-  #user,
   #upload-toggle {
     left: 10px;
     top: 10px;
@@ -130,6 +124,10 @@
   .motif-count {
     padding-left: 2px;
     font-size: var(--theme_font_size_2);
+  }
+
+  .motif-count.small {
+    font-size: var(--theme_font_size_1);
   }
 
   .scrolldown header > * {
@@ -190,7 +188,7 @@
   {#if motifs.length}
     <button id="motifs" on:click={toggleMotifList}>
       <span>&#9835;</span>
-      <span class="motif-count" data-motif-count={motifs.length}>
+      <span class="motif-count" class:small={motifs.length > 9}>
         {motifs.length}
       </span>
     </button>

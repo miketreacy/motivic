@@ -20,6 +20,7 @@
   export let sortType;
   export let sortOrder;
   export let expandedMotifId;
+  const generationLevels = Config.motifGenerationDisplayCount;
   const dispatch = createEventDispatcher();
 
   function toggleOpen(e) {
@@ -146,10 +147,11 @@
     sortOrder = sortOrder === "asc" ? "desc" : "asc";
   }
 
-  function getExpandMotifFn(motifId) {
-    return function expandMotif(e) {
-      expandedMotifId = expandedMotifId === motifId ? "" : motifId;
-    };
+  function expandMotif(e) {
+    console.log(`expandMotif() called`);
+    console.dir(e);
+    let motifId = e.target.dataset.itemId;
+    expandedMotifId = expandedMotifId === motifId ? "" : motifId;
   }
 
   $: selectedMotifs = updateSelectedMotifs(selectedMotifIds);
@@ -266,8 +268,8 @@
     padding: 0px;
   }
 
-  .motif .saved,
-  .motif .save {
+  .saved,
+  .save {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -280,8 +282,11 @@
     width: 90%;
   }
 
-  .motif .save {
+  .save {
     color: var(--theme_color_2);
+  }
+  .save:disabled {
+    color: var(--theme_color_6);
   }
 
   .name-wrap {
@@ -289,18 +294,18 @@
     grid-row: 1 / span 1;
   }
 
-  .motif .id {
+  .id {
     grid-column: 2 / span 4;
     grid-row: 3 / span 1;
     font-size: var(--theme_font_size_1);
   }
 
-  .motif .motif-display {
+  .motif-display {
     grid-column: 1 / span 5;
     grid-row: 3 / span 1;
   }
 
-  .motif .motif-created {
+  .motif-created {
     grid-column: 2 / span 3;
     grid-row: 2 / span 1;
     font-size: var(--theme_font_size_1);
@@ -319,7 +324,7 @@
     font-size: var(--theme_font_size_1);
   }
 
-  .motif .delete {
+  .delete {
     grid-column: 7 / span 1;
     grid-row: 1 / span 1;
     margin: 0;
@@ -403,9 +408,6 @@
   }
   .expanded {
     grid-template-rows: 30px 30px 30px 30px 30px;
-  }
-
-  ul[data-view-type="flat"] > .expanded {
     border: 1px solid var(--theme_color_1);
   }
 </style>
@@ -480,7 +482,7 @@
         ) as { id: motifId, name, created, parent: motifParentId, tempo, notes, saved, transformations }}
         <li
           class="motif"
-          class:expanded={viewType === 'nested' || expandedMotifId === motifId}
+          class:expanded={expandedMotifId === motifId}
           id="motif_{motifId}"
           data-id={motifId}
           data-saved={saved.local}>
@@ -505,11 +507,14 @@
               </label>
             {/if}
           </div>
-          <div class="name-wrap">
+          <div
+            class="name-wrap"
+            data-motif-id={motifId}
+            on:click|stopPropagation={expandMotif}>
             <ItemName
               itemType="motifs"
               item={motifs.find(m => m.id === motifId)}
-              itemClickCallback={getExpandMotifFn(motifId)}
+              on:click
               on:displayCrudModal />
           </div>
 
@@ -520,7 +525,8 @@
               class="save"
               data-action="save"
               data-motif-id={motifId}
-              on:click|self={dispatchDisplayModal}>
+              on:click|self={dispatchDisplayModal}
+              disabled={motifs.filter(m => m.saved.local).length >= Config.userData.savedItemLimit['motifs']}>
               save
             </button>
           {/if}
@@ -531,7 +537,7 @@
             on:click|self={dispatchDisplayModal}>
             &#9747;
           </button>
-          {#if viewType === 'nested' || expandedMotifId === motifId}
+          {#if expandedMotifId === motifId}
             <div class="motif-created">
               {Utils.general.dateDisplay(new Date(created))}
             </div>
