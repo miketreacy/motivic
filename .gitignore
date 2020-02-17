@@ -11,5 +11,6 @@ public/build
 .idea/*
 
 # CI/CD
+now.json
 rules.json
 DEPLOY.md
