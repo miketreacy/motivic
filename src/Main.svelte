@@ -10,6 +10,7 @@
   export let openSection = "";
   export let settings = [];
   export let motifs = [];
+  export let scrollDown = false;
   let viewType = "flat";
   let sortType = "created";
   let sortOrder = "desc";
@@ -101,6 +102,7 @@
         {sortType}
         {sortOrder}
         {expandedMotifId}
+        {scrollDown}
         on:listViewChange={handleListViewChange}
         on:displayToggle
         on:displayCrudModal

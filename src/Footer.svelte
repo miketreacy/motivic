@@ -1,5 +1,5 @@
 <script>
-
+  export let scrollUp;
 </script>
 
 <style>
@@ -18,7 +18,7 @@
     bottom: 0;
   }
 
-  .scrollup footer {
+  footer.scrollup {
     display: none;
   }
 
@@ -40,9 +40,15 @@
   #twitter {
     background-image: url("/images/Twitter_Social_Icon_Circle_Color.svg");
   }
+  /*Desktop*/
+  @media (min-width: 1025px) {
+    footer.scrollup {
+      display: flex;
+    }
+  }
 </style>
 
-<footer>
+<footer class:scrollup={scrollUp}>
   <div class="social">
     <a href="https://github.com/miketreacy/motivic" target="_blank">
       <span class="social-icon" id="github" />

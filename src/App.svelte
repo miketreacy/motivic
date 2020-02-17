@@ -35,6 +35,9 @@
     displayTimeMs: 0,
     dismissable: false
   };
+  let scrollPos;
+  let scrollDown = false;
+  let scrollUp = true;
 
   /**
    * Updates user data in memory in the global MOTIVIC namespace and in the component waterfall
@@ -92,18 +95,30 @@
     displayAlert = alertProps.visible;
   }
 
+  function scrollHandler(scrollPos) {
+    let threshold = 50;
+    scrollDown = scrollPos >= threshold;
+    scrollUp = scrollPos < threshold;
+    console.info(`scrollPos = ${scrollPos}`);
+    console.info(`scrollDown = ${scrollDown}`);
+    console.info(`scrollUp = ${scrollUp}`);
+  }
+
   $: updateGlobalUserData($motifStore, "motifs");
   $: updateGlobalUserData($settingStore, "settings");
+  $: scrollHandler(scrollPos);
 </script>
 
 <style>
 
 </style>
 
+<svelte:window bind:scrollY={scrollPos} />
 <Header
   {view}
   {motifs}
   {openSection}
+  {scrollDown}
   on:viewChange={handleViewChange}
   on:displayToggle={handleDisplayToggle}
   on:displayAlert={handleDisplayAlert} />
@@ -116,10 +131,11 @@
   {settings}
   {displayAlert}
   {alertProps}
+  {scrollDown}
   on:displayToggle={handleDisplayToggle}
   on:displayCrudModal={handleModalDisplay}
   on:motifSelection={handleMotifSelection} />
-<Footer />
+<Footer {scrollUp} />
 {#if modalProps.show}
   <!-- TODO: mount empty Modal here but mount the child content componenets separately to preserve modal fade in but keep form state clearn -->
   <ItemCrudModal {...modalProps} on:displayCrudModal={handleModalDisplay} />

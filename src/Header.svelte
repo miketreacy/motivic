@@ -3,12 +3,12 @@
   import Utils from "./Utils";
   import Nav from "./Nav.svelte";
   import Field from "./Field.svelte";
-
   export let showNav = false;
   export let showUpload = false;
   export let view = "";
   export let motifs = [];
   export let openSection = "";
+  export let scrollDown;
   const dispatch = createEventDispatcher();
   const fileUploadField = {
     type: "file",
@@ -130,13 +130,14 @@
     font-size: var(--theme_font_size_1);
   }
 
-  .scrolldown header > * {
-    display: none;
+  header.scrolldown {
+    padding: 0px;
+    border-bottom: none;
   }
 
-  .scrolldown header h1,
-  .scrolldown header button {
-    display: flex;
+  header.scrolldown h1,
+  header.scrolldown button {
+    display: none;
   }
 
   .subtitle {
@@ -150,7 +151,8 @@
 
   /*Desktop*/
   @media (min-width: 1025px) {
-    .scrolldown header > * {
+    header.scrolldown h1,
+    header.scrolldown button {
       display: flex;
     }
 
@@ -168,7 +170,7 @@
   }
 </style>
 
-<header class="show">
+<header class="show" class:scrolldown={scrollDown}>
   <!-- <button id="menu" on:click={toggleNavMenu}>
     <span>&#9776;</span>
   </button> -->

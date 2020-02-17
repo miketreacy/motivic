@@ -6,7 +6,6 @@
   import AudioControls from "./AudioControls.svelte";
   import CrudControls from "./CrudControls.svelte";
   import DownloadControls from "./DownloadControls.svelte";
-  import MotifControls from "./MotifControls.svelte";
   import ItemName from "./ItemName.svelte";
   export let motifs = [];
   export let selectedMotifs = [];
@@ -20,6 +19,7 @@
   export let sortType;
   export let sortOrder;
   export let expandedMotifId;
+  export let scrollDown = false;
   const generationLevels = Config.motifGenerationDisplayCount;
   const dispatch = createEventDispatcher();
 
@@ -170,10 +170,14 @@
     cursor: pointer;
     padding: 10px;
   }
+  .scrolldown > h2 {
+    /* display: none; */
+  }
   section {
     margin-top: 0px;
     flex-direction: column;
   }
+
   section[data-closed="true"] {
     flex-direction: row;
     border: 1px solid var(--theme_color_6);
@@ -191,6 +195,9 @@
     background-color: var(--theme_color_2);
     z-index: var(--front);
   }
+  .scrolldown .motif-controls {
+    top: 0px;
+  }
 
   .list-controls {
     width: 100%;
@@ -202,6 +209,9 @@
     border: 2px solid var(--theme_color_6);
     border-top: none;
     z-index: var(--front);
+  }
+  .scrolldown .list-controls {
+    top: 54px;
   }
   .select-all {
     display: flex;
@@ -416,6 +426,7 @@
   {id}
   class="motifs"
   class:nested={Boolean(parentId)}
+  class:scrolldown={scrollDown}
   data-closed={!listOpen}>
   <h2 on:click={toggleOpen}>{title} ({motifs.length})</h2>
   {#if listOpen && motifs.length}
