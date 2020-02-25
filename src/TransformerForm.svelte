@@ -186,10 +186,12 @@
 </style>
 
 <MotifForm {...props} {newMotif} on:displayToggle on:displayCrudModal>
-  <ItemSelector
-    {formId}
-    items={motifs}
-    itemType="motifs"
-    selectedItemId={selectedMotifId}
-    on:itemSelection={handleItemSelection} />
+  {#if motifs.length}
+    <ItemSelector
+      {formId}
+      items={motifs}
+      itemType="motifs"
+      selectedItemId={selectedMotifId}
+      on:itemSelection={handleItemSelection} />
+  {/if}
 </MotifForm>

@@ -190,6 +190,7 @@
     padding: 0;
     border: 2px solid var(--theme_color_6);
     position: sticky;
+    position: -webkit-sticky;
     /* TODO: write a css variable for this offset */
     top: 59px;
     background-color: var(--theme_color_2);

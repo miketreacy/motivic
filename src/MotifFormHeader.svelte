@@ -11,10 +11,6 @@
 </script>
 
 <style>
-  h2 {
-    flex: 1 1 0;
-  }
-
   h2[data-closed="true"] {
     text-transform: lowercase;
   }

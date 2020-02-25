@@ -71,6 +71,7 @@
   .item {
     border: 2px solid var(--theme_color_6);
     padding: 5px;
+    margin-top: 10px;
   }
 
   #item-name {
