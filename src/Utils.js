@@ -130,6 +130,7 @@ const Utils = {
         return await res.json();
       } catch (e) {
         console.error(e);
+        // TODO: handle this gracefully
         throw e;
       }
     }
@@ -714,6 +715,7 @@ const Utils = {
       try {
         storage = this.get.bind(this)() || {};
       } catch (e) {
+        // TODO: handle this gracefully
         throw e;
       }
 
@@ -732,6 +734,7 @@ const Utils = {
         console.error(`error setting localStorage`);
         console.error(err);
         // win.alert(`ERROR: Local storage unavailable. Please clear cache or close browser windows.`)
+        // TODO: display this error to the user with the alert or modal components
         throw new Error(
           `ERROR: Local storage unavailable. Please clear cache or close browser windows.`
         );
@@ -747,6 +750,7 @@ const Utils = {
           `error retrieving localStorage${key && `for key ${key}`}`
         );
         console.error(e);
+        // TODO: handle this gracefully
         throw e;
       }
       return key ? storage[key] : storage;

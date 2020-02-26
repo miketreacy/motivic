@@ -11,12 +11,19 @@ export const Audio = {
   isPlaying: false
 };
 
-export function startAudioContext() {
-  // starting AudioContext after user interaction prevents warning on chrome
-  // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
-  Audio.context = new (win.AudioContext || win.webkitAudioContext)();
-  // need to create a node in order to kick off the timer in Chrome.
-  Audio.context.createGain();
+export function getAudioContext() {
+  // only construct a new context if one doesn't exist
+  if (!Audio.context) {
+    // starting AudioContext after user interaction prevents warning on chrome
+    // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
+    let ctx = new (win.AudioContext || win.webkitAudioContext)();
+    // make sure context exists to prevent Safari iOS bug
+    if (ctx) {
+      // need to create a node in order to kick off the timer in Chrome.
+      ctx.createGain();
+      Audio.context = ctx;
+    }
+  }
   return Audio.context;
 }
 
@@ -68,6 +75,7 @@ export function playTone(ctx, note, timeLine, tempo, timeSig, voice) {
 // NOTE: turns out there is no need for an async play() wrapper.
 /**
  * Plays a melody via Web Audio API
+ * @param ctx {AudioContext | null} Audio Context for web audio API.
  * @param melody {Object} Melody to play.
  * @param time {number} Timeline start in seconds (double-precision float).
  * @param voice {string} Web Audio voice to play melody with (OscillatorNode.type)
@@ -75,12 +83,12 @@ export function playTone(ctx, note, timeLine, tempo, timeSig, voice) {
  * @returns {number} Current timeline time.
  */
 export function playMelody(
+  ctx = null,
   melody,
   time,
   voice,
   stopCallback = Function.prototype
 ) {
-  let ctx = Audio.context;
   let melodyLength = _getMelodyTimeDuration(melody);
   time = time || ctx.currentTime;
   setPlayState(true);
@@ -104,20 +112,20 @@ export function playMelody(
 
 /**
  * Plays a melody on loop via Web Audio API
+ * @param ctx {AudioContext | null} Audio Context for web audio API.
  * @param melody {Object} Melody to play.
  * @param time {number} Timeline start in seconds (double-precision float).
  * @param voice {string} Web Audio voice to play melody with (OscillatorNode.type)
  * @returns {number} Current timeline time.
  */
-export function loopMelody(melody, time, voice) {
-  let ctx = Audio.context;
+export function loopMelody(ctx = null, melody, time, voice) {
   let melodyLength = _getMelodyTimeDuration(melody);
-  time = playMelody(melody, time || ctx.currentTime, voice);
+  time = playMelody(ctx, melody, time || ctx.currentTime, voice);
   if (getPlayState()) {
     ctx.timeoutIDs = ctx.timeoutIDs || [];
     ctx.timeoutIDs.push(
       setTimeout(() => {
-        loopMelody(melody, time, voice);
+        loopMelody(ctx, melody, time, voice);
       }, melodyLength * 1000)
     );
   }

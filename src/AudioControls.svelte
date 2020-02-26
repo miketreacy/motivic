@@ -3,7 +3,7 @@
   import {
     getPlayState,
     setPlayState,
-    startAudioContext,
+    getAudioContext,
     playMelody,
     loopMelody,
     stopLoop
@@ -32,9 +32,14 @@
 
   function playMotifs(motifs) {
     isPlaying = true;
-    startAudioContext();
+    let ctx = getAudioContext();
+    if (!ctx) {
+      console.error(`Web Audio playback stopped: AudioContext not created`);
+      console.dir(ctx);
+      return;
+    }
     motifs.forEach(m =>
-      playMelody(m, 0, selectedVoice, () => (isPlaying = false))
+      playMelody(ctx, m, 0, selectedVoice, () => (isPlaying = false))
     );
   }
 
@@ -50,8 +55,13 @@
   function loopMotifs(motifs) {
     isPlaying = true;
     isLooping = true;
-    startAudioContext();
-    motifs.forEach(m => loopMelody(m, 0, selectedVoice, false));
+    let ctx = getAudioContext();
+    if (!ctx) {
+      console.error(`Web Audio playback stopped: AudioContext not created`);
+      console.dir(ctx);
+      return;
+    }
+    motifs.forEach(m => loopMelody(ctx, m, 0, selectedVoice, false));
   }
 
   function loopClickHandler(e) {
