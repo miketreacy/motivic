@@ -1,8 +1,7 @@
 <script>
+  import { onMount } from "svelte";
   import Config from "./Config.js";
   import {
-    getPlayState,
-    setPlayState,
     getAudioContext,
     playMelody,
     loopMelody,
@@ -10,12 +9,14 @@
   } from "./Audio.js";
   export let selectedVoice = "sine";
   export let selectedMotifs = [];
-  export let isPlaying = false;
-  export let isLooping = false;
   export let displayIcons = true;
   export let displayCompact = false;
+  let isPlaying = false;
+  let isLooping = false;
   let disabled = true;
-
+  let AudioCtx = null;
+  let AudioState = { isPlaying: false };
+  const timelineStart = 0;
   const waveFormIcon = {
     sawtooth: "&#8961",
     sine: "&#8767;",
@@ -26,25 +27,31 @@
   function stopMotifLoop() {
     isPlaying = false;
     isLooping = false;
-    setPlayState(false);
-    stopLoop();
+    AudioState.isPlaying = false;
+    stopLoop(AudioState, AudioCtx);
   }
 
   function playMotifs(motifs) {
     isPlaying = true;
-    let ctx = getAudioContext();
-    if (!ctx) {
+    if (!AudioCtx) {
       console.error(`Web Audio playback stopped: AudioContext not created`);
-      console.dir(ctx);
+      console.dir(AudioCtx);
       return;
     }
-    motifs.forEach(m =>
-      playMelody(ctx, m, 0, selectedVoice, () => (isPlaying = false))
+    motifs.forEach(motif =>
+      playMelody(
+        AudioState,
+        AudioCtx,
+        motif,
+        timelineStart,
+        selectedVoice,
+        () => (isPlaying = false)
+      )
     );
   }
 
   function playClickHandler(e) {
-    if (getPlayState()) {
+    if (AudioState.isPlaying) {
       return false;
     }
     if (selectedMotifs.length) {
@@ -55,17 +62,18 @@
   function loopMotifs(motifs) {
     isPlaying = true;
     isLooping = true;
-    let ctx = getAudioContext();
-    if (!ctx) {
+    if (!AudioCtx) {
       console.error(`Web Audio playback stopped: AudioContext not created`);
-      console.dir(ctx);
+      console.dir(AudioCtx);
       return;
     }
-    motifs.forEach(m => loopMelody(ctx, m, 0, selectedVoice, false));
+    motifs.forEach(motif =>
+      loopMelody(AudioState, AudioCtx, motif, timelineStart, selectedVoice)
+    );
   }
 
   function loopClickHandler(e) {
-    if (getPlayState()) {
+    if (AudioState.isPlaying) {
       stopMotifLoop();
     } else {
       if (selectedMotifs.length) {
@@ -73,6 +81,19 @@
       }
     }
   }
+
+  function init(settings) {
+    console.info(`Initilizalizing Audio Context`);
+    AudioCtx = getAudioContext();
+    if (!AudioCtx) {
+      // TODO: display to user as alert message
+      console.error(`No AudioContext available, playback is impossible`);
+    }
+  }
+
+  onMount(() => {
+    init();
+  });
 
   $: {
     disabled = !selectedMotifs.length;
@@ -100,7 +121,7 @@
   class:compact={!displayIcons}
   {disabled}
   data-char-length={selectedVoice ? selectedVoice.length : 0}>
-  {#each Config.voices as [voice, shortName]}
+  {#each Config.audio.voices as [voice, shortName]}
     <option value={voice}>
       <span>{displayCompact ? shortName : voice}</span>
       {#if displayIcons}

@@ -1,5 +1,20 @@
 const nameSpace = "MOTIVIC";
 const Config = {
+  audio: {
+    playSettings: {
+      attack: 1,
+      release: 100,
+      volume: 1,
+      type: "sine",
+      timeLine: 0
+    },
+    voices: [
+      ["sine", "sine"],
+      ["square", "square"],
+      ["sawtooth", "saw"],
+      ["triangle", "tri"]
+    ]
+  },
   nameSpace: nameSpace,
   views: ["about", "note grid", "randomizer", "transformer", "motifs"],
   homePage: "randomizer",
@@ -11,12 +26,6 @@ const Config = {
     crudAPI: false,
     savedSettings: false
   },
-  voices: [
-    ["sine", "sine"],
-    ["square", "square"],
-    ["sawtooth", "saw"],
-    ["triangle", "tri"]
-  ],
   timeSignatureBeats: [1, 2, 3, 4, 5, 6, 7, 8, 9],
   timeSignatureUnits: [1, 2, 4, 8, 12, 16],
   notes: ["c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b"],

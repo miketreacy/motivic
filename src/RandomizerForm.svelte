@@ -1,9 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
   import MotifForm from "./MotifForm.svelte";
-  import MotifList from "./MotifList.svelte";
-  import AudioControls from "./AudioControls.svelte";
-  import CrudControls from "./CrudControls.svelte";
   import Config from "./Config.js";
   import Utils from "./Utils";
   import { motifStore } from "./Stores.js";

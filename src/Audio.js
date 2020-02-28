@@ -1,42 +1,21 @@
 "use strict";
 import Config from "./Config";
-let win = window;
-export const Audio = {
-  context: null,
-  attack: 1,
-  release: 100,
-  volume: 1,
-  type: "sine",
-  timeLine: 0,
-  isPlaying: false
-};
 
 export function getAudioContext() {
+  // construct Audio context once per session and re-use it
   // only construct a new context if one doesn't exist
-  if (!Audio.context) {
-    // starting AudioContext after user interaction prevents warning on chrome
-    // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
-    let ctx = new (win.AudioContext || win.webkitAudioContext)();
-    // make sure context exists to prevent Safari iOS bug
-    if (ctx) {
-      // need to create a node in order to kick off the timer in Chrome.
-      ctx.createGain();
-      Audio.context = ctx;
-    }
+  // starting AudioContext after user interaction prevents warning on chrome
+  // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
+  let ctx = new (window.AudioContext || window.webkitAudioContext)();
+  // make sure context exists to prevent Safari iOS bug
+  if (ctx) {
+    // need to create a node in order to kick off the timer in Chrome.
+    ctx.createGain();
   }
-  return Audio.context;
-}
-
-export function getPlayState() {
-  return Audio.isPlaying;
-}
-
-export function setPlayState(isPlaying) {
-  Audio.isPlaying = isPlaying;
+  return ctx;
 }
 
 // Converts a note duration to seconds
-
 function _getNoteTimeDuration(noteDuration, bpm = 120, signature = [4, 4]) {
   let beatsPerSecond = bpm / 60;
   let secondsPerBeat = 1 / beatsPerSecond;
@@ -75,6 +54,7 @@ export function playTone(ctx, note, timeLine, tempo, timeSig, voice) {
 // NOTE: turns out there is no need for an async play() wrapper.
 /**
  * Plays a melody via Web Audio API
+ * @param state {Object} Pointer to some in-memory state object with an "isPlaying" property
  * @param ctx {AudioContext | null} Audio Context for web audio API.
  * @param melody {Object} Melody to play.
  * @param time {number} Timeline start in seconds (double-precision float).
@@ -83,6 +63,7 @@ export function playTone(ctx, note, timeLine, tempo, timeSig, voice) {
  * @returns {number} Current timeline time.
  */
 export function playMelody(
+  state,
   ctx = null,
   melody,
   time,
@@ -91,7 +72,7 @@ export function playMelody(
 ) {
   let melodyLength = _getMelodyTimeDuration(melody);
   time = time || ctx.currentTime;
-  setPlayState(true);
+  state.isPlaying = true;
 
   for (let i = 0; i < melody.notes.length; i++) {
     time = playTone(
@@ -104,7 +85,7 @@ export function playMelody(
     );
   }
   setTimeout(() => {
-    setPlayState(false);
+    state.isPlaying = false;
     stopCallback();
   }, melodyLength * 1000);
   return time;
@@ -112,29 +93,35 @@ export function playMelody(
 
 /**
  * Plays a melody on loop via Web Audio API
+ * @param state {Object} Pointer to some in-memory state object with an "isPlaying" property
  * @param ctx {AudioContext | null} Audio Context for web audio API.
  * @param melody {Object} Melody to play.
  * @param time {number} Timeline start in seconds (double-precision float).
  * @param voice {string} Web Audio voice to play melody with (OscillatorNode.type)
  * @returns {number} Current timeline time.
  */
-export function loopMelody(ctx = null, melody, time, voice) {
+export function loopMelody(state, ctx = null, melody, time, voice) {
   let melodyLength = _getMelodyTimeDuration(melody);
-  time = playMelody(ctx, melody, time || ctx.currentTime, voice);
-  if (getPlayState()) {
+  time = playMelody(state, ctx, melody, time || ctx.currentTime, voice);
+  if (state.isPlaying) {
     ctx.timeoutIDs = ctx.timeoutIDs || [];
     ctx.timeoutIDs.push(
       setTimeout(() => {
-        loopMelody(ctx, melody, time, voice);
+        loopMelody(state, ctx, melody, time, voice);
       }, melodyLength * 1000)
     );
   }
 }
 
-export function stopLoop() {
-  if (Audio.context.timeoutIDs) {
-    Audio.context.timeoutIDs.forEach(id => window.clearTimeout(id));
+/**
+ * Stop a loop
+ * @param state {Object} Pointer to some in-memory state object with an "isPlaying" property
+ * @param ctx {AudioContext | null} Audio Context for web audio API.
+ */
+export function stopLoop(state, ctx) {
+  if (ctx.timeoutIDs) {
+    ctx.timeoutIDs.forEach(id => window.clearTimeout(id));
   }
-  Audio.context.timeoutIDs = [];
-  setPlayState(false);
+  ctx.timeoutIDs = [];
+  state.isPlaying = false;
 }
