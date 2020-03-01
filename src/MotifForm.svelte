@@ -236,7 +236,6 @@
 
   {#if formOpen}
     <MotifFormControls
-      {formId}
       {formOpen}
       {formInDefaultState}
       {toggleFormFn}
@@ -275,7 +274,6 @@
     </div>
   </section> -->
   <MotifFormControls
-    {formId}
     {formOpen}
     {formInDefaultState}
     {toggleFormFn}

@@ -2,16 +2,34 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <meta name="description" content="Motivic: tools for composers." />
+    <meta name="theme-color" content="#00bfff" />
     <title>Motivic: tools for composers</title>
 
+    <link rel="icon" type="image/svg" href="/favicon.svg" />
     <link rel="icon" type="image/png" href="/favicon.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/images/favicon_192.svg"
+    />
     <link rel="stylesheet" href="/global.css" />
     <link rel="stylesheet" href="/build/bundle.css" />
+    <link rel="manifest" href="/manifest.json" />
 
     <script defer src="/build/bundle.js"></script>
   </head>
 
-  <body></body>
+  <body>
+    <noscript>
+      <p>
+        You must enable JavaScript in your browser to use this application
+      </p>
+    </noscript>
+    <script src="register-sw.js"></script>
+  </body>
 </html>

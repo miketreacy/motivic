@@ -1,0 +1,28 @@
+{
+  "short_name": "Motivic",
+  "name": "Motivic: tools for composers",
+  "description": "Music composition app",
+  "icons": [
+    {
+      "src": "/images/favicon_144.svg",
+      "type": "image/svg",
+      "sizes": "144x144"
+    },
+    {
+      "src": "/images/favicon_192.svg",
+      "type": "image/svg",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/images/favicon_512.svg",
+      "type": "image/svg",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#eefaff",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "theme_color": "#00bfff"
+}

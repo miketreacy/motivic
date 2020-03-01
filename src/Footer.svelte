@@ -34,11 +34,11 @@
   }
 
   #github {
-    background-image: url("/images/GitHub-Mark-32px.png");
+    background-image: url("/images/github_icon.png");
   }
 
   #twitter {
-    background-image: url("/images/Twitter_Social_Icon_Circle_Color.svg");
+    background-image: url("/images/twitter_icon.svg");
   }
   /*Desktop*/
   @media (min-width: 1025px) {
@@ -50,10 +50,16 @@
 
 <footer class:scrollup={scrollUp}>
   <div class="social">
-    <a href="https://github.com/miketreacy/motivic" target="_blank">
+    <a
+      href="https://github.com/miketreacy/motivic"
+      target="_blank"
+      rel="noopener noreferrer">
       <span class="social-icon" id="github" />
     </a>
-    <a href="https://twitter.com/mstreacy" target="_blank">
+    <a
+      href="https://twitter.com/mstreacy"
+      target="_blank"
+      rel="noopener noreferrer">
       <span class="social-icon" id="twitter" />
     </a>
   </div>
