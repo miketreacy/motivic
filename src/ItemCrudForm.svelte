@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import Utils from "./Utils";
   export let item = null;
+  export let itemChildren = [];
   export let itemType = "";
   export let submitCallback = Function.prototype;
   export let actionComplete = false;
@@ -18,13 +19,31 @@
     timeoutId = window.setTimeout(submitCallback, 2000);
   }
 
+  // update child variations to remove child.parent => parent.id reference
+  function updateChildren() {
+    let successes = [];
+    let msgs = [];
+    itemChildren
+      .map(item => {
+        item.parent = "";
+        item.transformations = [];
+        return item;
+      })
+      .forEach(item => {
+        let [success, msg] = Utils.userData.persist(item, itemType);
+        successes.push(success);
+        msgs.push(msg);
+      });
+  }
+
   function deleteItem() {
     let [success, msg] = Utils.userData.remove(item, itemType);
-    // TODO: update child variations to remove child.parent => id reference
+    updateChildren(itemChildren);
     responseMsg = msg;
     actionComplete = true;
     timeoutId = window.setTimeout(submitCallback, 2000);
   }
+
   onMount(() => {
     console.info(`ItemCrudForm onMount() props`);
     console.dir($$props);
@@ -111,13 +130,16 @@
     <fieldset>
       <div class="input-wrap name">
         <label for="item-name">name</label>
+        <!-- svelte-ignore a11y-autofocus -->
         <input
           type="text"
           max="32"
           class="name"
           id="item-name"
           bind:value={renameItemValue}
-          placeholder={`${Utils.general.singularize(itemType)} name`} />
+          placeholder={`${Utils.general.singularize(itemType)} name`}
+          autofocus
+          on:click={e => e.target.select()} />
       </div>
       <button class="submit" disabled={actionComplete} on:click={saveItem}>
         submit
@@ -132,13 +154,16 @@
     <fieldset>
       <div class="input-wrap name">
         <label for="item-name">name</label>
+        <!-- svelte-ignore a11y-autofocus -->
         <input
           type="text"
           max="32"
           class="name"
           id="item-name"
           bind:value={renameItemValue}
-          placeholder={`rename ${Utils.general.singularize(itemType)}`} />
+          placeholder={`rename ${Utils.general.singularize(itemType)}`}
+          autofocus
+          on:click={e => e.target.select()} />
       </div>
       <button class="submit" disabled={actionComplete} on:click={saveItem}>
         submit

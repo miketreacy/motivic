@@ -15,7 +15,7 @@
   let isLooping = false;
   let disabled = true;
   let AudioCtx = null;
-  let AudioState = { isPlaying: false };
+  let AudioState = { isPlaying: false, timeoutIDs: [] };
   const timelineStart = 0;
   const waveFormIcon = {
     sawtooth: "&#8961",

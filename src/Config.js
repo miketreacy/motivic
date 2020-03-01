@@ -257,6 +257,14 @@ const Config = {
     medium: { width: 30, fontSize: 15, yOffset: -13 },
     large: { width: 40, fontSize: 20, yOffset: -17 }
   },
+  itemCrudModalDefaultProps: {
+    itemType: "",
+    item: null,
+    itemChildren: [],
+    formType: "",
+    show: false,
+    actionComplete: false
+  },
   rhythmicUnit: 64,
   midiTicksPerQuarterNote: 128,
   percentOfRests: 33,

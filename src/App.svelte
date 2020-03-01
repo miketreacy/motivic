@@ -1,32 +1,22 @@
 <script>
   import { createEventDispatcher } from "svelte";
   import { motifStore, settingStore } from "./Stores.js";
+  import Config from "./Config.js";
   import Header from "./Header.svelte";
   import Main from "./Main.svelte";
   import Footer from "./Footer.svelte";
   import Modal from "./Modal.svelte";
   import ItemCrudModal from "./ItemCrudModal.svelte";
+
   export let view = "";
   export let openSection = "";
 
   const dispatch = createEventDispatcher();
-
   let motifs = [];
   let selectedMotifIds;
   let allSelected;
   let settings = [];
-  let ModalView = "";
-  let modalItem = null;
-  let modalType = "";
-  let modalActionComplete = false;
-  let modalFormType = "";
-  let defaultModalProps = {
-    itemType: "",
-    item: null,
-    formType: "",
-    show: false
-  };
-  let modalProps = Object.assign({}, defaultModalProps);
+  let modalProps = Object.assign({}, Config.itemCrudModalDefaultProps);
   let displayAlert = false;
   let alertProps = {
     visible: false,
@@ -79,7 +69,7 @@
   function handleModalDisplay(event) {
     console.log(`handleModalDisplay() called (App.svelte)`);
     console.dir(event.detail);
-    modalProps = event.detail.modalProps;
+    modalProps = Object.assign(modalProps, event.detail.modalProps);
     // de-select everything when modal is displayed
     selectedMotifIds = [];
   }
@@ -137,6 +127,6 @@
   on:motifSelection={handleMotifSelection} />
 <Footer {scrollUp} />
 {#if modalProps.show}
-  <!-- TODO: mount empty Modal here but mount the child content componenets separately to preserve modal fade in but keep form state clearn -->
+  <!-- TODO: mount empty Modal here but mount the child content components separately to preserve modal fade in but keep form state clearn -->
   <ItemCrudModal {...modalProps} on:displayCrudModal={handleModalDisplay} />
 {/if}

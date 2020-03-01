@@ -1,22 +1,14 @@
 <script>
   import { createEventDispatcher } from "svelte";
+  import Config from "./Config.js";
   export let show = false;
-  export let item = null;
-  export let type = "";
-  export let submitCallback = Function.prototype;
   let modal;
-  let actionComplete = false;
+  let dismissModalProps = Object.assign({}, Config.itemCrudModalDefaultProps);
   const dispatch = createEventDispatcher();
-  let modalProps = {
-    itemType: "",
-    item: null,
-    formType: "",
-    show: false,
-    actionComplete: false
-  };
+
   function dispatchDismissModal() {
     dispatch("displayCrudModal", {
-      modalProps
+      modalProps: dismissModalProps
     });
   }
 </script>

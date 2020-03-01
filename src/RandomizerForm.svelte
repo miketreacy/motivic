@@ -3,7 +3,6 @@
   import MotifForm from "./MotifForm.svelte";
   import Config from "./Config.js";
   import Utils from "./Utils";
-  import { motifStore } from "./Stores.js";
   const { notes, modes, timeSignatureBeats, timeSignatureUnits } = Config;
   const formId = "randomizer";
   const formTitle = "Randomizer";

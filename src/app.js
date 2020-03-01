@@ -44,7 +44,6 @@ function updateURL(view = "", query = "", stateMap = {}, pagination = null) {
   newURL.hash = query ? `${view}?${query}` : `${view}`;
   stateMap.view = view;
   Utils.url.create(window, {
-    //TODO: add more local state e.g. form state, grid state, etc.
     state: stateMap,
     title: document.querySelector("title").textContent,
     url: newURL

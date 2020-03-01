@@ -132,11 +132,14 @@
   });
 
   function dispatchDisplayModal(event) {
+    let motif = motifs.find(m => m.id === event.target.dataset.motifId);
+    let motifChildren = motifs.filter(m => m.parent === motif.id);
     dispatch("displayCrudModal", {
       modalProps: {
         show: true,
         itemType: "motifs",
-        item: motifs.find(m => m.id === event.target.dataset.motifId),
+        item: motif,
+        itemChildren: motifChildren,
         formType: event.target.dataset.action,
         actionComplete: false
       }

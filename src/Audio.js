@@ -104,8 +104,7 @@ export function loopMelody(state, ctx = null, melody, time, voice) {
   let melodyLength = _getMelodyTimeDuration(melody);
   time = playMelody(state, ctx, melody, time || ctx.currentTime, voice);
   if (state.isPlaying) {
-    ctx.timeoutIDs = ctx.timeoutIDs || [];
-    ctx.timeoutIDs.push(
+    state.timeoutIDs.push(
       setTimeout(() => {
         loopMelody(state, ctx, melody, time, voice);
       }, melodyLength * 1000)
@@ -119,9 +118,9 @@ export function loopMelody(state, ctx = null, melody, time, voice) {
  * @param ctx {AudioContext | null} Audio Context for web audio API.
  */
 export function stopLoop(state, ctx) {
-  if (ctx.timeoutIDs) {
-    ctx.timeoutIDs.forEach(id => window.clearTimeout(id));
+  if (state.timeoutIDs) {
+    state.timeoutIDs.forEach(id => window.clearTimeout(id));
   }
-  ctx.timeoutIDs = [];
+  state.timeoutIDs = [];
   state.isPlaying = false;
 }
