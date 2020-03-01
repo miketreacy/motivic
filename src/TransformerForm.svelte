@@ -108,7 +108,6 @@
       motif,
       "motifs",
       `${motif.name}_var_1`,
-      motif.created,
       "",
       parentMotif.id,
       transformations
@@ -192,6 +191,7 @@
       items={motifs}
       itemType="motifs"
       selectedItemId={selectedMotifId}
-      on:itemSelection={handleItemSelection} />
+      on:itemSelection={handleItemSelection}
+      on:displayAlert />
   {/if}
 </MotifForm>

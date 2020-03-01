@@ -83,6 +83,7 @@
   .message {
     font-style: italic;
     font-size: var(--theme_font_size_1);
+    white-space: pre-wrap;
   }
   .dismiss {
     width: 40px;

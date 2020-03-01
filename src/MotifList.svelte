@@ -194,7 +194,6 @@
     border: 2px solid var(--theme_color_6);
     position: sticky;
     position: -webkit-sticky;
-    /* TODO: write a css variable for this offset */
     top: 59px;
     background-color: var(--theme_color_2);
     z-index: var(--front);
@@ -207,7 +206,6 @@
     width: 100%;
     height: 40px;
     position: sticky;
-    /* TODO: write a css variable for this offset */
     top: 112px;
     background-color: var(--theme_color_2);
     border: 2px solid var(--theme_color_6);
@@ -436,7 +434,7 @@
   {#if listOpen && motifs.length}
     {#if !parentId}
       <section class="motif-controls">
-        <AudioControls {selectedMotifs} />
+        <AudioControls {selectedMotifs} on:displayAlert />
       </section>
       {#if motifs.length > 1}
         <div class="list-controls">
@@ -563,7 +561,6 @@
             </div>
             {#if transformations && transformations.length}
               <h4 class="transformations-header">transformations:</h4>
-              <!-- TODO: refine this recursion -->
               <ul class="transformations">
                 {#each transformations as { type, params }, i}
                   <li class="transformation">{type}: {params.join(', ')}</li>

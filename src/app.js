@@ -51,7 +51,11 @@ function updateURL(view = "", query = "", stateMap = {}, pagination = null) {
 }
 
 function init() {
-  Utils.storage.init.bind(Utils.storage)();
+  try {
+    Utils.storage.init.bind(Utils.storage)();
+  } catch (e) {
+    console.error(e);
+  }
   let localData = Utils.userData.init.bind(Utils.userData)();
   localData.motifs.forEach(m => motifStore.add(m));
   localData.settings.forEach(s => settingStore.add(s));

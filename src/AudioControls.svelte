@@ -1,4 +1,5 @@
 <script>
+  import { createEventDispatcher } from "svelte";
   import { onMount } from "svelte";
   import Config from "./Config.js";
   import {
@@ -23,6 +24,7 @@
     square: "&#9633;",
     triangle: "&#9651;"
   };
+  const dispatch = createEventDispatcher();
 
   function stopMotifLoop() {
     isPlaying = false;
@@ -33,11 +35,6 @@
 
   function playMotifs(motifs) {
     isPlaying = true;
-    if (!AudioCtx) {
-      console.error(`Web Audio playback stopped: AudioContext not created`);
-      console.dir(AudioCtx);
-      return;
-    }
     motifs.forEach(motif =>
       playMelody(
         AudioState,
@@ -62,11 +59,6 @@
   function loopMotifs(motifs) {
     isPlaying = true;
     isLooping = true;
-    if (!AudioCtx) {
-      console.error(`Web Audio playback stopped: AudioContext not created`);
-      console.dir(AudioCtx);
-      return;
-    }
     motifs.forEach(motif =>
       loopMelody(AudioState, AudioCtx, motif, timelineStart, selectedVoice)
     );
@@ -83,21 +75,14 @@
   }
 
   function init(settings) {
-    console.info(`Initilizalizing Audio Context`);
     AudioCtx = getAudioContext();
-    if (!AudioCtx) {
-      // TODO: display to user as alert message
-      console.error(`No AudioContext available, playback is impossible`);
-    }
   }
 
   onMount(() => {
     init();
   });
 
-  $: {
-    disabled = !selectedMotifs.length;
-  }
+  $: disabled = !AudioCtx || !selectedMotifs.length;
 </script>
 
 <style>
@@ -116,39 +101,42 @@
   }
 </style>
 
-<select
-  bind:value={selectedVoice}
-  class:compact={!displayIcons}
-  {disabled}
-  data-char-length={selectedVoice ? selectedVoice.length : 0}>
-  {#each Config.audio.voices as [voice, shortName]}
-    <option value={voice}>
-      <span>{displayCompact ? shortName : voice}</span>
-      {#if displayIcons}
-        <span>
-          {@html waveFormIcon[voice]}
-        </span>
-      {/if}
-    </option>
-  {/each}
-</select>
-<button
-  class="play"
-  class:playing={isPlaying}
-  {disabled}
-  on:click={playClickHandler}>
-  {#if displayIcons}
-    <span>&#9658;</span>
-  {/if}
-  <span>play</span>
-</button>
-<button
-  class="loop"
-  class:playing={isLooping}
-  {disabled}
-  on:click={loopClickHandler}>
-  {#if displayIcons}
-    <span>&infin;</span>
-  {/if}
-  <span>loop</span>
-</button>
+<!-- Don't display AudioControls if playback is impossible -->
+{#if AudioCtx}
+  <select
+    bind:value={selectedVoice}
+    class:compact={!displayIcons}
+    {disabled}
+    data-char-length={selectedVoice ? selectedVoice.length : 0}>
+    {#each Config.audio.voices as [voice, shortName]}
+      <option value={voice}>
+        <span>{displayCompact ? shortName : voice}</span>
+        {#if displayIcons}
+          <span>
+            {@html waveFormIcon[voice]}
+          </span>
+        {/if}
+      </option>
+    {/each}
+  </select>
+  <button
+    class="play"
+    class:playing={isPlaying}
+    {disabled}
+    on:click={playClickHandler}>
+    {#if displayIcons}
+      <span>&#9658;</span>
+    {/if}
+    <span>play</span>
+  </button>
+  <button
+    class="loop"
+    class:playing={isLooping}
+    {disabled}
+    on:click={loopClickHandler}>
+    {#if displayIcons}
+      <span>&infin;</span>
+    {/if}
+    <span>loop</span>
+  </button>
+{/if}

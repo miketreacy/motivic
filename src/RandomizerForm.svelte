@@ -140,8 +140,7 @@
     let [success, msg, createdMotif] = Utils.userData.processNewItem(
       motif,
       "motifs",
-      "my motif",
-      motif.created
+      "my motif"
     );
     dispatch("displayAlert", {
       visible: true,
@@ -194,4 +193,9 @@
 
 </style>
 
-<MotifForm {...props} {newMotif} on:displayToggle on:displayCrudModal />
+<MotifForm
+  {...props}
+  {newMotif}
+  on:displayToggle
+  on:displayCrudModal
+  on:displayAlert />

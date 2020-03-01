@@ -32,7 +32,7 @@
     z-index: var(--front);
   }
 
-  .alert {
+  .content {
     display: flex;
     visibility: hidden;
     margin: 0 auto;
@@ -56,7 +56,7 @@
     transform: translate(-50%, -50%);
   }
 
-  .modal-background.show .alert {
+  .modal-background.show .content {
     visibility: visible;
   }
   .dismiss {
@@ -73,7 +73,7 @@
 </style>
 
 <div class="modal-background" class:show bind:this={modal}>
-  <div class="alert" bind:this={modal}>
+  <div class="content" bind:this={modal}>
     <button class="dismiss" on:click={dispatchDismissModal}>x</button>
     <slot />
   </div>

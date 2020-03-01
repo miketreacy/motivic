@@ -4,6 +4,7 @@
   import CrudControls from "./CrudControls.svelte";
   export let motif;
   const dispatch = createEventDispatcher();
+
   function dismissAudition() {
     dispatch("toggleMotifAudition", { motif: null });
   }
@@ -47,7 +48,8 @@
     <AudioControls
       displayIcons={false}
       displayCompact={true}
-      selectedMotifs={[motif]} />
+      selectedMotifs={[motif]}
+      on:displayAlert />
     <CrudControls
       displayIcons={false}
       type="motifs"

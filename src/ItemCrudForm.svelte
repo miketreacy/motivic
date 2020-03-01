@@ -8,15 +8,19 @@
   export let actionComplete = false;
   export let formType = "";
   let timeoutId = "";
-  let responseMsg = "";
+  let resultMessage = "";
   let renameItemValue = item.name || "";
+  let actionSuccessful = true;
 
   function saveItem() {
     item.name = renameItemValue;
     let [success, msg] = Utils.userData.persist(item, itemType, true);
-    responseMsg = msg;
+    actionSuccessful = success;
+    resultMessage = msg;
     actionComplete = true;
-    timeoutId = window.setTimeout(submitCallback, 2000);
+    if (success) {
+      timeoutId = window.setTimeout(submitCallback, 2000);
+    }
   }
 
   // update child variations to remove child.parent => parent.id reference
@@ -38,10 +42,13 @@
 
   function deleteItem() {
     let [success, msg] = Utils.userData.remove(item, itemType);
-    updateChildren(itemChildren);
-    responseMsg = msg;
+    updateChildren();
+    actionSuccessful = success;
+    resultMessage = msg;
     actionComplete = true;
-    timeoutId = window.setTimeout(submitCallback, 2000);
+    if (success) {
+      timeoutId = window.setTimeout(submitCallback, 2000);
+    }
   }
 
   onMount(() => {
@@ -122,6 +129,15 @@
     width: 100%;
     max-width: 70vw;
   }
+  .result-message {
+    padding: 10px;
+    text-align: left;
+    white-space: pre-wrap;
+  }
+  [data-success="false"] {
+    border: 2px solid red;
+    box-sizing: border-box;
+  }
 </style>
 
 {#if formType === 'save'}
@@ -145,7 +161,11 @@
         submit
       </button>
     </fieldset>
-    {#if actionComplete}{responseMsg}{/if}
+    {#if actionComplete}
+      <div class="result-message" data-success={actionSuccessful}>
+        {resultMessage}
+      </div>
+    {/if}
   </div>
 {/if}
 {#if formType === 'rename'}
@@ -169,7 +189,11 @@
         submit
       </button>
     </fieldset>
-    {#if actionComplete}{responseMsg}{/if}
+    {#if actionComplete}
+      <div class="result-message" data-success={actionSuccessful}>
+        {resultMessage}
+      </div>
+    {/if}
   </div>
 {/if}
 {#if formType === 'delete'}
@@ -201,6 +225,10 @@
         delete
       </button>
     </fieldset>
-    {#if actionComplete}{responseMsg}{/if}
+    {#if actionComplete}
+      <div class="result-message" data-success={actionSuccessful}>
+        {resultMessage}
+      </div>
+    {/if}
   </div>
 {/if}

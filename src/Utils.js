@@ -124,15 +124,23 @@ const Utils = {
     }
   },
   http: {
+    /**
+     * Async fetch wrapper
+     * @param {string} url URL to request
+     * @param {Object} params fetch params object
+     * @returns {Array} Tuple of [data, error]
+     */
     awaitFetch: async function(url, params) {
+      let data = null;
+      let error = null;
       try {
         let res = await win.fetch(url, params);
-        return await res.json();
+        data = await res.json();
       } catch (e) {
         console.error(e);
-        // TODO: handle this gracefully
-        throw e;
+        error = e;
       }
+      return [data, error];
     }
   },
   melody: {
@@ -230,9 +238,7 @@ const Utils = {
      */
     getInitialPitch: melody => melody.filter(n => n.value)[0],
 
-    // TODO: one scope to rule them all, and in the closure bind them
-    // TODO: calculates all computed properties based on the two crucial ones (value & duration)
-
+    // TODO: compute all auxillary properties based on the two crucial ones (value & duration)
     /**
      * Returns a new note object for a given value and duration.
      * @param {number} value Absolute value of note pitch.
@@ -504,21 +510,17 @@ const Utils = {
      * @param {Object} item New or updated item
      * @param {string} type Plural item type ('motifs', 'settings') etc
      * @param {string} name Item name
-     * @param {string} created Created timestamp
      * @param {string} id Item id, if item is pre-existing
      * @param {string} parentId Id of relative theme motif if item is variation
      * @param {Array} transformations List of transformations applied if item is variation
-     * @param {boolean} store Should item be persisted in localStorage?
      */
     processNewItem: function(
       item,
       type,
       name = "",
-      created = "",
       id = "",
       parentId = "",
-      transformations = [],
-      store = false
+      transformations = []
     ) {
       console.log(`Utils.processNewItem()`);
       console.dir({
@@ -526,8 +528,7 @@ const Utils = {
         type,
         name,
         parentId,
-        transformations,
-        store
+        transformations
       });
       let newItem = this._initSavedItem(
         item,
@@ -537,7 +538,7 @@ const Utils = {
         transformations
       );
       console.dir(newItem);
-      return this.persist(newItem, type, store);
+      return this.persist(newItem, type, false);
     },
 
     _initSavedItem: function(
@@ -607,9 +608,11 @@ const Utils = {
       } catch (e) {
         return [
           false,
-          `${Utils.general.singularize(type)} ${
+          `${Utils.general.singularize(type)} "${
             item.name
-          } could not be ${action} due to an error.`,
+          }" could not be ${action} due to the following error:\n\n${
+            e.message
+          }`,
           item
         ];
       }
@@ -707,7 +710,11 @@ const Utils = {
       Object.keys(schema).forEach(k => {
         storage[k] = storage[k] || schema[k];
       });
-      this.set.bind(this)(Config.nameSpace, storage);
+      try {
+        this.set.bind(this)(Config.nameSpace, storage);
+      } catch (e) {
+        throw e;
+      }
     },
 
     set: function(key, value) {
@@ -715,7 +722,6 @@ const Utils = {
       try {
         storage = this.get.bind(this)() || {};
       } catch (e) {
-        // TODO: handle this gracefully
         throw e;
       }
 
@@ -724,19 +730,20 @@ const Utils = {
       } else {
         storage = value;
       }
-      this.update.bind(Utils.storage)(storage);
+      try {
+        this.update.bind(Utils.storage)(storage);
+      } catch (e) {
+        throw e;
+      }
     },
 
     update: function(payload) {
       try {
         localStorage.setItem(Config.nameSpace, JSON.stringify(payload));
       } catch (err) {
-        console.error(`error setting localStorage`);
         console.error(err);
-        // win.alert(`ERROR: Local storage unavailable. Please clear cache or close browser windows.`)
-        // TODO: display this error to the user with the alert or modal components
         throw new Error(
-          `ERROR: Local storage unavailable. Please clear cache or close browser windows.`
+          `Your browser's localStorage is full or unavailable. Please clear cache or close browser windows.`
         );
       }
     },
@@ -750,7 +757,6 @@ const Utils = {
           `error retrieving localStorage${key && `for key ${key}`}`
         );
         console.error(e);
-        // TODO: handle this gracefully
         throw e;
       }
       return key ? storage[key] : storage;

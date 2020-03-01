@@ -164,11 +164,22 @@
     console.dir(reqBody);
     // rollDice();
     // toggleLoader(doc.querySelector("#randomize .dice"), true);
-    let data = await Utils.http.awaitFetch(apiUrl, getApiParams(reqBody));
-    responseCallbackFn(data);
-    if (formOpen) {
-      // toggleFormFn();
+    let [data, error] = await Utils.http.awaitFetch(
+      apiUrl,
+      getApiParams(reqBody)
+    );
+    if (data) {
+      responseCallbackFn(data);
+    } else {
+      dispatch("displayAlert", {
+        visible: true,
+        type: "error",
+        message: `${formTitle} API operation failed.\n${error}`,
+        displayTimeMs: 1500,
+        dismissable: true
+      });
     }
+
     formIsSubmitting = false;
   }
 
@@ -236,7 +247,8 @@
       <MotifAudition
         motif={newMotif}
         on:toggleMotifAudition={handleAuditionToggle}
-        on:displayCrudModal />
+        on:displayCrudModal
+        on:displayAlert />
     {/if}
     <slot />
     <fieldset class="user-input">
