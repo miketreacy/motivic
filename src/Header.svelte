@@ -29,6 +29,16 @@
       showNav = false;
     }
   }
+
+  function handleUploadMenuClickAway(e) {
+    if (
+      !e.target.closest("#upload-toggle") &&
+      !e.target.closest(".upload-controls")
+    ) {
+      showUpload = false;
+    }
+  }
+
   function handleUploadedMotifs(results) {
     showUpload = false;
     results.forEach(result => {
@@ -170,6 +180,7 @@
   }
 </style>
 
+<svelte:body on:click={handleUploadMenuClickAway} />
 <header class="show" class:scrolldown={scrollDown}>
   <!-- <button id="menu" on:click={toggleNavMenu}>
     <span>&#9776;</span>

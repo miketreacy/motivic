@@ -48,7 +48,12 @@
     viewType = event.detail.viewType;
     sortType = event.detail.sortType;
     sortOrder = event.detail.sortOrder;
-    expandedMotifId = event.detail.expandedMotifId;
+    // Only expand the motif when the expandedMotifId value changes explicitly,
+    // otherwise close the expanded motif on all other list-view event types.
+    expandedMotifId =
+      event.detail.expandedMotifId === expandedMotifId
+        ? ""
+        : event.detail.expandedMotifId;
     motifs = motifs;
     console.info(`handleListViewChange() called`);
     console.info(`viewType = ${viewType}`);
