@@ -1,9 +1,9 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import Config from "./Config.js";
   import {
-    getAudioContext,
+    newAudioContext,
     playMelody,
     loopMelody,
     stopLoop
@@ -15,8 +15,7 @@
   let isPlaying = false;
   let isLooping = false;
   let disabled = true;
-  let AudioCtx = null;
-  let AudioState = { isPlaying: false, timeoutIDs: [] };
+  let AudioSession = { ctx: null, isPlaying: false, timeoutIDs: [] };
   const timelineStart = 0;
   const waveFormIcon = {
     sawtooth: "&#8961",
@@ -29,16 +28,15 @@
   function stopMotifLoop() {
     isPlaying = false;
     isLooping = false;
-    AudioState.isPlaying = false;
-    stopLoop(AudioState, AudioCtx);
+    AudioSession.isPlaying = false;
+    stopLoop(AudioSession);
   }
 
   function playMotifs(motifs) {
     isPlaying = true;
     motifs.forEach(motif =>
       playMelody(
-        AudioState,
-        AudioCtx,
+        AudioSession,
         motif,
         timelineStart,
         selectedVoice,
@@ -48,7 +46,7 @@
   }
 
   function playClickHandler(e) {
-    if (AudioState.isPlaying) {
+    if (AudioSession.isPlaying) {
       return false;
     }
     if (selectedMotifs.length) {
@@ -60,12 +58,12 @@
     isPlaying = true;
     isLooping = true;
     motifs.forEach(motif =>
-      loopMelody(AudioState, AudioCtx, motif, timelineStart, selectedVoice)
+      loopMelody(AudioSession, motif, timelineStart, selectedVoice)
     );
   }
 
   function loopClickHandler(e) {
-    if (AudioState.isPlaying) {
+    if (AudioSession.isPlaying) {
       stopMotifLoop();
     } else {
       if (selectedMotifs.length) {
@@ -74,15 +72,17 @@
     }
   }
 
-  function init(settings) {
-    AudioCtx = getAudioContext();
-  }
-
   onMount(() => {
-    init();
+    AudioSession.ctx = newAudioContext();
   });
 
-  $: disabled = !AudioCtx || !selectedMotifs.length;
+  onDestroy(async () => {
+    await AudioSession.ctx.close();
+    // delete Audio.context to prevent memory leak
+    delete AudioSession.ctx;
+  });
+
+  $: disabled = !AudioSession.ctx || !selectedMotifs.length;
 </script>
 
 <style>
@@ -102,7 +102,7 @@
 </style>
 
 <!-- Don't display AudioControls if playback is impossible -->
-{#if AudioCtx}
+{#if AudioSession.ctx}
   <select
     bind:value={selectedVoice}
     class:compact={!displayIcons}

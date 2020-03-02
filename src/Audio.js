@@ -1,12 +1,15 @@
 "use strict";
 import Config from "./Config";
 
-export function getAudioContext() {
+export function newAudioContext() {
   // construct Audio context once per session and re-use it
   // only construct a new context if one doesn't exist
   // starting AudioContext after user interaction prevents warning on chrome
   // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
-  let ctx = new (window.AudioContext || window.webkitAudioContext)();
+  let ctx = new (window.AudioContext || window.webkitAudioContext)({
+    latencyHint: "playback",
+    sampleRate: 44000
+  });
   // make sure context exists to prevent Safari iOS bug
   if (ctx) {
     // need to create a node in order to kick off the timer in Chrome.
@@ -54,8 +57,7 @@ export function playTone(ctx, note, timeLine, tempo, timeSig, voice) {
 // NOTE: turns out there is no need for an async play() wrapper.
 /**
  * Plays a melody via Web Audio API
- * @param state {Object} Pointer to some in-memory state object with an "isPlaying" property
- * @param ctx {AudioContext | null} Audio Context for web audio API.
+ * @param session {Object} Pointer to an instance of AudioSession
  * @param melody {Object} Melody to play.
  * @param time {number} Timeline start in seconds (double-precision float).
  * @param voice {string} Web Audio voice to play melody with (OscillatorNode.type)
@@ -63,20 +65,19 @@ export function playTone(ctx, note, timeLine, tempo, timeSig, voice) {
  * @returns {number} Current timeline time.
  */
 export function playMelody(
-  state,
-  ctx = null,
+  session,
   melody,
   time,
   voice,
   stopCallback = Function.prototype
 ) {
   let melodyLength = _getMelodyTimeDuration(melody);
-  time = time || ctx.currentTime;
-  state.isPlaying = true;
+  time = time || session.ctx.currentTime;
+  session.isPlaying = true;
 
   for (let i = 0; i < melody.notes.length; i++) {
     time = playTone(
-      ctx,
+      session.ctx,
       melody.notes[i],
       time,
       melody.bpm,
@@ -85,7 +86,7 @@ export function playMelody(
     );
   }
   setTimeout(() => {
-    state.isPlaying = false;
+    session.isPlaying = false;
     stopCallback();
   }, melodyLength * 1000);
   return time;
@@ -93,20 +94,19 @@ export function playMelody(
 
 /**
  * Plays a melody on loop via Web Audio API
- * @param state {Object} Pointer to some in-memory state object with an "isPlaying" property
- * @param ctx {AudioContext | null} Audio Context for web audio API.
+ * @param session {Object} Pointer to an instance of AudioSession
  * @param melody {Object} Melody to play.
  * @param time {number} Timeline start in seconds (double-precision float).
  * @param voice {string} Web Audio voice to play melody with (OscillatorNode.type)
  * @returns {number} Current timeline time.
  */
-export function loopMelody(state, ctx = null, melody, time, voice) {
+export function loopMelody(session, melody, time, voice) {
   let melodyLength = _getMelodyTimeDuration(melody);
-  time = playMelody(state, ctx, melody, time || ctx.currentTime, voice);
-  if (state.isPlaying) {
-    state.timeoutIDs.push(
+  time = playMelody(session, melody, time || session.ctx.currentTime, voice);
+  if (session.isPlaying) {
+    session.timeoutIDs.push(
       setTimeout(() => {
-        loopMelody(state, ctx, melody, time, voice);
+        loopMelody(session, melody, time, voice);
       }, melodyLength * 1000)
     );
   }
@@ -114,13 +114,12 @@ export function loopMelody(state, ctx = null, melody, time, voice) {
 
 /**
  * Stop a loop
- * @param state {Object} Pointer to some in-memory state object with an "isPlaying" property
- * @param ctx {AudioContext | null} Audio Context for web audio API.
+ * @param session {Object} Pointer to an instance of AudioSession
  */
-export function stopLoop(state, ctx) {
-  if (state.timeoutIDs) {
-    state.timeoutIDs.forEach(id => window.clearTimeout(id));
+export function stopLoop(session) {
+  if (session.timeoutIDs) {
+    session.timeoutIDs.forEach(id => window.clearTimeout(id));
   }
-  state.timeoutIDs = [];
-  state.isPlaying = false;
+  session.timeoutIDs = [];
+  session.isPlaying = false;
 }
