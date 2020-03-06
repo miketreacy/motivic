@@ -44,7 +44,6 @@
   }
 
   nav ul button {
-    height: 40px;
     width: 100px;
   }
 

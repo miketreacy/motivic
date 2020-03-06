@@ -11,7 +11,11 @@
 </script>
 
 <style>
+  h2 {
+    flex: 1 0 0;
+  }
   h2[data-closed="true"] {
+    font-size: var(--theme_font_size_2b);
     text-transform: lowercase;
   }
 </style>

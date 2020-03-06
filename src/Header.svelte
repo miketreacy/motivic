@@ -111,8 +111,6 @@
 
   header button {
     position: absolute;
-    height: 40px;
-    width: 40px;
   }
 
   .upload-controls {

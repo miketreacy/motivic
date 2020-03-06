@@ -23,6 +23,7 @@
     width: 100%;
     position: relative;
     justify-content: left;
+    align-self: flex-start;
   }
   .name {
     cursor: text;
@@ -31,6 +32,7 @@
     text-overflow: ellipsis;
     font-size: var(--theme_font_size_2);
     text-align: left;
+    align-self: flex-start;
     flex: 1 1 0;
   }
 
@@ -40,8 +42,6 @@
   }
 
   .rename {
-    width: 40px;
-    height: 30px;
     justify-self: center;
   }
 </style>

@@ -61,7 +61,7 @@
     padding: 0;
     flex: 1 1 0;
     min-width: 0;
-    max-width: 40px;
+    max-width: var(--touch_min_width);
     text-align: center;
     border: none;
   }
@@ -69,9 +69,7 @@
     color: var(--theme_color_1);
     background-color: var(--theme_color_2);
     position: static;
-    display: block;
-    width: 40px;
-    max-width: 40px;
+    max-width: var(--touch_min_width);
     flex: 1 1 0;
     cursor: pointer;
     border: none;

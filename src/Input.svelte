@@ -36,14 +36,14 @@
     background-color: var(--theme_color_1);
     border: none;
     border-radius: 5px;
-    min-height: 30px;
     outline: none;
     padding: 5px;
-    height: 30px;
     border: 1px solid var(--theme_color_10);
-    width: 40%;
     margin: 0;
     flex: 1 1 0;
+  }
+  select {
+    padding: 10px;
   }
   .display-flex {
     display: flex;
@@ -54,7 +54,7 @@
   }
 
   input[type="checkbox"] {
-    width: 40px;
+    width: var(--touch_min_width);
     margin-right: -6px;
   }
 

@@ -65,8 +65,6 @@
     background-color: var(--theme_color_10);
     color: white;
     position: absolute;
-    width: 40px;
-    height: 30px;
     top: 10px;
     right: 10px;
   }

@@ -85,7 +85,8 @@
     /* max-width: fit-content; */
   }
   .form-wrap {
-    padding-top: 10px;
+    padding-top: 30px;
+    widows: 100%;
   }
   .submit {
     background-color: var(--theme_color_1);
@@ -142,7 +143,7 @@
 
 {#if formType === 'save'}
   <div class="form-wrap">
-    <h3>Save {Utils.general.singularize(itemType)}</h3>
+    <h2>Save {Utils.general.singularize(itemType)}</h2>
     <fieldset>
       <div class="input-wrap name">
         <label for="item-name">name</label>
@@ -170,7 +171,7 @@
 {/if}
 {#if formType === 'rename'}
   <div class="form-wrap">
-    <h3>Rename {Utils.general.singularize(itemType)}</h3>
+    <h2>Rename {Utils.general.singularize(itemType)}</h2>
     <fieldset>
       <div class="input-wrap name">
         <label for="item-name">name</label>
@@ -198,7 +199,7 @@
 {/if}
 {#if formType === 'delete'}
   <div class="form-wrap" data-form-type={formType}>
-    <h3>Delete {Utils.general.singularize(itemType)}</h3>
+    <h2>Delete {Utils.general.singularize(itemType)}</h2>
     <fieldset>
       <div class="input-wrap msg">
         <p class="confirmation">

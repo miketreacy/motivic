@@ -104,6 +104,7 @@
 </style>
 
 <svelte:window bind:scrollY={scrollPos} />
+<!-- {#if openSection === ''} -->
 <Header
   {view}
   {motifs}
@@ -112,6 +113,7 @@
   on:viewChange={handleViewChange}
   on:displayToggle={handleDisplayToggle}
   on:displayAlert={handleDisplayAlert} />
+<!-- {/if} -->
 <Main
   {view}
   {motifs}

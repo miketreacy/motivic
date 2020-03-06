@@ -76,7 +76,7 @@
     background-color: var(--theme_color_2);
     top: calc(var(--header_offset) + var(--nav_offset));
     position: relative;
-    padding: 10px 10px 0;
+    padding: 10px;
     margin-bottom: var(--footer_offset);
     width: 100%;
     max-width: var(--max_main_width);

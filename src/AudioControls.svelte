@@ -2,6 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import { onMount, onDestroy } from "svelte";
   import Config from "./Config.js";
+  import Utils from "./Utils.js";
   import {
     newAudioContext,
     playMelody,
@@ -23,7 +24,19 @@
     square: "&#9633;",
     triangle: "&#9651;"
   };
+  const waveFormNameDisplay = {
+    sawtooth: "  sawtooth",
+    sine: "     sine;",
+    square: "   square",
+    triangle: " triangle"
+  };
   const dispatch = createEventDispatcher();
+
+  function getVoiceOptionDisplay(voice, shortName, isCompact = false) {
+    let padTotal = isCompact ? 5 : 10;
+    let str = isCompact ? shortName : voice;
+    return Utils.general.leftPad(str, padTotal);
+  }
 
   function stopMotifLoop() {
     isPlaying = false;
@@ -92,12 +105,19 @@
     min-width: 58.2px;
     padding-top: 10px;
   }
-  .compact {
-    padding: 7px;
-    padding-top: 12px;
+  select.compact {
+    padding: 12px 7px 7px 7px;
   }
   .playing {
     color: var(--theme_color_9);
+  }
+
+  button > span {
+    flex: 1 1 0;
+  }
+
+  button.compact > span {
+    flex: initial;
   }
 </style>
 
@@ -110,7 +130,7 @@
     data-char-length={selectedVoice ? selectedVoice.length : 0}>
     {#each Config.audio.voices as [voice, shortName]}
       <option value={voice}>
-        <span>{displayCompact ? shortName : voice}</span>
+        <span>{getVoiceOptionDisplay(voice, shortName, displayCompact)}</span>
         {#if displayIcons}
           <span>
             {@html waveFormIcon[voice]}
@@ -121,6 +141,7 @@
   </select>
   <button
     class="play"
+    class:compact={!displayIcons}
     class:playing={isPlaying}
     {disabled}
     on:click={playClickHandler}>
@@ -131,6 +152,7 @@
   </button>
   <button
     class="loop"
+    class:compact={!displayIcons}
     class:playing={isLooping}
     {disabled}
     on:click={loopClickHandler}>

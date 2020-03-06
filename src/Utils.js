@@ -34,6 +34,24 @@ const Utils = {
     },
 
     /**
+     * Left pad for strings
+     * @param {string} str string to pad
+     * @param {number} totalCharSpace total amount of spaces to fill
+     * @returns {string} padded string
+     */
+    leftPad: function(str, totalCharSpace) {
+      let prefix = "";
+      let result = str;
+      let gap = totalCharSpace - str.length;
+      if (gap > 0) {
+        prefix = Array(gap)
+          .fill(" ")
+          .join("");
+      }
+      return `${prefix}${result}`;
+    },
+
+    /**
      * simple util for getting a singular string from plural string
      * @param {string} str String to singularize
      * @returns {string} Singularized string

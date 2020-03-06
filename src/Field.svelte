@@ -21,7 +21,7 @@
   .input-wrap {
     flex-direction: row;
     padding: 0px;
-    height: 40px;
+    height: 50px;
     width: 100%;
     position: relative;
     justify-content: space-between;

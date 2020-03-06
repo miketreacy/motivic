@@ -204,7 +204,7 @@
 
   .list-controls {
     width: 100%;
-    height: 40px;
+    height: 50px;
     position: sticky;
     top: 112px;
     background-color: var(--theme_color_2);
@@ -265,10 +265,11 @@
   }
   .motif {
     border: 1px solid var(--theme_color_7);
-    padding: 10px 5px 10px 10px;
+    /* padding: 10px 5px 10px 10px; */
+    padding: 10px 5px 0 10px;
     display: grid;
     grid-template-columns: 10% 15% 15% 15% 15% 15% 15%;
-    grid-template-rows: 30px 0px 0px 0px 0px;
+    grid-template-rows: 40px 0px 0px 0px 0px;
     grid-row-gap: 2px;
     justify-items: stretch;
     width: 100%;
@@ -292,6 +293,7 @@
     grid-column: 6 / span 1;
     grid-row: 1 / span 1;
     width: 90%;
+    height: var(--touch_min_height);
   }
 
   .save {
@@ -304,6 +306,8 @@
   .name-wrap {
     grid-column: 2 / span 4;
     grid-row: 1 / span 1;
+    align-items: flex-start;
+    margin-right: 5px;
   }
 
   .id {
@@ -319,10 +323,11 @@
 
   .motif-created {
     grid-column: 2 / span 3;
-    grid-row: 2 / span 1;
+    grid-row: 1 / span 1;
     font-size: var(--theme_font_size_1);
     display: block;
     text-align: left;
+    align-self: flex-end;
   }
 
   .download {
@@ -340,8 +345,6 @@
     grid-column: 7 / span 1;
     grid-row: 1 / span 1;
     margin: 0;
-    width: 40px;
-    width: 90%;
     justify-self: center;
     padding: 0 10px;
     background-color: var(--theme_color_10);
@@ -368,6 +371,7 @@
     font-style: italic;
     flex-direction: column;
     align-items: flex-start;
+    justify-content: flex-start;
     padding-top: 5px;
   }
 
@@ -397,10 +401,6 @@
     align-items: center;
   }
 
-  label.select-theme {
-    height: 30px;
-  }
-
   .motif.has-variations > .selection label.select-theme span {
     display: inline;
   }
@@ -417,9 +417,10 @@
 
   select {
     width: auto;
+    padding-top: 10px;
   }
   .expanded {
-    grid-template-rows: 30px 30px 30px 30px 30px;
+    grid-template-rows: 50px 50px 50px 50px 50px;
     border: 1px solid var(--theme_color_1);
   }
 </style>
@@ -550,10 +551,10 @@
             on:click|self={dispatchDisplayModal}>
             &#9747;
           </button>
+          <div class="motif-created">
+            {Utils.general.dateDisplay(new Date(created))}
+          </div>
           {#if expandedMotifId === motifId}
-            <div class="motif-created">
-              {Utils.general.dateDisplay(new Date(created))}
-            </div>
             <div class="motif-display">display motif here</div>
             <div class="download">
               <DownloadControls

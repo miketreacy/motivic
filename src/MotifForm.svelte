@@ -212,7 +212,7 @@
   }
   fieldset {
     border-style: solid;
-    padding: 0;
+    padding: 10px 5px;
     margin: 0;
     width: 100%;
     flex-direction: column;

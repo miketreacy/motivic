@@ -22,6 +22,9 @@
     width: 100%;
     padding: 10px;
   }
+  select {
+    width: 50%;
+  }
 </style>
 
 <section>

@@ -21,12 +21,13 @@
   --theme_font_size_0: 0.5rem;
   --theme_font_size_1: 0.75rem;
   --theme_font_size_2: 1rem;
+  --theme_font_size_2b: 1.25rem;
   --theme_font_size_3: 1.5rem;
   --theme_font_size_4: 2rem;
 
-  --header_offset: 59px;
+  --header_offset: 65px;
   --nav_offset: 0px;
-  --footer_offset: 54px;
+  --footer_offset: 74px;
   --max_main_width: 540px;
 
   /*z-index Variables*/
@@ -48,6 +49,10 @@
   --layout_tablet_width: 768px;
   --layout_desktop_width: 1025px;
   --layout_widescreen_width: 1300px;
+
+  /* Touch */
+  --touch_min_height: 40px;
+  --touch_min_width: 40px;
 }
 
 :focus {
@@ -130,13 +135,17 @@ select {
   min-height: 30px;
   outline: none;
   padding: 5px;
-  height: 30px;
-  width: 40%;
+  height: var(--touch_min_height);
   margin: 0;
+}
+button,
+select {
+  min-width: var(--touch_min_width);
 }
 
 select {
   -webkit-appearance: none;
+  padding: 10px;
 }
 
 button:focus,
@@ -151,6 +160,10 @@ select:disabled {
   cursor: not-allowed;
   background-color: var(--theme_color_4);
   color: var(--theme_color_6);
+}
+
+button > span {
+  display: flex;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -216,8 +229,6 @@ section {
   font-size: var(--theme_font_size_1);
   border: none;
   border-radius: 5px;
-  min-height: 30px;
-  height: 40px;
   border-style: none;
   padding: 4px 12px 6px;
   margin: 5px;

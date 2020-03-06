@@ -44,7 +44,7 @@
     position: relative;
     width: 100%;
     max-width: var(--max_main_width);
-    min-height: 40px;
+    min-height: var(--touch_min_height);
     display: block;
     box-sizing: border-box;
     padding: 5px 50px 5px 5px;
@@ -86,7 +86,7 @@
     white-space: pre-wrap;
   }
   .dismiss {
-    width: 40px;
+    width: var(--touch_min_width);
     position: absolute;
     right: 5px;
     top: 5px;

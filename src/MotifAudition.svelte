@@ -17,7 +17,7 @@
     padding: 5px;
   }
   .new-motif {
-    height: 35px;
+    height: 45px;
     color: var(--theme_color_6);
   }
   .new-motif span {
