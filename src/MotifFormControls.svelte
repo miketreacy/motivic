@@ -34,7 +34,7 @@
     border-style: none;
     padding: 4px 12px 6px;
     margin: 5px;
-    max-width: 60px;
+    max-width: 45px;
     transition: background-color 0.5s ease;
   }
 </style>

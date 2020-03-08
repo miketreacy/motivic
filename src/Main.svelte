@@ -132,18 +132,18 @@
           on:displayAlert={handleDisplayAlert}
           on:displayCrudModal />
       {/if}
+      {#if showSectionMap.uploader}
+        <UploaderForm
+          formOpen={openSection === 'uploader'}
+          on:displayToggle
+          on:displayAlert={handleDisplayAlert}
+          on:displayCrudModal />
+      {/if}
       {#if showSectionMap.transformer && motifs.length}
         <TransformerForm
           formOpen={openSection === 'transformer'}
           {motifs}
           selectedMotifId={motifs.length ? motifs[0].id : ''}
-          on:displayToggle
-          on:displayAlert={handleDisplayAlert}
-          on:displayCrudModal />
-      {/if}
-      {#if showSectionMap.uploader}
-        <UploaderForm
-          formOpen={openSection === 'uploader'}
           on:displayToggle
           on:displayAlert={handleDisplayAlert}
           on:displayCrudModal />

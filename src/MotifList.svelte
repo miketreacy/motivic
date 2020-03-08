@@ -298,8 +298,9 @@
     height: var(--touch_min_height);
   }
 
-  .save {
+  .motif button.save {
     color: var(--theme_color_2);
+    font-size: var(--theme_font_size_2);
   }
   .save:disabled {
     color: var(--theme_color_6);

@@ -208,9 +208,14 @@
     flex-direction: column;
   }
   section[data-closed="true"] {
-    margin-top: 2px;
-    flex-direction: row;
     padding: 10px;
+    padding-left: 30px;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 40px;
+    grid-row-gap: 2px;
+    justify-items: flex-start;
+    width: 100%;
   }
   fieldset {
     border-style: solid;
