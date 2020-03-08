@@ -5,6 +5,7 @@
   export let toggleFormFn = () => null;
   export let resetFormFn = () => null;
   export let submitFormFn = () => null;
+  export let controls = [];
   let iconMap = {
     randomizer: ["&#9861;"],
     transformer: ["&#10226;"]
@@ -39,13 +40,19 @@
 </style>
 
 <div class="form-controls" data-closed={!formOpen}>
-  <button class="section-toggle" on:click={toggleFormFn}>
-    {formOpen ? 'close' : 'open'}
-  </button>
-  <button class="reset" on:click={resetFormFn} disabled={formInDefaultState}>
-    reset
-  </button>
-  <button class="apply" on:click={submitFormFn} disabled={!formCanSubmit}>
-    <span>apply</span>
-  </button>
+  {#if controls.includes('toggle')}
+    <button class="toggle" on:click={toggleFormFn}>
+      {formOpen ? 'close' : 'open'}
+    </button>
+  {/if}
+  {#if controls.includes('reset')}
+    <button class="reset" on:click={resetFormFn} disabled={formInDefaultState}>
+      reset
+    </button>
+  {/if}
+  {#if controls.includes('apply')}
+    <button class="apply" on:click={submitFormFn} disabled={!formCanSubmit}>
+      <span>apply</span>
+    </button>
+  {/if}
 </div>

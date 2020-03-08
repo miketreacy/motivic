@@ -6,6 +6,7 @@
   export let apiField = true;
   export let id = "";
   export let label = "";
+  export let centerLabel = false;
   export let required = true;
   export let options = [];
   export let min = 0;
@@ -39,6 +40,9 @@
     flex: 1 1 0;
     text-align: left;
   }
+  label.center {
+    text-align: center;
+  }
 
   .input-wrap.overlay {
     position: absolute;
@@ -59,7 +63,7 @@
 {#if wrap}
   <div class="input-wrap" class:hidden={type === 'hidden'}>
     {#if label}
-      <label for={id}>{label}</label>
+      <label class:center={centerLabel} for={id}>{label}</label>
     {/if}
     <Input
       {form}
@@ -77,7 +81,7 @@
   </div>
 {:else}
   {#if label}
-    <label for={id}>{label}</label>
+    <label class:center={centerLabel} for={id}>{label}</label>
   {/if}
   <Input
     {form}

@@ -20,12 +20,12 @@
     flex-direction: column;
     flex: 1 1 0;
     width: 100%;
-    font-size: var(--theme_font_size_1);
+    font-size: var(--theme_font_size_3);
   }
   select {
     flex: 1 1 0;
     width: 100%;
-    font-size: var(--theme_font_size_1);
+    font-size: var(--theme_font_size_2);
   }
 </style>
 

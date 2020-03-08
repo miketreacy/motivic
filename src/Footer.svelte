@@ -1,5 +1,5 @@
 <script>
-  export let scrollUp;
+  export let scrollUp = false;
 </script>
 
 <style>
@@ -14,7 +14,6 @@
     padding: 10px;
     flex-direction: column;
     min-width: inherit;
-    border-top: 2px solid var(--theme_color_1);
     bottom: 0;
   }
 

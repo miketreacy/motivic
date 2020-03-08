@@ -43,6 +43,7 @@
 
   .rename {
     justify-self: center;
+    font-size: var(--theme_font_size_3);
   }
 </style>
 

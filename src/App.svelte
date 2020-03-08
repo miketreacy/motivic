@@ -86,7 +86,7 @@
   }
 
   function scrollHandler(scrollPos) {
-    let threshold = 50;
+    let threshold = 30;
     scrollDown = scrollPos >= threshold;
     scrollUp = scrollPos < threshold;
     console.info(`scrollPos = ${scrollPos}`);
@@ -104,7 +104,7 @@
 </style>
 
 <svelte:window bind:scrollY={scrollPos} />
-<!-- {#if openSection === ''} -->
+
 <Header
   {view}
   {motifs}
@@ -113,7 +113,7 @@
   on:viewChange={handleViewChange}
   on:displayToggle={handleDisplayToggle}
   on:displayAlert={handleDisplayAlert} />
-<!-- {/if} -->
+
 <Main
   {view}
   {motifs}
@@ -127,7 +127,9 @@
   on:displayToggle={handleDisplayToggle}
   on:displayCrudModal={handleModalDisplay}
   on:motifSelection={handleMotifSelection} />
-<Footer {scrollUp} />
+{#if openSection === ''}
+  <Footer />
+{/if}
 {#if modalProps.show}
   <!-- TODO: mount empty Modal here but mount the child content components separately to preserve modal fade in but keep form state clearn -->
   <ItemCrudModal {...modalProps} on:displayCrudModal={handleModalDisplay} />

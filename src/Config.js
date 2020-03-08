@@ -16,7 +16,14 @@ const Config = {
     ]
   },
   nameSpace: nameSpace,
-  views: ["about", "note grid", "randomizer", "transformer", "motifs"],
+  views: [
+    "about",
+    "note grid",
+    "randomizer",
+    "transformer",
+    "uploader",
+    "motifs"
+  ],
   homePage: "randomizer",
   feature: {
     editMelody: false,

@@ -17,9 +17,13 @@
   export let getRequestBodyFn = Function.prototype;
   export let formCanSubmitDefault = false;
   export let newMotif = null;
-  const apiUrl = `${Config.api.baseURL}${submitOptions.path}`;
+  export let topControls = true;
+  export let formControls = ["toggle", "reset", "apply"];
+  export let formOpen = false;
+  const apiUrl = submitOptions
+    ? `${Config.api.baseURL}${submitOptions.path}`
+    : "";
   let formStateDefault = {};
-  let formOpen = false;
   let formInDefaultState = true;
   let formCanSubmit = true;
   let formIsSubmitting = false;
@@ -30,8 +34,9 @@
   }
 
   function toggleFormFn() {
-    formOpen = !formOpen;
-    dispatchFormToggle(formOpen);
+    // formOpen = !formOpen;
+    // dispatchFormToggle(formOpen);
+    dispatchFormToggle(!formOpen);
   }
 
   function logAll() {
@@ -198,6 +203,7 @@
     formCanSubmit = canFormSubmit(formInDefaultState, formIsSubmitting);
     fieldRows = getUpdatedFieldRows(formState);
   }
+  $: console.log(`MotifForm_${formId}.formOpen = ${formOpen}`);
 </script>
 
 <style>
@@ -207,13 +213,14 @@
   section[data-closed="true"] {
     margin-top: 2px;
     flex-direction: row;
-    border: 1px dashed var(--theme_color_6);
+    /* border: 1px dashed var(--theme_color_6); */
     padding: 10px;
   }
   fieldset {
     border-style: solid;
+    border: none;
     padding: 10px 5px;
-    margin: 0;
+    margin: 10px 0;
     width: 100%;
     flex-direction: column;
     background-color: var(--theme_color_5);
@@ -222,7 +229,7 @@
   .form-row {
     padding: 5px 10px;
     flex-direction: column;
-    border-bottom: 1px dotted var(--theme_color_10);
+    /* border-bottom: 1px dotted var(--theme_color_10); */
     width: 100%;
   }
 
@@ -235,13 +242,16 @@
   <MotifFormHeader {formId} {formTitle} {formInfo} {formOpen} />
 
   {#if formOpen}
-    <MotifFormControls
-      {formOpen}
-      {formInDefaultState}
-      {toggleFormFn}
-      {resetFormFn}
-      {submitFormFn}
-      {formCanSubmit} />
+    {#if topControls}
+      <MotifFormControls
+        {formOpen}
+        {formInDefaultState}
+        {toggleFormFn}
+        {resetFormFn}
+        {submitFormFn}
+        {formCanSubmit}
+        controls={formControls} />
+    {/if}
     {#if newMotif}
       <MotifAudition
         motif={newMotif}
@@ -250,17 +260,22 @@
         on:displayAlert />
     {/if}
     <slot />
-    <fieldset class="user-input">
-      <legend>Settings</legend>
-      <!--<button class="save-setting">save setting</button>-->
-      {#each fieldRows as fields}
-        <div class="form-row">
-          {#each fields as field}
-            <Field {...field} form={formId} on:inputValueChange={formChange} />
-          {/each}
-        </div>
-      {/each}
-    </fieldset>
+    {#if fieldRows.length}
+      <fieldset class="user-input">
+        <legend>Settings</legend>
+        <!--<button class="save-setting">save setting</button>-->
+        {#each fieldRows as fields}
+          <div class="form-row">
+            {#each fields as field}
+              <Field
+                {...field}
+                form={formId}
+                on:inputValueChange={formChange} />
+            {/each}
+          </div>
+        {/each}
+      </fieldset>
+    {/if}
   {/if}
   <!-- <section class="show selected-setting">
     <div class="input-wrap">
@@ -279,5 +294,6 @@
     {toggleFormFn}
     {resetFormFn}
     {submitFormFn}
-    {formCanSubmit} />
+    {formCanSubmit}
+    controls={formControls} />
 </section>

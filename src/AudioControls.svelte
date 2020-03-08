@@ -119,6 +119,11 @@
   button.compact > span {
     flex: initial;
   }
+  select:disabled,
+  button:disabled {
+    background-color: var(--theme_color_4);
+    color: var(--theme_color_6);
+  }
 </style>
 
 <!-- Don't display AudioControls if playback is impossible -->

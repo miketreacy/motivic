@@ -39,7 +39,6 @@
 
   .wrap {
     margin-top: 10px;
-    border: 1px dashed var(--theme_color_1);
     flex-direction: row;
     position: relative;
     width: 100%;
@@ -53,27 +52,19 @@
   .wrap[data-dismissable="false"] {
     padding-right: 5px;
   }
-  [data-type="error"] {
-    border: 1px dashed var(--theme_color_8);
-  }
+
   [data-type="error"] .message-type {
     color: var(--theme_color_8);
   }
-  [data-type="success"] {
-    border: 1px dashed var(--theme_color_7);
-  }
+
   [data-type="success"] .message-type {
     color: var(--theme_color_7);
   }
-  [data-type="info"] {
-    border: 1px dashed var(--theme_color_1);
-  }
+
   [data-type="info"] .message-type {
     color: var(--theme_color_1);
   }
-  [data-type="warn"] {
-    border: 1px dashed var(--theme_color_9);
-  }
+
   [data-type="warn"] .message-type {
     color: var(--theme_color_9);
   }

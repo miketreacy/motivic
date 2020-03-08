@@ -4,6 +4,7 @@
   import Utils from "./Utils";
   import MotifForm from "./MotifForm.svelte";
   import ItemSelector from "./ItemSelector.svelte";
+  export let formOpen = false;
   export let motif = null;
   export let motifs = [];
   export let selectedMotifId = "";
@@ -165,7 +166,7 @@
     return motif;
   }
 
-  let props = {
+  let staticProps = {
     formId,
     formTitle,
     formInfo,
@@ -184,7 +185,12 @@
 
 </style>
 
-<MotifForm {...props} {newMotif} on:displayToggle on:displayCrudModal>
+<MotifForm
+  {...staticProps}
+  {formOpen}
+  {newMotif}
+  on:displayToggle
+  on:displayCrudModal>
   {#if motifs.length}
     <ItemSelector
       {formId}

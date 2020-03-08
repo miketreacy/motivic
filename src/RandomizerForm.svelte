@@ -3,6 +3,7 @@
   import MotifForm from "./MotifForm.svelte";
   import Config from "./Config.js";
   import Utils from "./Utils";
+  export let formOpen = false;
   const { notes, modes, timeSignatureBeats, timeSignatureUnits } = Config;
   const formId = "randomizer";
   const formTitle = "Randomizer";
@@ -176,7 +177,7 @@
     return reqBody;
   }
 
-  let props = {
+  let staticProps = {
     formId,
     formTitle,
     formInfo,
@@ -194,7 +195,8 @@
 </style>
 
 <MotifForm
-  {...props}
+  {...staticProps}
+  {formOpen}
   {newMotif}
   on:displayToggle
   on:displayCrudModal

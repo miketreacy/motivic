@@ -9,6 +9,7 @@
   export let motifs = [];
   export let openSection = "";
   export let scrollDown;
+  let fullDisplay = true;
   const dispatch = createEventDispatcher();
   const fileUploadField = {
     type: "file",
@@ -17,6 +18,7 @@
     accept: ".json, .midi, .mid",
     wrap: false
   };
+  let motifListOpen = false;
   function toggleNavMenu() {
     showNav = !showNav;
     if (showNav) {
@@ -82,7 +84,12 @@
     }
   }
 
+  function loadHomeView(e) {
+    dispatch("displayToggle", { section: "", open: false });
+  }
+
   $: motifListOpen = openSection === "motifs";
+  $: fullDisplay = openSection === "";
 </script>
 
 <style>
@@ -93,9 +100,6 @@
     box-sizing: border-box;
     display: flex;
     z-index: var(--middle);
-  }
-
-  header {
     background-color: var(--theme_color_4);
     position: fixed;
     width: 100vw;
@@ -104,23 +108,34 @@
     flex-direction: column;
     min-width: inherit;
   }
-
-  header {
-    border-bottom: 2px solid var(--theme_color_1);
+  header.compact {
+    border: none;
+    background-color: initial;
   }
 
-  header button {
+  header .button-wrap {
     position: absolute;
   }
 
-  .upload-controls {
-    flex-direction: column;
-    height: auto;
+  button {
+    max-width: 40px;
   }
 
-  #upload-toggle {
+  .button-wrap.left {
     left: 10px;
-    top: 10px;
+  }
+  .button-wrap.right {
+    right: 10px;
+  }
+  button.home {
+    /* background-image: url("./images/favicon_144.svg"); */
+    position: relative;
+  }
+
+  button.home img {
+    width: 40px;
+    position: absolute;
+    border-radius: 5px;
   }
 
   #motifs {
@@ -164,56 +179,38 @@
       display: flex;
     }
 
-    .upload-controls {
-      display: flex;
-      position: absolute;
-      left: 15vw;
-      width: auto;
-      top: 5px;
-    }
-
     .subtitle {
       display: flex;
     }
   }
 </style>
 
-<svelte:body on:click={handleUploadMenuClickAway} />
-<header class="show" class:scrolldown={scrollDown}>
-  <!-- <button id="menu" on:click={toggleNavMenu}>
-    <span>&#9776;</span>
-  </button> -->
-  <button id="upload-toggle" on:click={toggleUploadMenu}>
-    <span>&#8679;</span>
-  </button>
-  <h1>
-    <a href="/">Motivic</a>
-  </h1>
-  <!--HIDING USER ACCOUNT FOR NOW-->
-  <!--<button id="user"><span>user</span></button>-->
-  <!--<section id="user-account">-->
-  <!--<button id="account-create">create</button>-->
-  <!--<button id="account-login">login</button>-->
-  <!--<button id="account-logout">logout</button>-->
-  <!--</section>-->
+<header class="show" class:scrolldown={scrollDown} class:compact={!fullDisplay}>
+  {#if openSection}
+    <div class="button-wrap left">
+      <button class="home" on:click={loadHomeView}>
+        <!-- <span>&#127968;</span> -->
+        <img alt="home" src="./images/favicon_144_white_on_blue.svg" />
+      </button>
+    </div>
+  {/if}
+
+  {#if fullDisplay}
+    <h1 on:click={loadHomeView}>Motivic</h1>
+  {/if}
   {#if motifs.length}
-    <button id="motifs" on:click={toggleMotifList}>
-      <span>&#9835;</span>
-      <span class="motif-count" class:small={motifs.length > 9}>
-        {motifs.length}
-      </span>
-    </button>
+    <div class="button-wrap right">
+      <button id="motifs" on:click={toggleMotifList}>
+        <span>&#9835;</span>
+        <span class="motif-count" class:small={motifs.length > 9}>
+          {motifs.length}
+        </span>
+      </button>
+    </div>
   {/if}
   <p class="subtitle">
     <span class="icons">&#9836;</span>
     tools for composers
     <span class="icons">&#9836;</span>
   </p>
-  {#if showUpload}
-    <div class="upload-controls">
-      <Field {...fileUploadField} on:inputValueChange={uploadFile} />
-    </div>
-  {/if}
-  <!-- Hiding nav due to new SPA approach - no need for page-like paradigm to navigate views -->
-  <!-- <Nav show={showNav} {view} on:viewChange /> -->
 </header>

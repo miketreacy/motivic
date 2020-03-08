@@ -175,6 +175,7 @@
   }
   .scrolldown > h2 {
     /* display: none; */
+    visibility: hidden;
   }
   section {
     margin-top: 0px;
@@ -186,16 +187,17 @@
     border: 1px solid var(--theme_color_6);
   }
   .motif-controls {
-    background-color: var(--theme_color_2);
+    background-color: var(--theme_color_5);
     flex: none;
     flex-direction: row;
     flex-wrap: wrap;
     padding: 0;
-    border: 2px solid var(--theme_color_6);
+    /* border: 2px solid var(--theme_color_10); */
+    border: none;
+    border-bottom: none;
     position: sticky;
     position: -webkit-sticky;
     top: 59px;
-    background-color: var(--theme_color_2);
     z-index: var(--front);
   }
   .scrolldown .motif-controls {
@@ -206,10 +208,11 @@
     width: 100%;
     height: 50px;
     position: sticky;
-    top: 112px;
-    background-color: var(--theme_color_2);
-    border: 2px solid var(--theme_color_6);
-    border-top: none;
+    top: 109px;
+    background-color: var(--theme_color_5);
+    /* border: 2px solid var(--theme_color_10);
+    border-top: none; */
+    border: none;
     z-index: var(--front);
   }
   .scrolldown .list-controls {
@@ -259,12 +262,13 @@
     margin-left: 5px;
     padding: 0 11.5px;
     width: auto;
+    font-size: var(--theme_font_size_3);
   }
   .motif-list {
     width: 100%;
   }
   .motif {
-    border: 1px solid var(--theme_color_7);
+    /* border: 1px solid var(--theme_color_7); */
     /* padding: 10px 5px 10px 10px; */
     padding: 10px 5px 0 10px;
     display: grid;
@@ -279,6 +283,10 @@
 
   .motif div {
     padding: 0px;
+  }
+
+  .motif button {
+    font-size: var(--theme_font_size_3);
   }
 
   .saved,
@@ -431,8 +439,9 @@
   class:nested={Boolean(parentId)}
   class:scrolldown={scrollDown}
   data-closed={!listOpen}>
-  <h2 on:click={toggleOpen}>{title} ({motifs.length})</h2>
+
   {#if listOpen && motifs.length}
+    <h2 on:click={toggleOpen}>{title} ({motifs.length})</h2>
     {#if !parentId}
       <section class="motif-controls">
         <AudioControls {selectedMotifs} on:displayAlert />

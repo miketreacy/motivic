@@ -1,6 +1,7 @@
 <script>
   import Alert from "./Alert.svelte";
   import About from "./About.svelte";
+  import UploaderForm from "./UploaderForm.svelte";
   import RandomizerForm from "./RandomizerForm.svelte";
   import TransformerForm from "./TransformerForm.svelte";
   import MotifList from "./MotifList.svelte";
@@ -15,7 +16,14 @@
   let sortType = "created";
   let sortOrder = "desc";
   let expandedMotifId = "";
-  let showSectionMap = { motifs: true, randomizer: true, transformer: true };
+  const defaultShowSectionMap = {
+    motifs: false,
+    uploader: true,
+    randomizer: true,
+    transformer: true
+  };
+  let showSectionMap = Object.assign({}, defaultShowSectionMap);
+
   export let displayAlert = false;
   export let alertProps = {
     visible: false,
@@ -25,17 +33,22 @@
     dismissable: false
   };
   function updateDisplayState(openSection) {
+    console.log(`\nupdateDisplayState() called with ${openSection}\n`);
     if (openSection) {
       showSectionMap = Object.keys(showSectionMap).reduce((obj, key) => {
         obj[key] = key === openSection;
         return obj;
       }, {});
     } else {
-      showSectionMap = Object.keys(showSectionMap).reduce((obj, key) => {
-        obj[key] = true;
-        return obj;
-      }, {});
+      showSectionMap = Object.assign({}, defaultShowSectionMap);
     }
+
+    console.log(
+      `showSectionMap=\t${Object.keys(showSectionMap).reduce((str, key) => {
+        str += `${key}=${showSectionMap[key]}\t`;
+        return str;
+      }, "")}`
+    );
   }
   function handleDisplayAlert(event) {
     console.log(`handleDisplayAlert() called`);
@@ -65,6 +78,7 @@
   $: updateDisplayState(openSection);
   $: openSection =
     openSection === "motifs" && !motifs.length ? "" : openSection;
+  $: console.log(`Main.openSection = ${openSection}`);
 </script>
 
 <style>
@@ -74,14 +88,19 @@
     flex-wrap: wrap;
     flex-direction: column;
     background-color: var(--theme_color_2);
-    top: calc(var(--header_offset) + var(--nav_offset));
     position: relative;
     padding: 10px;
-    margin-bottom: var(--footer_offset);
     width: 100%;
     max-width: var(--max_main_width);
     align-items: center;
     justify-content: center;
+  }
+  #tools-wrap {
+    width: 100%;
+    margin-top: 0vh;
+  }
+  #tools-wrap.closed {
+    margin-top: 10vh;
   }
 </style>
 
@@ -94,40 +113,50 @@
     <About />
   {/if}
   {#if view === 'studio'}
-    {#if showSectionMap.motifs}
-      <MotifList
-        id="motifs"
-        title="My Motifs"
-        listOpen={openSection === 'motifs'}
-        {motifs}
-        {selectedMotifIds}
-        {allSelected}
-        parentId=""
-        {viewType}
-        {sortType}
-        {sortOrder}
-        {expandedMotifId}
-        {scrollDown}
-        on:listViewChange={handleListViewChange}
-        on:displayToggle
-        on:displayCrudModal
-        on:motifSelection
-        on:displayAlert={handleDisplayAlert} />
-    {/if}
-
-    {#if showSectionMap.randomizer}
-      <RandomizerForm
-        on:displayToggle
-        on:displayAlert={handleDisplayAlert}
-        on:displayCrudModal />
-    {/if}
-    {#if showSectionMap.transformer}
-      <TransformerForm
-        {motifs}
-        selectedMotifId={motifs.length ? motifs[0].id : ''}
-        on:displayToggle
-        on:displayAlert={handleDisplayAlert}
-        on:displayCrudModal />
-    {/if}
+    <div id="tools-wrap" class:closed={openSection === ''}>
+      {#if showSectionMap.motifs}
+        <MotifList
+          id="motifs"
+          title="My Motifs"
+          listOpen={openSection === 'motifs'}
+          {motifs}
+          {selectedMotifIds}
+          {allSelected}
+          parentId=""
+          {viewType}
+          {sortType}
+          {sortOrder}
+          {expandedMotifId}
+          {scrollDown}
+          on:listViewChange={handleListViewChange}
+          on:displayToggle
+          on:displayCrudModal
+          on:motifSelection
+          on:displayAlert={handleDisplayAlert} />
+      {/if}
+      {#if showSectionMap.randomizer}
+        <RandomizerForm
+          formOpen={openSection === 'randomizer'}
+          on:displayToggle
+          on:displayAlert={handleDisplayAlert}
+          on:displayCrudModal />
+      {/if}
+      {#if showSectionMap.transformer && motifs.length}
+        <TransformerForm
+          formOpen={openSection === 'transformer'}
+          {motifs}
+          selectedMotifId={motifs.length ? motifs[0].id : ''}
+          on:displayToggle
+          on:displayAlert={handleDisplayAlert}
+          on:displayCrudModal />
+      {/if}
+      {#if showSectionMap.uploader}
+        <UploaderForm
+          formOpen={openSection === 'uploader'}
+          on:displayToggle
+          on:displayAlert={handleDisplayAlert}
+          on:displayCrudModal />
+      {/if}
+    </div>
   {/if}
 </main>
