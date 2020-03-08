@@ -174,7 +174,6 @@
     padding: 10px;
   }
   .scrolldown > h2 {
-    /* display: none; */
     visibility: hidden;
   }
   section {
@@ -192,7 +191,6 @@
     flex-direction: row;
     flex-wrap: wrap;
     padding: 0;
-    /* border: 2px solid var(--theme_color_10); */
     border: none;
     border-bottom: none;
     position: sticky;
@@ -210,8 +208,6 @@
     position: sticky;
     top: 109px;
     background-color: var(--theme_color_5);
-    /* border: 2px solid var(--theme_color_10);
-    border-top: none; */
     border: none;
     z-index: var(--front);
   }
@@ -268,8 +264,6 @@
     width: 100%;
   }
   .motif {
-    /* border: 1px solid var(--theme_color_7); */
-    /* padding: 10px 5px 10px 10px; */
     padding: 10px 5px 0 10px;
     display: grid;
     grid-template-columns: 10% 15% 15% 15% 15% 15% 15%;

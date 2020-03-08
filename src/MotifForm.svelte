@@ -34,8 +34,6 @@
   }
 
   function toggleFormFn() {
-    // formOpen = !formOpen;
-    // dispatchFormToggle(formOpen);
     dispatchFormToggle(!formOpen);
   }
 
@@ -203,7 +201,6 @@
     formCanSubmit = canFormSubmit(formInDefaultState, formIsSubmitting);
     fieldRows = getUpdatedFieldRows(formState);
   }
-  $: console.log(`MotifForm_${formId}.formOpen = ${formOpen}`);
 </script>
 
 <style>
@@ -213,7 +210,6 @@
   section[data-closed="true"] {
     margin-top: 2px;
     flex-direction: row;
-    /* border: 1px dashed var(--theme_color_6); */
     padding: 10px;
   }
   fieldset {
@@ -229,7 +225,6 @@
   .form-row {
     padding: 5px 10px;
     flex-direction: column;
-    /* border-bottom: 1px dotted var(--theme_color_10); */
     width: 100%;
   }
 

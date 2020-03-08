@@ -33,7 +33,6 @@
     dismissable: false
   };
   function updateDisplayState(openSection) {
-    console.log(`\nupdateDisplayState() called with ${openSection}\n`);
     if (openSection) {
       showSectionMap = Object.keys(showSectionMap).reduce((obj, key) => {
         obj[key] = key === openSection;
@@ -42,13 +41,6 @@
     } else {
       showSectionMap = Object.assign({}, defaultShowSectionMap);
     }
-
-    console.log(
-      `showSectionMap=\t${Object.keys(showSectionMap).reduce((str, key) => {
-        str += `${key}=${showSectionMap[key]}\t`;
-        return str;
-      }, "")}`
-    );
   }
   function handleDisplayAlert(event) {
     console.log(`handleDisplayAlert() called`);
@@ -78,7 +70,6 @@
   $: updateDisplayState(openSection);
   $: openSection =
     openSection === "motifs" && !motifs.length ? "" : openSection;
-  $: console.log(`Main.openSection = ${openSection}`);
 </script>
 
 <style>
