@@ -4,7 +4,13 @@
   import Config from "./Config.js";
   import Utils from "./Utils";
   export let formOpen = false;
-  const { notes, modes, timeSignatureBeats, timeSignatureUnits } = Config;
+  const {
+    notes,
+    modes,
+    timeSignatureBeats,
+    timeSignatureUnits,
+    noteDurations
+  } = Config;
   const formId = "randomizer";
   const formTitle = "Randomizer";
   const formInfo =
@@ -17,6 +23,8 @@
     octave_high: 5,
     leap_min: 1,
     leap_max: 24,
+    duration_min: 1,
+    duration_max: 64,
     timeSignature_beat_0: 4,
     timeSignature_unit_1: 4,
     tempo_type: "bpm",
@@ -80,6 +88,22 @@
         step: 1,
         min: 2,
         max: 48
+      }
+    ],
+    [
+      {
+        type: "select",
+        id: "duration_min",
+        label: "Min Note Duration",
+        value: 1,
+        options: noteDurations
+      },
+      {
+        type: "select",
+        id: "duration_max",
+        label: "Max Note Duration",
+        value: 64,
+        options: noteDurations
       }
     ],
     [

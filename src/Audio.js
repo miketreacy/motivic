@@ -18,19 +18,37 @@ export function newAudioContext() {
   return ctx;
 }
 
-// Converts a note duration to seconds
-function _getNoteTimeDuration(noteDuration, bpm = 120, signature = [4, 4]) {
+/**
+ * Gets the duration of a note in seconds.
+ * @param {number} rhythmicUnit (int) Atomic rhythmic unit expressed as the division of a whole note (1/x).
+ * @param {number} noteDuration (int) Note duration in rhythmic units.
+ * @param {number} bpm (int) Tempo in Beats Per Minute.
+ * @param {number} timeSignatureUnits Time signature units (note division that gets one beat).
+ * @returns {number} (float) Note duration in seconds.
+ */
+function _getNoteTimeDuration(
+  rhythmicUnit,
+  noteDuration,
+  bpm = 120,
+  timeSignatureUnits
+) {
   let beatsPerSecond = bpm / 60;
   let secondsPerBeat = 1 / beatsPerSecond;
-  let beatsPerNote = noteDuration / (signature[0] * signature[1]);
-  return secondsPerBeat * beatsPerNote;
+  let rhythmicUnitsPerBeat = Math.floor(rhythmicUnit / timeSignatureUnits);
+  let beatsPerNote = Math.floor(noteDuration / rhythmicUnitsPerBeat);
+  return Math.floor(secondsPerBeat * beatsPerNote);
 }
 
 function _getMelodyTimeDuration(melody) {
   return melody.notes.reduce((time, note) => {
     return (
       time +
-      _getNoteTimeDuration(note.duration, melody.bpm, melody.timeSignature)
+      _getNoteTimeDuration(
+        Config.rhythmicUnit,
+        note.duration,
+        melody.bpm,
+        melody.timeSignature[1]
+      )
     );
   }, 0);
 }
@@ -40,7 +58,12 @@ function _getFrequency(pitch, octave) {
 }
 
 export function playTone(ctx, note, timeLine, tempo, timeSig, voice) {
-  let playLength = _getNoteTimeDuration(note.duration, tempo, timeSig);
+  let playLength = _getNoteTimeDuration(
+    Config.rhythmicUnit,
+    note.duration,
+    tempo,
+    timeSig[1]
+  );
 
   if (note.name !== "rest") {
     let o = ctx.createOscillator();
@@ -113,7 +136,7 @@ export function loopMelody(session, melody, time, voice) {
 }
 
 /**
- * Stop a loop
+ * Stops a loop
  * @param session {Object} Pointer to an instance of AudioSession
  */
 export function stopLoop(session) {

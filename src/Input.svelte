@@ -70,7 +70,11 @@
 {#if type == 'select'}
   <select class={displayClass} {id} bind:value {required}>
     {#each options as opt}
-      <option>{opt}</option>
+      {#if Array.isArray(opt)}
+        <option value={opt[0]}>{opt[1]}</option>
+      {:else}
+        <option>{opt}</option>
+      {/if}
     {/each}
   </select>
 {:else if type == 'number'}

@@ -34,7 +34,16 @@ const Config = {
     savedSettings: false
   },
   timeSignatureBeats: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-  timeSignatureUnits: [1, 2, 4, 8, 12, 16],
+  timeSignatureUnits: [1, 2, 4, 8, 16],
+  noteDurations: [
+    [1, "64th"],
+    [2, "32nd"],
+    [4, "16th"],
+    [8, "8th"],
+    [16, "quarter"],
+    [32, "half"],
+    [64, "whole"]
+  ],
   notes: ["c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b"],
   frequencies: [
     {
