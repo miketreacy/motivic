@@ -24,19 +24,20 @@ export function newAudioContext() {
  * @param {number} noteDuration (int) Note duration in rhythmic units.
  * @param {number} bpm (int) Tempo in Beats Per Minute.
  * @param {number} timeSignatureUnits Time signature units (note division that gets one beat).
+ * Defaults to 4 which means a quarter note equals one beat.
  * @returns {number} (float) Note duration in seconds.
  */
 function _getNoteTimeDuration(
   rhythmicUnit,
   noteDuration,
   bpm = 120,
-  timeSignatureUnits
+  timeSignatureUnits = 4
 ) {
   let beatsPerSecond = bpm / 60;
   let secondsPerBeat = 1 / beatsPerSecond;
-  let rhythmicUnitsPerBeat = Math.floor(rhythmicUnit / timeSignatureUnits);
-  let beatsPerNote = Math.floor(noteDuration / rhythmicUnitsPerBeat);
-  return Math.floor(secondsPerBeat * beatsPerNote);
+  let rhythmicUnitsPerBeat = rhythmicUnit / timeSignatureUnits;
+  let beatsPerNote = noteDuration / rhythmicUnitsPerBeat;
+  return secondsPerBeat * beatsPerNote;
 }
 
 function _getMelodyTimeDuration(melody) {

@@ -377,6 +377,9 @@ const Utils = {
           m.bpm = bpm;
           m.name = `${name}_midi-import`;
           m.mode = "chromatic";
+          // TODO: parse time signature of uploaded MIDI file?
+          // TODO: default to 4/4 for now.
+          m.timeSignature = [4, 4];
           m.notes = m.notes.map((n, i) =>
             Utils.melody.getNote.bind(Utils.melody)(n.value, n.duration, m, i)
           );
