@@ -7,6 +7,7 @@
   import CrudControls from "./CrudControls.svelte";
   import DownloadControls from "./DownloadControls.svelte";
   import ItemName from "./ItemName.svelte";
+  import MotifSettingsList from "./MotifSettingsList.svelte";
   export let motifs = [];
   export let selectedMotifs = [];
   export let listOpen = false;
@@ -124,6 +125,11 @@
       // assume key value is string
       return Utils.general.objectKeySorterAlpha(key, order);
     }
+  }
+
+  function getMotifDisplay(motifId) {
+    // TODO: get the motif display here - although will be in a separate component!
+    return null;
   }
 
   onMount(() => {
@@ -264,7 +270,7 @@
     width: 100%;
   }
   .motif {
-    padding: 10px 5px 0 10px;
+    padding: 10px 5px;
     display: grid;
     grid-template-columns: 10% 15% 15% 15% 15% 15% 15%;
     grid-template-rows: 40px 0px 0px 0px 0px;
@@ -319,9 +325,14 @@
     font-size: var(--theme_font_size_1);
   }
 
+  .motif-settings {
+    grid-column: 1 / span 4;
+    grid-row: 2 / span 3;
+  }
+
   .motif-display {
     grid-column: 1 / span 5;
-    grid-row: 3 / span 1;
+    grid-row: 8 / span 1;
   }
 
   .motif-created {
@@ -356,15 +367,18 @@
   .transformations-header {
     display: flex;
     grid-column: 2 / span 3;
-    grid-row: 4 / span 1;
+    grid-row: 5 / span 1;
     align-items: flex-start;
   }
 
   .transformations {
-    display: flex;
+    /* display: flex;
     grid-column: 3 / span 4;
-    grid-row: 5 / span 1;
-    align-items: flex-start;
+    grid-row: 6 / span 3;
+    align-items: flex-start; */
+
+    grid-column: 1 / span 4;
+    grid-row: 5 / span 3;
   }
 
   .selection {
@@ -410,7 +424,7 @@
 
   .nested {
     grid-column: 2 / span 6;
-    grid-row: 4 / span 5;
+    grid-row: 9 / span 5;
     align-items: flex-start;
   }
 
@@ -423,7 +437,7 @@
     padding-top: 10px;
   }
   .expanded {
-    grid-template-rows: 50px 50px 50px 50px 50px;
+    grid-template-rows: 50px 50px auto auto auto;
     border: 1px solid var(--theme_color_1);
   }
 </style>
@@ -497,7 +511,7 @@
         .filter(displayMotif)
         .sort(
           motifSorter(sortType, sortOrder)
-        ) as { id: motifId, name, created, parent: motifParentId, tempo, notes, saved, transformations }}
+        ) as { id: motifId, name, created, key, mode, timeSignature, tempo, length, parent: motifParentId, notes, saved, transformations }}
         <li
           class="motif"
           class:expanded={expandedMotifId === motifId}
@@ -559,18 +573,36 @@
             {Utils.general.dateDisplay(new Date(created))}
           </div>
           {#if expandedMotifId === motifId}
-            <div class="motif-display">display motif here</div>
+            <!-- TODO: assign uploaded motifs tempo, length, timeSignature, etc so I can expect these props to exist -->
+            {#if key && mode && length && tempo && timeSignature}
+              <div class="motif-settings">
+                <MotifSettingsList
+                  title="settings:"
+                  settings={{ key: key, mode: mode, [tempo.type]: tempo.units, 'time signature': `${timeSignature.join('/')}`, [length.type]: length.units }} />
+              </div>
+            {/if}
+            {#if getMotifDisplay(motifId)}
+              <div class="motif-display">{getMotifDisplay(motifId)}</div>
+            {/if}
             <div class="download">
               <DownloadControls
                 selectedMotifs={[motifs.find(m => m.id === motifId)]} />
             </div>
             {#if transformations && transformations.length}
-              <h4 class="transformations-header">transformations:</h4>
+              <div class="transformations">
+                <MotifSettingsList
+                  title="transformations:"
+                  settings={transformations.reduce((map, { type, params }) => {
+                    map[type] = params.join(', ');
+                    return map;
+                  }, {})} />
+              </div>
+              <!-- <h4 class="transformations-header">transformations:</h4>
               <ul class="transformations">
                 {#each transformations as { type, params }, i}
                   <li class="transformation">{type}: {params.join(', ')}</li>
                 {/each}
-              </ul>
+              </ul> -->
             {/if}
             {#if viewType === 'nested' && motifVariationCount(motifId)}
               <svelte:self
