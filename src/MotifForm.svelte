@@ -20,6 +20,7 @@
   export let topControls = true;
   export let formControls = ["toggle", "reset", "apply"];
   export let formOpen = false;
+  export let scrollPos;
   const apiUrl = submitOptions
     ? `${Config.api.baseURL}${submitOptions.path}`
     : "";
@@ -89,6 +90,7 @@
   }
 
   function getUpdatedFieldRows(state) {
+    console.log(`getUpdatedFieldRows() called with`, state);
     return fieldRows.map(row => {
       return row.map(field => {
         if (field.id in state) {
@@ -162,6 +164,7 @@
 
   async function submitFormFn() {
     formIsSubmitting = true;
+    scrollPos = 0;
     const reqBody = getRequestBodyFn(formState);
     console.info(`${submitOptions.method} ${submitOptions.path} request body:`);
     console.dir(reqBody);
@@ -225,6 +228,7 @@
     width: 100%;
     flex-direction: column;
     background-color: var(--theme_color_5);
+    border-radius: 5px;
   }
 
   .form-row {
@@ -238,6 +242,7 @@
   }
 </style>
 
+<svelte:window bind:scrollY={scrollPos} />
 <section id={formId} data-closed={!formOpen}>
   <MotifFormHeader {formId} {formTitle} {formInfo} {formOpen} />
 
@@ -270,7 +275,8 @@
               <Field
                 {...field}
                 form={formId}
-                on:inputValueChange={formChange} />
+                on:inputValueChange={formChange}
+                on:displayAlert />
             {/each}
           </div>
         {/each}

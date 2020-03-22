@@ -63,6 +63,9 @@
     padding: 10px;
     margin: 10px 0;
     width: 100%;
+    border: none;
+    border-radius: 5px;
+    min-height: 190px;
   }
   .input-wrap {
     flex-direction: column;
@@ -71,7 +74,7 @@
     line-height: 30px;
   }
   .msg {
-    padding: 10px 0;
+    padding: 0;
   }
 
   label,
@@ -87,6 +90,9 @@
   .form-wrap {
     padding-top: 30px;
     widows: 100%;
+    top: -25px;
+    position: relative;
+    pointer-events: none;
   }
   .submit {
     background-color: var(--theme_color_1);
@@ -94,11 +100,6 @@
   }
   div[data-form-type="delete"] .submit {
     background-color: var(--theme_color_8);
-  }
-  .item {
-    border: 2px solid var(--theme_color_6);
-    padding: 5px;
-    margin-top: 10px;
   }
 
   #item-name {
@@ -110,7 +111,7 @@
   }
   .item-confirmation li {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
     justify-items: flex-start;
   }
@@ -129,6 +130,7 @@
     white-space: nowrap;
     width: 100%;
     max-width: 70vw;
+    color: var(--theme_color_1);
   }
   .result-message {
     padding: 10px;
@@ -136,7 +138,7 @@
     white-space: pre-wrap;
   }
   [data-success="false"] {
-    border: 2px solid red;
+    border: 2px solid var(--theme_color_8);
     box-sizing: border-box;
   }
 </style>
@@ -217,7 +219,9 @@
             </li>
             <li>
               <span class="key">created:</span>
-              <span class="value">{item.created}</span>
+              <span class="value">
+                {Utils.general.dateDisplay(new Date(item.created))}
+              </span>
             </li>
           </ul>
         </div>

@@ -11,7 +11,7 @@
   const formId = "transformer";
   const formTitle = "Transformer";
   const formInfo =
-    "applies transformations to an existing melody to produce counterpoint";
+    "applies transformations to an existing monophonic melody to produce counterpoint";
   const formCanSubmitDefault = false;
   let formState = {
     motif: null,
@@ -119,7 +119,8 @@
       type: success ? "success" : "error",
       message: msg,
       displayTimeMs: 1500,
-      dismissable: false
+      dismissable: false,
+      top: 45
     });
     newMotif = savedVariationMotif;
   }
@@ -171,7 +172,6 @@
     formTitle,
     formInfo,
     formState,
-    fieldRows,
     responseCallbackFn,
     submitOptions,
     getRequestBodyFn,
@@ -187,6 +187,7 @@
 
 <MotifForm
   {...staticProps}
+  {fieldRows}
   {formOpen}
   {newMotif}
   on:displayToggle

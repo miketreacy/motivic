@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from "svelte";
   import { createEventDispatcher } from "svelte";
   export let id = "";
   export let required = true;
@@ -9,6 +10,7 @@
   export let form = "";
   export let apiField;
   export let displayClass = "display-block";
+  export let roughIncrement = 0;
 
   const dispatch = createEventDispatcher();
   /**
@@ -18,8 +20,7 @@
    */
   function getUpdatedValue(stepChange) {
     let val = (value || min) + stepChange * step;
-    let newVal = Math.min(Math.max(min, val), max);
-
+    let newVal = validateValue(val);
     return Math.max(newVal - (newVal % step), step);
   }
 
@@ -30,15 +31,62 @@
     value = getUpdatedValue(int);
   }
 
+  function validateInput(el) {
+    let valid = el.checkValidity();
+    console.info(`${el.id} valid: ${valid}`);
+    if (!valid) {
+      value = validateValue(el.value);
+      let label = document.querySelector(`label[for="${el.id}"]`).textContent;
+      dispatch("displayAlert", {
+        visible: true,
+        type: "warn",
+        message: `${label} ${el.validationMessage}`,
+        displayTimeMs: 1500,
+        dismissable: false,
+        top: el.getBoundingClientRect().top - 70,
+        displayLabel: false
+      });
+    }
+  }
+
+  function inputHandler(e) {
+    console.info(`inputHandler()`, e.type);
+    let el = e.target;
+    let elValue = parseInt(el.value, 10);
+    let maxDigits = max.toString().length;
+    let valueDigits = elValue.toString().length;
+    if (
+      (!elValue && elValue < min) ||
+      valueDigits >= maxDigits ||
+      elValue * 10 > max
+    ) {
+      validateInput(el);
+    }
+  }
+
+  function changeHandler(e) {
+    let el = e.target;
+    validateInput(el);
+  }
+
   function dispatchValueChange(val) {
     if (apiField) {
       dispatch("inputValueChange", { value: val, field: id, form });
     }
   }
 
-  $: {
-    dispatchValueChange(value);
+  function validateValue(val) {
+    let result = Math.min(Math.max(min, parseInt(val, 10)), max);
+    console.info(`validateValue() called ${val} => ${result}`);
+    return result;
   }
+
+  onMount(() => {
+    console.log(`NumberInput.onMount() called with value = ${value}`);
+    value = validateValue(value);
+  });
+
+  $: dispatchValueChange(value);
 </script>
 
 <style>
@@ -54,6 +102,10 @@
     padding: 0;
     justify-content: space-between;
     box-sizing: content-box;
+  }
+
+  .qty-controls.rough button.fine {
+    display: none;
   }
 
   input {
@@ -74,18 +126,40 @@
     cursor: pointer;
     border: none;
   }
+  button span {
+    pointer-events: none;
+  }
+
+  .rough {
+    flex-direction: row;
+  }
+
+  .increment {
+    font-size: var(--theme_font_size_1);
+  }
 </style>
 
-<div class="qty-controls">
+<div class="qty-controls" class:rough={roughIncrement}>
+  {#if roughIncrement}
+    <button
+      class="num-change rough"
+      data-num-change="-10"
+      name="qty"
+      on:click|self={numChange}>
+      -
+      <span class="increment">{roughIncrement}</span>
+    </button>
+  {/if}
   <button
-    class="fa fa-minus num-change"
+    class="num-change fine"
     data-num-change="-1"
     name="qty"
     on:click|self={numChange}>
-    &minus;
+    -
   </button>
   <input
     type="number"
+    name={id}
     {id}
     class={displayClass}
     bind:value
@@ -94,12 +168,25 @@
     {max}
     {step}
     inputmode="numeric"
-    pattern="[0-9]*" />
+    pattern="[0-9]*"
+    on:click={e => e.target.select()}
+    on:input={inputHandler}
+    on:change={changeHandler} />
   <button
-    class="fa fa-plus num-change"
+    class="num-change fine"
     data-num-change="1"
     name="qty"
     on:click|self={numChange}>
-    &plus;
+    +
   </button>
+  {#if roughIncrement}
+    <button
+      class="num-change rough"
+      data-num-change="10"
+      name="qty"
+      on:click|self={numChange}>
+      +
+      <span class="increment">{roughIncrement}</span>
+    </button>
+  {/if}
 </div>

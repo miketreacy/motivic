@@ -170,6 +170,7 @@
 
   .subtitle .icons {
     font-style: normal;
+    padding: 0 10px;
   }
 
   /*Desktop*/
@@ -181,6 +182,7 @@
 
     .subtitle {
       display: flex;
+      padding-top: 10px;
     }
   }
 </style>
@@ -208,9 +210,11 @@
       </button>
     </div>
   {/if}
-  <p class="subtitle">
-    <span class="icons">&#9836;</span>
-    tools for composers
-    <span class="icons">&#9836;</span>
-  </p>
+  {#if fullDisplay}
+    <p class="subtitle">
+      <span class="icons">&#9836;</span>
+      tools for composers
+      <span class="icons">&#9836;</span>
+    </p>
+  {/if}
 </header>

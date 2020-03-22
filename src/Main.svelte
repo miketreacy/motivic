@@ -30,7 +30,9 @@
     message: "",
     type: "",
     displayTimeMs: 0,
-    dismissable: false
+    dismissable: false,
+    top: 0,
+    displayLabel: true
   };
   function updateDisplayState(openSection) {
     if (openSection) {
@@ -43,8 +45,6 @@
     }
   }
   function handleDisplayAlert(event) {
-    console.log(`handleDisplayAlert() called`);
-    console.dir(event.detail);
     alertProps = event.detail;
     displayAlert = alertProps.visible;
   }
@@ -103,7 +103,7 @@
   {#if view === 'about'}
     <About />
   {/if}
-  {#if view === 'studio'}
+  {#if view === 'home'}
     <div id="tools-wrap" class:closed={openSection === ''}>
       {#if showSectionMap.motifs}
         <MotifList

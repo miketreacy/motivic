@@ -50,8 +50,10 @@
     transition-delay: var(--timing_fastest);
     max-width: 400px;
     min-width: 300px;
+    height: 260px;
+    max-height: 260px;
     position: fixed;
-    top: 30%;
+    top: 150px;
     left: 50%;
     transform: translate(-50%, -50%);
   }

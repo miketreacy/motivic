@@ -23,7 +23,9 @@
     message: "",
     type: "",
     displayTimeMs: 0,
-    dismissable: false
+    dismissable: false,
+    top: 0,
+    displayLabel: true
   };
   let scrollPos;
   let scrollDown = false;

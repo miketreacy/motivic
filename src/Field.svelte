@@ -16,6 +16,8 @@
   export let accept = "";
   export let wrap = true;
   export let form = "";
+  export let roughIncrement = 0;
+  export let info = "";
 </script>
 
 <style>
@@ -63,7 +65,7 @@
 {#if wrap}
   <div class="input-wrap" class:hidden={type === 'hidden'}>
     {#if label}
-      <label class:center={centerLabel} for={id}>{label}</label>
+      <label class:center={centerLabel} for={id} title={info}>{label}</label>
     {/if}
     <Input
       {form}
@@ -77,11 +79,13 @@
       {step}
       {value}
       {accept}
-      on:inputValueChange />
+      {roughIncrement}
+      on:inputValueChange
+      on:displayAlert />
   </div>
 {:else}
   {#if label}
-    <label class:center={centerLabel} for={id}>{label}</label>
+    <label class:center={centerLabel} for={id} title={info}>{label}</label>
   {/if}
   <Input
     {form}
@@ -95,5 +99,7 @@
     {step}
     {value}
     {accept}
-    on:inputValueChange />
+    {roughIncrement}
+    on:inputValueChange
+    on:displayAlert />
 {/if}

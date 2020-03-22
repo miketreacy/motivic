@@ -14,6 +14,7 @@
   export let accept = "";
   export let form = "";
   export let displayClass = "display-block";
+  export let roughIncrement = 0;
 
   function dispatchValueChange(val) {
     if (apiField) {
@@ -88,7 +89,9 @@
     {max}
     {step}
     {apiField}
-    on:inputValueChange />
+    {roughIncrement}
+    on:inputValueChange
+    on:displayAlert />
 {:else if type == 'text'}
   <input
     type="text"

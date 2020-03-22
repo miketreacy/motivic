@@ -6,6 +6,9 @@
   export let type = "";
   export let displayTimeMs = 3000;
   export let dismissable = false;
+  export let top = 0;
+  export let displayLabel = true;
+  let typeColor = "";
   // types:
   //       SUCCESS
   //       ERROR
@@ -25,20 +28,32 @@
     dispatch("displayAlert", { visble: false });
   }
 
+  function getTypeColor(type) {
+    return {
+      warn: "var(--theme_color_9)",
+      success: "var(--theme_color_7)",
+      info: "var(--theme_color_1)",
+      error: "var(--theme_color_8)"
+    }[type];
+  }
+
   const dispatch = createEventDispatcher();
+
+  $: typeColor = getTypeColor(type);
 </script>
 
 <style>
   section {
     position: fixed;
-    top: calc(var(--header_offset) + var(--nav_offset));
+    top: var(--top);
     z-index: var(--front);
-    background-color: rgba(255, 255, 255, 1);
+    background-color: rgba(255, 255, 255, 0.75);
     width: 95vw;
   }
 
   .wrap {
-    margin-top: 10px;
+    background-color: rgba(255, 255, 255, 1);
+    margin: 10px 0;
     flex-direction: row;
     position: relative;
     width: 100%;
@@ -47,28 +62,15 @@
     display: block;
     box-sizing: border-box;
     padding: 5px 50px 5px 5px;
+    border: 2px solid var(--color);
   }
 
   .wrap[data-dismissable="false"] {
     padding-right: 5px;
   }
 
-  [data-type="error"] .message-type {
-    color: var(--theme_color_8);
-  }
-
-  [data-type="success"] .message-type {
-    color: var(--theme_color_7);
-  }
-
-  [data-type="info"] .message-type {
-    color: var(--theme_color_1);
-  }
-
-  [data-type="warn"] .message-type {
-    color: var(--theme_color_9);
-  }
   .message-type {
+    color: var(--theme_color_3);
     font-size: var(--theme_font_size_3);
   }
   .message {
@@ -84,7 +86,7 @@
   }
 </style>
 
-<section id="alert">
+<section id="alert" style="--color: {typeColor}; --top: {top}px">
   {#if visible}
     <div
       class="wrap"
@@ -94,7 +96,9 @@
       out:fade
       on:introend={onIntroEnd}
       on:outroend={onOutroEnd}>
-      <div class="message-type">{type.toUpperCase()}</div>
+      {#if displayLabel}
+        <div class="message-type">{type.toUpperCase()}</div>
+      {/if}
       <div class="message">{message}</div>
       {#if dismissable}
         <button class="dismiss" on:click={dismiss}>x</button>

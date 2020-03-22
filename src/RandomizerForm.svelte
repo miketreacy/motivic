@@ -58,7 +58,8 @@
         value: 3,
         step: 1,
         min: 0,
-        max: 8
+        max: 8,
+        info: "Uses piano octaves (Scientific Pitch Notation)"
       },
       {
         type: "number",
@@ -67,7 +68,8 @@
         value: 5,
         step: 1,
         min: 0,
-        max: 8
+        max: 8,
+        info: "Uses piano octaves (Scientific Pitch Notation)"
       }
     ],
     [
@@ -78,7 +80,8 @@
         value: 1,
         step: 1,
         min: 1,
-        max: 11
+        max: 11,
+        info: "Minimum leap (in half-steps) between two consecutive notes"
       },
       {
         type: "number",
@@ -87,7 +90,8 @@
         value: 24,
         step: 1,
         min: 2,
-        max: 48
+        max: 48,
+        info: "Maximum leap (in half-steps) between two consecutive notes"
       }
     ],
     [
@@ -96,14 +100,16 @@
         id: "duration_min",
         label: "Min Note Duration",
         value: 1,
-        options: noteDurations
+        options: noteDurations,
+        info: "Minimum note length"
       },
       {
         type: "select",
         id: "duration_max",
         label: "Max Note Duration",
         value: 64,
-        options: noteDurations
+        options: noteDurations,
+        info: "Maximum note length"
       }
     ],
     [
@@ -112,14 +118,16 @@
         id: "timeSignature_beat_0",
         label: "Time Signature Beat",
         value: 4,
-        options: timeSignatureBeats
+        options: timeSignatureBeats,
+        info: "Beats per measure"
       },
       {
         type: "select",
         id: "timeSignature_unit_1",
         label: "Time Signature Unit",
         value: 4,
-        options: timeSignatureUnits
+        options: timeSignatureUnits,
+        info: "Which note duration gets one beat (4 = quarter note, etc)"
       }
     ],
     [
@@ -135,7 +143,8 @@
         value: 120,
         step: 1,
         min: 60,
-        max: 240
+        max: 240,
+        roughIncrement: 10
       }
     ],
     [
@@ -172,7 +181,8 @@
       type: success ? "success" : "error",
       message: msg,
       displayTimeMs: 1500,
-      dismissable: false
+      dismissable: true,
+      top: 45
     });
     newMotif = createdMotif;
   }
@@ -206,7 +216,6 @@
     formTitle,
     formInfo,
     formState,
-    fieldRows,
     responseCallbackFn,
     submitOptions,
     getRequestBodyFn,
@@ -220,6 +229,7 @@
 
 <MotifForm
   {...staticProps}
+  {fieldRows}
   {formOpen}
   {newMotif}
   on:displayToggle

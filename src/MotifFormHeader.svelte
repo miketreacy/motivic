@@ -23,6 +23,26 @@
     font-size: var(--theme_font_size_2b);
     text-transform: lowercase;
   }
+
+  h2:hover {
+    position: relative;
+  }
+
+  /* TODO: future CSS tooltop implementation below */
+  /* h2:hover:after {
+    content: attr(title);
+    padding: 4px 8px;
+    color: #333;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    white-space: nowrap;
+    z-index: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 4px #222;
+    background-image: linear-gradient(top, #eeeeee, #cccccc);
+  } */
+
   .icons {
     font-size: var(--theme_font_size_4);
     margin: 0 10px;
@@ -35,7 +55,7 @@
       {@html iconMap[formId]}
     </span>
   {/if}
-  <h2 data-closed={!formOpen}>
+  <h2 data-closed={!formOpen} title={formInfo}>
     <!-- {#if formOpen}
     <span class="icons">
       {@html iconMap[formId]}

@@ -12,9 +12,10 @@
 
 <style>
   .motif-audition {
-    border: 2px dotted var(--theme_color_1);
     position: relative;
     padding: 5px;
+    background-color: var(--theme_color_4);
+    border-radius: 5px;
   }
   .new-motif {
     height: 45px;

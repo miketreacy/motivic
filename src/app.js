@@ -1,8 +1,8 @@
 import App from "./App.svelte";
 import Utils from "./Utils";
 import { motifStore, settingStore } from "./Stores.js";
-const views = ["about", "studio", "motifs"];
-let view = "studio";
+const views = ["about", "home", "motifs"];
+let view = "home";
 
 /**
  * Parses URL to loads appropriate view.

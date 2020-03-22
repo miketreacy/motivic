@@ -73,7 +73,7 @@
     <!--<button data-view="note-grid">note grid</button>-->
     <!--</li>-->
     <li>
-      <button data-view="studio" on:click={selectView}>studio</button>
+      <button data-view="home" on:click={selectView}>home</button>
     </li>
     <li>
       <button data-view="motifs" on:click={selectView}>motifs</button>
