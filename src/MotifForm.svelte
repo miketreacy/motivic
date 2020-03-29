@@ -20,7 +20,7 @@
   export let topControls = true;
   export let formControls = ["toggle", "reset", "apply"];
   export let formOpen = false;
-  export let scrollPos;
+  let scrollPos;
   const apiUrl = submitOptions
     ? `${Config.api.baseURL}${submitOptions.path}`
     : "";

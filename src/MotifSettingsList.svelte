@@ -16,10 +16,19 @@
   .title {
     align-self: flex-start;
     padding: 10px;
-    background-color: var(--theme_color_1);
-    color: var(--theme_color_2);
+    /* background-color: var(--theme_color_1);
+    color: var(--theme_color_2); */
+    color: var(--theme_color_7);
+    background-color: var(--theme_color_4);
     border-radius: 5px;
+    border: 1px solid var(--theme_color_7);
+    cursor: pointer;
   }
+
+  .open .title {
+    border-bottom: none;
+  }
+
   .list {
     width: 100%;
     margin: 0;
@@ -46,7 +55,7 @@
   }
 </style>
 
-<div class="wrap">
+<div class="wrap" class:open={displayList}>
   {#if title}
     <div class="title" on:click={toggleDisplay}>{title}</div>
   {/if}

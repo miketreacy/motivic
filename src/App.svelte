@@ -30,6 +30,7 @@
   let scrollPos;
   let scrollDown = false;
   let scrollUp = true;
+  let openItemId = "";
 
   /**
    * Updates user data in memory in the global MOTIVIC namespace and in the component waterfall
@@ -49,13 +50,13 @@
   function handleDisplayToggle(event) {
     console.log(`handleDisplayToggle() called`);
     console.dir(event.detail);
-    let section = event.detail.section;
-    let open = event.detail.open;
+    let { section, open, id } = event.detail;
     if (open) {
       openSection = section;
     } else {
       openSection = "";
     }
+    openItemId = id || "";
   }
 
   function handleMotifSelection(event) {
@@ -120,6 +121,7 @@
   {view}
   {motifs}
   {openSection}
+  {openItemId}
   {allSelected}
   {selectedMotifIds}
   {settings}

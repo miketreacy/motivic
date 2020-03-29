@@ -139,6 +139,26 @@ const Utils = {
       let secs = pad(date.getSeconds());
       let timeStr = `${hrs}:${mins}:${secs}`;
       return `${dateStr} ${timeStr}`;
+    },
+    /**
+     * Limits the amount of times an event callback can be fired.
+     * Good for attenuating the frequency of rapid i/o events (window.scroll, window.resize, data.stream).
+     * @param {*} timeout An undefined variable to store a function in.
+     * @param {function} cb A callback function to execute.
+     * @param {number} interval  The number of milliseconds to wait before the callback can be fired again.
+     * @param {Array} cbArgs Array of arguments to be applied to the callback function.
+     */
+    throttle: function(timeout, cb, interval, cbArgs) {
+      // ignore events as long as a callback execution is in the queue
+      cbArgs = cbArgs && cbArgs.length ? [...cbArgs] : null;
+      if (!timeout) {
+        timeout = setTimeout(() => {
+          timeout = null;
+          if (typeof cb === "function") {
+            cb.apply(this, cbArgs);
+          }
+        }, interval);
+      }
     }
   },
   http: {

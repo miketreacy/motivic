@@ -15,7 +15,6 @@ function createMotifStore() {
           newMotifs = motifs.map((m, i) => (i === idx ? motif : m));
         } else {
           // store brand new motif
-          console.info(`motif ${motif.id} added to store`);
           newMotifs = [...motifs, motif];
         }
 
@@ -40,7 +39,6 @@ function createSettingsStore() {
           newSettings = settings.map((s, i) => (i === idx ? setting : m));
         } else {
           // store brand new setting
-          console.info(`setting ${setting.id} added to store`);
           newSettings = [...settings, setting];
         }
 

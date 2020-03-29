@@ -181,7 +181,7 @@
       type: success ? "success" : "error",
       message: msg,
       displayTimeMs: 1500,
-      dismissable: true,
+      dismissable: false,
       top: 45
     });
     newMotif = createdMotif;

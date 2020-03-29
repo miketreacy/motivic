@@ -5,10 +5,13 @@
   import RandomizerForm from "./RandomizerForm.svelte";
   import TransformerForm from "./TransformerForm.svelte";
   import MotifList from "./MotifList.svelte";
+  import Motif from "./Motif.svelte";
+
   export let selectedMotifIds = [];
   export let allSelected = false;
   export let view = "";
   export let openSection = "";
+  export let openItemId = "";
   export let settings = [];
   export let motifs = [];
   export let scrollDown = false;
@@ -17,6 +20,7 @@
   let sortOrder = "desc";
   let expandedMotifId = "";
   const defaultShowSectionMap = {
+    motif: "",
     motifs: false,
     uploader: true,
     randomizer: true,
@@ -34,7 +38,11 @@
     top: 0,
     displayLabel: true
   };
-  function updateDisplayState(openSection) {
+
+  function updateDisplayState(openSection, openItemId) {
+    console.log(
+      `updateDisplayState() called with ${openSection}:${openItemId}`
+    );
     if (openSection) {
       showSectionMap = Object.keys(showSectionMap).reduce((obj, key) => {
         obj[key] = key === openSection;
@@ -43,6 +51,7 @@
     } else {
       showSectionMap = Object.assign({}, defaultShowSectionMap);
     }
+    console.dir(showSectionMap);
   }
   function handleDisplayAlert(event) {
     alertProps = event.detail;
@@ -67,7 +76,7 @@
     console.info(`expandedMotifId = ${expandedMotifId}`);
   }
 
-  $: updateDisplayState(openSection);
+  $: updateDisplayState(openSection, openItemId);
   $: openSection =
     openSection === "motifs" && !motifs.length ? "" : openSection;
 </script>
@@ -91,7 +100,8 @@
     margin-top: 0vh;
   }
   #tools-wrap.closed {
-    margin-top: 10vh;
+    /* margin-top: 10vh; */
+    margin-top: var(--header_offset);
   }
 </style>
 
@@ -105,6 +115,13 @@
   {/if}
   {#if view === 'home'}
     <div id="tools-wrap" class:closed={openSection === ''}>
+      {#if showSectionMap.motif && openItemId}
+        <Motif
+          motif={motifs.find(m => m.id === openItemId)}
+          on:displayToggle
+          on:displayAlert={handleDisplayAlert}
+          on:displayCrudModal />
+      {/if}
       {#if showSectionMap.motifs}
         <MotifList
           id="motifs"

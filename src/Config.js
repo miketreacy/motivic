@@ -273,6 +273,7 @@ const Config = {
     medium: { width: 30, fontSize: 15, yOffset: -13 },
     large: { width: 40, fontSize: 20, yOffset: -17 }
   },
+  gridFontSize: 12,
   itemCrudModalDefaultProps: {
     itemType: "",
     item: null,

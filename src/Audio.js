@@ -57,7 +57,15 @@ function _getMelodyTimeDuration(melody) {
 function _getFrequency(pitch, octave) {
   return Config.frequencies[octave][pitch.toLowerCase()];
 }
-
+/**
+ *
+ * @param {*} ctx
+ * @param {*} note
+ * @param {*} timeLine
+ * @param {*} tempo
+ * @param {*} timeSig
+ * @param {*} voice
+ */
 export function playTone(ctx, note, timeLine, tempo, timeSig, voice) {
   let playLength = _getNoteTimeDuration(
     Config.rhythmicUnit,

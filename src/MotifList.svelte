@@ -32,6 +32,11 @@
     }
   }
 
+  function openMotifView(motifId) {
+    console.log(`MotifList.openMotifView() called with ${motifId}`);
+    dispatch("displayToggle", { section: "motif", open: true, id: motifId });
+  }
+
   function motifSelection(e) {
     let selectAll = e.target.id === "select-all";
     let add = e.target.checked;
@@ -126,16 +131,6 @@
       return Utils.general.objectKeySorterAlpha(key, order);
     }
   }
-
-  function getMotifDisplay(motifId) {
-    // TODO: get the motif display here - although will be in a separate component!
-    return null;
-  }
-
-  onMount(() => {
-    console.info(`onMount() props: ${id}`);
-    console.dir($$props);
-  });
 
   function dispatchDisplayModal(event) {
     let motif = motifs.find(m => m.id === event.target.dataset.motifId);
@@ -270,7 +265,8 @@
     width: 100%;
   }
   .motif {
-    padding: 10px 5px;
+    /* padding: 10px 5px; */
+    padding: 10px;
     display: grid;
     grid-template-columns: 10% 15% 15% 15% 15% 15% 15%;
     grid-template-rows: 40px 0px 0px 0px 0px;
@@ -577,13 +573,15 @@
             {#if key && mode && length && tempo && timeSignature}
               <div class="motif-settings">
                 <MotifSettingsList
-                  title="settings:"
+                  title="settings"
                   settings={{ key: key, mode: mode, [tempo.type]: tempo.units, 'time signature': `${timeSignature.join('/')}`, [length.type]: length.units }} />
               </div>
             {/if}
-            {#if getMotifDisplay(motifId)}
-              <div class="motif-display">{getMotifDisplay(motifId)}</div>
-            {/if}
+
+            <div class="motif-display">
+              <button on:click={e => openMotifView(motifId)}>open</button>
+            </div>
+
             <div class="download">
               <DownloadControls
                 selectedMotifs={[motifs.find(m => m.id === motifId)]} />
@@ -591,18 +589,12 @@
             {#if transformations && transformations.length}
               <div class="transformations">
                 <MotifSettingsList
-                  title="transformations:"
+                  title="transformations"
                   settings={transformations.reduce((map, { type, params }) => {
                     map[type] = params.join(', ');
                     return map;
                   }, {})} />
               </div>
-              <!-- <h4 class="transformations-header">transformations:</h4>
-              <ul class="transformations">
-                {#each transformations as { type, params }, i}
-                  <li class="transformation">{type}: {params.join(', ')}</li>
-                {/each}
-              </ul> -->
             {/if}
             {#if viewType === 'nested' && motifVariationCount(motifId)}
               <svelte:self
