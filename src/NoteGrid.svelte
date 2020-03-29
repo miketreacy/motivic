@@ -1,5 +1,6 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
+  import { newAudioContext } from "./Audio.js";
   import { createEventDispatcher } from "svelte";
   import Config from "./Config.js";
   import Utils from "./Utils.js";
@@ -8,8 +9,6 @@
   export let width = Config.gridDisplayWidth;
   export let height = Config.gridDisplayHeight;
   export let motifs = [];
-  export let octaveLow = 3;
-  export let octaveHigh = 4;
   export let writable = true;
 
   const numberOfPitches = 12;
@@ -25,44 +24,30 @@
     medium: { width: 30, fontSize: 15, yOffset: -13 },
     large: { width: 40, fontSize: 20, yOffset: -17 }
   };
-  const gridDisplayFields = [
-    {
-      type: "select",
-      id: "octave_low",
-      label: "Low Octave",
-      value: 3,
-      options: Config.gridDisplayOctaves,
-      info: "Uses piano octaves (Scientific Pitch Notation)"
-    },
-    {
-      type: "select",
-      id: "octave_high",
-      label: "High Octave",
-      value: 4,
-      options: Config.gridDisplayOctaves,
-      info: "Uses piano octaves (Scientific Pitch Notation)"
-    },
-    {
-      type: "select",
-      id: "grid-display-columns",
-      label: "Columns",
-      value: 8,
-      options: Config.gridDisplayColumns,
-      info: "Number of grid columns to display"
-    }
-  ];
 
+  let gridOctaveMap = {
+    low: Config.gridDisplayOctaveLow,
+    high: Config.gridDisplayOctaveHigh
+  };
   let columns;
+  let viewColumns;
+  let totalColumns;
   let rows;
   let pitchSet;
   let innerWidth;
+  let horizontalGrids = 1;
   let selectedColumns = 8;
   let selectedOctaves = {
     low: gridDisplayOctaveLow,
     high: gridDisplayOctaveHigh
   };
+  let displayColumnOptions = [];
+  let displayOctaveOptions = [];
   let cellDuration;
   let gridViewBox;
+  let octaveLow;
+  let octaveHigh;
+  let audioSession = { ctx: null, isPlaying: false, timeoutIDs: [] };
 
   function getGridSize() {
     let gridSize = innerWidth > 768 ? "medium" : "small";
@@ -77,21 +62,56 @@
     };
   }
 
-  function getMelodyColumns(melody) {
+  function getMotifColumns(melody) {
+    // TODO: enforce a minimum number of columns
+    // TODO: so motifs don't take too many horizontal grids to display
+    // TODO: enforce a max number of columns relative to viewport width
+    // TODO: so it's usable on small screens
+    // find the smallest possible number of columns to display the motif with
     return Config.gridDisplayColumns.find(num =>
       melody.notes.every(n => n.duration % (Config.rhythmicUnit / num) === 0)
     );
   }
 
-  function getMelodyOctaves(melody) {
+  function getViewColumns(motif) {
+    if (motif) {
+      return getMotifColumns(motif);
+    }
+    return Config.gridDisplayColumns;
+  }
+
+  function getTotalColumns(viewColumns, horizontalGrids) {
+    return viewColumns * horizontalGrids;
+  }
+
+  function getMotifGrids(motif, columns) {
+    let totalDuration = motif.notes.reduce((sum, n) => sum + n.duration, 0);
+    return totalDuration / columns;
+  }
+
+  function getMotifOctaveMap(melody) {
     let melodyOctaves = melody.notes
       .filter(n => typeof n.octave === "number")
       .map(n => n.octave);
     return {
-      low: Math.min(melodyOctaves),
-      high: Math.max(melodyOctaves)
+      low: Math.min(...melodyOctaves),
+      high: Math.max(...melodyOctaves)
     };
   }
+
+  function getGridOctaveMap(motif) {
+    if (motif) {
+      return getMotifOctaveMap(motif);
+    } else
+      return {
+        low: Config.gridDisplayOctaveLow,
+        high: Config.gridDisplayOctaveHigh
+      };
+  }
+
+  function getOctaveLow() {}
+
+  function getOctaveHigh() {}
 
   function renderNote(cols) {
     let beatsPerCol = Config.rhythmicUnit / cols;
@@ -229,6 +249,7 @@
       inputEl.value = Math.min(parseInt(otherInputEl.value), inputVal);
     }
   }
+
   function saveGridMelody() {
     let gridMelody = mapMelody(getMelody());
     let name =
@@ -236,11 +257,12 @@
     processNewMotif(gridMelody, name, "theme", "", "Grid melody created");
   }
 
-  function getGridViewBox(width, height, columns, rows) {
-    let x = width / (columns + 1);
+  function getGridViewBox(width, height, columns, rows, horizontalGrids) {
+    let x = width / columns + 1;
     let y = height / rows;
-    console.info(`getGridViewBox() ${x} ${y} ${width} ${height}`);
-    return `${x} ${y} ${width} ${height}`;
+    let viewBox = `${x} ${y} ${width} ${height}`;
+    console.info(`getGridViewBox() ${viewBox}`);
+    return viewBox;
   }
 
   function getCellDuration(columns) {
@@ -256,8 +278,8 @@
   function getNoteValueRowMap(rows, pitchSet) {
     let pitches = pitchSet.slice().reverse();
     // match note.value to row
-    let noteValueRowMap = [...Array(rows).keys()]
-      .map(n => n + 1)
+    let noteValueRowMap = Utils.general
+      .range(rows, 1)
       .reduce((map, row, idx) => {
         let note = pitches[idx];
         map[note.value] = row;
@@ -326,16 +348,54 @@
     return matrix;
   }
 
+  function getRows(octaveMap, numberOfPitches) {
+    return (octaveMap.high - octaveMap.low + 1) * numberOfPitches;
+  }
+
+  function getDisplayOctaveOptions(octaveMap) {
+    let size = octaveMap.high - octaveMap.low + 1;
+    return Utils.general.range(size, octaveMap.low);
+  }
+
+  function getDisplayColumnOptions(columns, motif = null) {
+    // TODO: enforce a minimum number of columns
+    // TODO: so motifs don't take too many horizontal grids to display
+    // TODO: enforce a max number of columns relative to viewport width
+    // TODO: so it's usable on small screens
+    return Config.gridDisplayColumns;
+  }
+
+  onMount(() => {
+    // only instantiate one AudioContext per grid session
+    audioSession.ctx = newAudioContext();
+  });
+
+  onDestroy(async () => {
+    await audioSession.ctx.close();
+    // delete Audio.context to prevent memory leak
+    delete audioSession.ctx;
+  });
+
   // For now set up to handle first motif in array - add multi-motif grid overlay rendering later
   $: motif = motifs[0];
-  $: columns = getMelodyColumns(motif);
-  $: octaves = getMelodyOctaves(motif);
-  $: rows = (octaveHigh - octaveLow + 1) * numberOfPitches;
-  $: pitchSet = Utils.melody.getPitchSet(octaveLow, octaveHigh);
-  $: cellDuration = getCellDuration(columns);
-  $: gridViewBox = getGridViewBox(width, height, columns, rows);
+  $: gridOctaveMap = getGridOctaveMap(motif);
+  $: viewColumns = getViewColumns(motif);
+  $: horizontalGrids = getMotifGrids(motif, viewColumns);
+  $: totalColumns = getTotalColumns(viewColumns, horizontalGrids);
+  $: rows = getRows(gridOctaveMap, numberOfPitches);
+  $: pitchSet = Utils.melody.getPitchSet(gridOctaveMap.low, gridOctaveMap.high);
+  $: cellDuration = getCellDuration(viewColumns);
+  $: gridViewBox = getGridViewBox(
+    width,
+    height,
+    viewColumns,
+    rows,
+    horizontalGrids
+  );
   $: noteValueRowMap = getNoteValueRowMap(rows, pitchSet);
-  $: selectionMatrix = getSelectionMatrix(motif.notes, columns);
+  $: selectionMatrix = getSelectionMatrix(motif.notes, totalColumns);
+  $: displayColumnOptions = getDisplayColumnOptions(viewColumns, motif);
+  $: displayOctaveOptions = getDisplayOctaveOptions(gridOctaveMap);
 </script>
 
 <style>
@@ -347,6 +407,10 @@
     border: 1px solid;
     border-radius: 5px;
     margin: 0 10px;
+    overflow-x: scroll;
+    white-space: nowrap;
+    flex-wrap: nowrap;
+    overflow: auto;
   }
 
   .grid-display {
@@ -365,25 +429,53 @@
 
 <svelte:window bind:innerWidth />
 <section id="note-grid">
-
-  <div id="grid-wrap">
+  <div id="grid-wrap" style={`width: ${width}px;`}>
     <Grid
       id="svg-grid"
-      {width}
+      width={width * horizontalGrids}
       {height}
       {rows}
-      columns={columns + 1}
+      columns={totalColumns + 1}
       viewBox={gridViewBox}
       labelSet={pitchSet}
-      motifNotes={motif.notes}
       selections={selectionMatrix}
-      {writable} />
+      {writable}
+      {audioSession} />
   </div>
   <button class="reset" data-section="note-grid">reset</button>
   <div>each cell is {cellDuration}</div>
+  <div>grid {1} of {horizontalGrids}</div>
   <div class="grid-display">
-    {#each gridDisplayFields as field}
-      <Field {...field} on:inputValueChange on:displayAlert />
-    {/each}
+
+    <Field
+      type="select"
+      id="octave_low"
+      label="Low Octave"
+      value={3}
+      options={displayOctaveOptions}
+      info="Uses piano octaves (Scientific Pitch Notation)"
+      on:inputValueChange
+      on:displayAlert />
+
+    <Field
+      type="select"
+      id="octave_high"
+      label="High Octave"
+      value={4}
+      options={displayOctaveOptions}
+      info="Uses piano octaves (Scientific Pitch Notation)"
+      on:inputValueChange
+      on:displayAlert />
+
+    <Field
+      type="select"
+      id="grid-display-columns"
+      label="columns"
+      value={8}
+      options={displayColumnOptions}
+      info="Number of grid columns to display"
+      on:inputValueChange
+      on:displayAlert />
+
   </div>
 </section>

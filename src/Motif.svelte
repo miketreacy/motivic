@@ -47,7 +47,7 @@
   }
 
   function getGridWidth(innerWidth) {
-    return innerWidth * 0.9;
+    return innerWidth - 20;
   }
 
   onMount(() => {

@@ -2,6 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import { motifStore, settingStore } from "./Stores.js";
   import Config from "./Config.js";
+  import Utils from "./Utils.js";
   import Header from "./Header.svelte";
   import Main from "./Main.svelte";
   import Footer from "./Footer.svelte";
@@ -36,9 +37,12 @@
    * Updates user data in memory in the global MOTIVIC namespace and in the component waterfall
    */
   function updateGlobalUserData(items, type) {
-    let initGlobal = window.MOTIVIC || { user: { motifs: [], settings: [] } };
+    let initGlobal = window[Config.nameSpace] || {
+      user: { motifs: [], settings: [] },
+      lib: { utils: Utils }
+    };
     initGlobal.user[type] = items;
-    window.MOTIVIC = initGlobal;
+    window[Config.nameSpace] = initGlobal;
     if (type === "motifs") {
       motifs = items;
     }
@@ -63,7 +67,7 @@
     let { existingIds, newIds, add } = event.detail;
 
     if (add) {
-      selectedMotifIds = [...new Set([...existingIds, ...newIds])];
+      selectedMotifIds = Utils.general.unique([...existingIds, ...newIds]);
     } else {
       selectedMotifIds = existingIds.filter(id => !newIds.includes(id));
     }

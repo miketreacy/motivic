@@ -70,7 +70,7 @@
 
   function updateSelectedMotifIds(motifIds, add = true) {
     if (add) {
-      return [...new Set([...selectedMotifIds, ...motifIds])];
+      return Utils.general.unique([...selectedMotifIds, ...motifIds]);
     } else {
       return selectedMotifIds.filter(id => !motifIds.includes(id));
     }

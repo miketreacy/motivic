@@ -9,6 +9,27 @@ const Utils = {
     clone: function(val) {
       return JSON.parse(JSON.stringify(val));
     },
+
+    /**
+     * Takes an array of primitive values and makes them unique.
+     * @param {Array} arr An array
+     * @returns {Array} unique array
+     */
+    unique: function(arr) {
+      return [...new Set([...arr])];
+    },
+
+    /**
+     * Generates a numberical range of ints
+     * @param {number} size Length of range array to return
+     * @param {number} startAt Number to start range
+     * @param {number} step Distance between range members
+     * @returns {Array} Range
+     */
+    range: function(size, startAt = 0, step = 1) {
+      return [...Array(size).keys()].map(i => i * step + startAt);
+    },
+
     /**
      * Generates and returns a random alphanumeric string. Will return only alpha or numeric
      * characters if optional type argument is passed.

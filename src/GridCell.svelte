@@ -12,9 +12,8 @@
   export let content = "";
   export let fontSize;
   export let selected = false;
-
-  let AudioSession = { ctx: null, isPlaying: false, timeoutIDs: [] };
-  const timelineStart = 0;
+  export let writable;
+  export let audioSession;
 
   function deSelectCell(el) {
     let tieId = el.dataset.tie_id;
@@ -107,7 +106,7 @@
     let tempo = 120;
     let timeSig = [4 / 4];
     let voice = "square";
-    playTone(AudioSession.ctx, note, 0, tempo, timeSig, voice);
+    playTone(audioSession.ctx, note, 0, tempo, timeSig, voice);
   }
 
   function mouseDownHandler(e) {
@@ -142,17 +141,7 @@
     // }
   }
 
-  onMount(() => {
-    AudioSession.ctx = newAudioContext();
-  });
-
-  onDestroy(async () => {
-    await AudioSession.ctx.close();
-    // delete Audio.context to prevent memory leak
-    delete AudioSession.ctx;
-  });
-
-  $: disabled = !AudioSession.ctx;
+  $: disabled = !audioSession.ctx;
 </script>
 
 <style>

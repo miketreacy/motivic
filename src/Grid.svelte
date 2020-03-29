@@ -8,9 +8,9 @@
   export let columns;
   export let labelSet;
   export let viewBox = "";
-  export let motifNotes = [];
   export let selections = [[]];
   export let writable = true;
+  export let audioSession;
 
   let defId = "cell";
   let fontSize;
@@ -48,17 +48,19 @@
 
 <style>
   .grid {
+    display: flex;
+    flex: 0 0 auto;
   }
 </style>
 
 <svelte:window bind:innerWidth />
 
-<svg class="grid" {id} {width} {height} {viewBox}>
+<svg class="grid" {id} {width} {height} {viewBox} overflow="scroll">
   <defs>
     <rect id={defId} x="0" y="0" width={cellWidth} height={cellHeight} />
   </defs>
   <g {id}>
-    {#each [...Array(rows).keys()].map(n => n + 1) as row, idx}
+    {#each Utils.general.range(rows, 1) as row, idx}
       <GridRow
         {defId}
         {row}
@@ -66,9 +68,10 @@
         {cellWidth}
         {cellHeight}
         note={pitches[idx]}
-        motifNotes={motifNotes.filter(n => n.value === pitches[idx].value)}
         {selections}
-        {fontSize} />
+        {fontSize}
+        {writable}
+        {audioSession} />
     {/each}
   </g>
 </svg>
