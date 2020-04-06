@@ -222,6 +222,7 @@ section {
   display: flex;
   flex-direction: row;
   width: 100%;
+  justify-content: space-evenly;
 }
 .motif-controls button,
 .motif-controls input,
@@ -231,11 +232,13 @@ section {
   border-radius: 5px;
   border-style: none;
   padding: 4px 12px 6px;
-  margin: 5px;
-  max-width: 120px;
+  margin: 0px;
+  max-width: 100px;
   display: flex;
   flex-direction: column;
-  transition: background-color 0.5s ease;
+  transition-property: background-color, color;
+  transition-duration: 0.5s;
+  transition-timing-function: ease;
   flex: 1 1 0;
 }
 .motif-controls button:disabled,

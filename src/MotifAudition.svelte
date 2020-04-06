@@ -13,7 +13,7 @@
 <style>
   .motif-audition {
     position: relative;
-    padding: 5px;
+    padding: 10px;
     background-color: var(--theme_color_4);
     border-radius: 5px;
   }
@@ -32,9 +32,13 @@
   }
   .dismiss {
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: 10px;
+    right: 10px;
     width: 30px;
+  }
+
+  .motif-controls {
+    justify-content: space-between;
   }
 </style>
 
@@ -53,6 +57,7 @@
       on:displayAlert />
     <CrudControls
       displayIcons={false}
+      displayCompact={true}
       type="motifs"
       saveMode="local"
       selectedItems={[motif]}

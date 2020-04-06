@@ -198,6 +198,10 @@
     position: -webkit-sticky;
     top: 59px;
     z-index: var(--front);
+    justify-content: space-evenly;
+    padding: 10px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
   }
   .scrolldown .motif-controls {
     top: 0px;
@@ -211,6 +215,9 @@
     background-color: var(--theme_color_5);
     border: none;
     z-index: var(--front);
+    padding-bottom: 10px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
   }
   .scrolldown .list-controls {
     top: 54px;
@@ -578,9 +585,11 @@
               </div>
             {/if}
 
-            <div class="motif-display">
+            <!-- disabling motif view for now!!!
+            TODO: enable this later when grid view is ready!
+              <div class="motif-display">
               <button on:click={e => openMotifView(motifId)}>open</button>
-            </div>
+            </div> -->
 
             <div class="download">
               <DownloadControls

@@ -9,26 +9,20 @@
     loopMelody,
     stopLoop
   } from "./Audio.js";
+  import DropDown from "./DropDown.svelte";
   export let selectedVoice = "sine";
   export let selectedMotifs = [];
-  export let displayIcons = true;
   export let displayCompact = false;
   let isPlaying = false;
   let isLooping = false;
   let disabled = true;
   let AudioSession = { ctx: null, isPlaying: false, timeoutIDs: [] };
   const timelineStart = 0;
-  const waveFormIcon = {
+  const waveFormIconMap = {
     sawtooth: "&#8961",
     sine: "&#8767;",
     square: "&#9633;",
     triangle: "&#9651;"
-  };
-  const waveFormNameDisplay = {
-    sawtooth: "  sawtooth",
-    sine: "     sine;",
-    square: "   square",
-    triangle: " triangle"
   };
   const dispatch = createEventDispatcher();
 
@@ -85,6 +79,10 @@
     }
   }
 
+  function selectVoice(event) {
+    selectedVoice = event.detail.selection;
+  }
+
   onMount(() => {
     AudioSession.ctx = newAudioContext();
   });
@@ -99,15 +97,6 @@
 </script>
 
 <style>
-  select {
-    width: 50%;
-    white-space: normal;
-    min-width: 58.2px;
-    padding-top: 10px;
-  }
-  select.compact {
-    padding: 12px 7px 7px 7px;
-  }
   .playing {
     color: var(--theme_color_9);
   }
@@ -115,11 +104,15 @@
   button > span {
     flex: 1 1 0;
   }
-
+  button.compact {
+    max-width: 60px;
+    min-width: var(--touch);
+    margin: 0px;
+  }
   button.compact > span {
     flex: initial;
   }
-  select:disabled,
+
   button:disabled {
     background-color: var(--theme_color_4);
     color: var(--theme_color_6);
@@ -128,40 +121,33 @@
 
 <!-- Don't display AudioControls if playback is impossible -->
 {#if AudioSession.ctx}
-  <select
-    bind:value={selectedVoice}
-    class:compact={!displayIcons}
+  <DropDown
+    id="voice-control"
+    options={Config.audio.voices}
+    {displayCompact}
     {disabled}
-    data-char-length={selectedVoice ? selectedVoice.length : 0}>
-    {#each Config.audio.voices as [voice, shortName]}
-      <option value={voice}>
-        <span>{getVoiceOptionDisplay(voice, shortName, displayCompact)}</span>
-        {#if displayIcons}
-          <span>
-            {@html waveFormIcon[voice]}
-          </span>
-        {/if}
-      </option>
-    {/each}
-  </select>
+    optionIconMap={waveFormIconMap}
+    on:updateSelection={selectVoice} />
+
   <button
     class="play"
-    class:compact={!displayIcons}
+    class:compact={displayCompact}
     class:playing={isPlaying}
     {disabled}
     on:click={playClickHandler}>
-    {#if displayIcons}
+    {#if !displayCompact}
       <span>&#9658;</span>
     {/if}
     <span>play</span>
   </button>
+
   <button
     class="loop"
-    class:compact={!displayIcons}
+    class:compact={displayCompact}
     class:playing={isLooping}
     {disabled}
     on:click={loopClickHandler}>
-    {#if displayIcons}
+    {#if !displayCompact}
       <span>&infin;</span>
     {/if}
     <span>loop</span>
