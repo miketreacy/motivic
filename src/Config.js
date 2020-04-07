@@ -6,14 +6,14 @@ const Config = {
       release: 100,
       volume: 1,
       type: "sine",
-      timeLine: 0
+      timeLine: 0,
     },
     voices: [
       ["sine", "sine"],
       ["square", "square"],
       ["sawtooth", "saw"],
-      ["triangle", "tri"]
-    ]
+      ["triangle", "tri"],
+    ],
   },
   nameSpace: nameSpace,
   views: [
@@ -22,7 +22,7 @@ const Config = {
     "randomizer",
     "transformer",
     "uploader",
-    "motifs"
+    "motifs",
   ],
   homePage: "randomizer",
   feature: {
@@ -31,7 +31,7 @@ const Config = {
     cloudSave: false,
     noteGrid: false,
     crudAPI: false,
-    savedSettings: false
+    savedSettings: false,
   },
   timeSignatureBeats: [1, 2, 3, 4, 5, 6, 7, 8, 9],
   timeSignatureUnits: [1, 2, 4, 8, 16],
@@ -42,7 +42,7 @@ const Config = {
     [8, "8th"],
     [16, "quarter"],
     [32, "half"],
-    [64, "whole"]
+    [64, "whole"],
   ],
   notes: ["c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b"],
   frequencies: [
@@ -64,7 +64,7 @@ const Config = {
       a: 27.5,
       "a#": 29.135,
       bb: 29.135,
-      b: 30.868
+      b: 30.868,
     },
     {
       // octave 1
@@ -84,7 +84,7 @@ const Config = {
       a: 55,
       "a#": 58.27,
       bb: 58.27,
-      b: 61.735
+      b: 61.735,
     },
     {
       // octave 2
@@ -104,7 +104,7 @@ const Config = {
       a: 110,
       "a#": 116.541,
       bb: 116.541,
-      b: 123.471
+      b: 123.471,
     },
     {
       // octave 3
@@ -124,7 +124,7 @@ const Config = {
       a: 220,
       "a#": 233.082,
       bb: 233.082,
-      b: 246.942
+      b: 246.942,
     },
     {
       // octave 4
@@ -144,7 +144,7 @@ const Config = {
       a: 440,
       "a#": 466.164,
       bb: 466.164,
-      b: 493.883
+      b: 493.883,
     },
     {
       // octave 5
@@ -164,7 +164,7 @@ const Config = {
       a: 880,
       "a#": 932.328,
       bb: 932.328,
-      b: 987.767
+      b: 987.767,
     },
     {
       // octave 6
@@ -184,7 +184,7 @@ const Config = {
       a: 1760,
       "a#": 1864.655,
       bb: 1864.655,
-      b: 1975.533
+      b: 1975.533,
     },
     {
       // octave 7
@@ -204,7 +204,7 @@ const Config = {
       a: 3520,
       "a#": 3729.31,
       bb: 3729.31,
-      b: 3951.066
+      b: 3951.066,
     },
     {
       // octave 8
@@ -224,7 +224,7 @@ const Config = {
       a: 7040,
       "a#": 7458.62,
       bb: 7458.62,
-      b: 7902.132
+      b: 7902.132,
     },
     {
       // octave 9
@@ -244,8 +244,8 @@ const Config = {
       a: 14080,
       "a#": 14917.24,
       bb: 14917.24,
-      b: 15804.264
-    }
+      b: 15804.264,
+    },
   ],
   modes: {
     chromatic: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], // all 12 notes
@@ -256,7 +256,7 @@ const Config = {
     lydian: [0, 2, 4, 6, 7, 9, 11],
     mixolydian: [0, 2, 4, 5, 7, 9, 10],
     aeolian: [0, 2, 3, 5, 7, 8, 10], // aka Minor scale
-    locrian: [0, 1, 3, 5, 6, 8, 10]
+    locrian: [0, 1, 3, 5, 6, 8, 10],
   },
   gridDisplayColumns: [8, 16, 32, 64],
   gridDisplayWidth: 300,
@@ -266,12 +266,12 @@ const Config = {
   gridDimensionsMap: {
     small: 300,
     medium: 400,
-    large: 500
+    large: 500,
   },
   gridLabelSizeMap: {
     small: { width: 20, fontSize: 12, yOffset: -9 },
     medium: { width: 30, fontSize: 15, yOffset: -13 },
-    large: { width: 40, fontSize: 20, yOffset: -17 }
+    large: { width: 40, fontSize: 20, yOffset: -17 },
   },
   gridFontSize: 12,
   itemCrudModalDefaultProps: {
@@ -280,7 +280,7 @@ const Config = {
     itemChildren: [],
     formType: "",
     show: false,
-    actionComplete: false
+    actionComplete: false,
   },
   rhythmicUnit: 64,
   midiTicksPerQuarterNote: 128,
@@ -289,11 +289,11 @@ const Config = {
     octave: {
       low: 0,
       middle: 4,
-      high: 8
+      high: 8,
     },
     timeSignature: {
       beat: 4,
-      unit: 4
+      unit: 4,
     },
     bpm: 120,
     key: "c",
@@ -307,17 +307,17 @@ const Config = {
         // Setting the shortest randomly-generated note to a 16th note (4/64)
         min: 4,
         // Setting the longest randomly-generated note to a whole note (64/64)
-        max: 32
-      }
+        max: 32,
+      },
     },
     melody: {
       length: 2,
       // Smallest & largest step-jumps allowed between notes in a melody.
       leap: {
         min: 1,
-        max: 24
-      }
-    }
+        max: 24,
+      },
+    },
   },
   api: {
     baseURL: "https://motivic.io/api",
@@ -326,14 +326,16 @@ const Config = {
         path: "/melody/random",
         method: "POST",
         mode: "cors",
-        headers: new Headers({ "Content-Type": "application/json" })
+        headers: new Headers({ "Content-Type": "application/json" }),
+        timeoutMilliseconds: 5000,
       },
       transformer: {
         path: "/melody/transform",
         method: "POST",
         mode: "cors",
-        headers: new Headers({ "Content-Type": "application/json" })
-      }
+        headers: new Headers({ "Content-Type": "application/json" }),
+        timeoutMilliseconds: 5000,
+      },
     },
     crud: {
       createOneMotif: { method: "POST", path: "/motif" },
@@ -343,25 +345,25 @@ const Config = {
       updateOneMotif: { method: "PUT", path: "/motif" },
       updateMultipleMotifs: { method: "PUT", path: "/motifs" },
       deleteOneMotif: { method: "DELETE", path: "/motif" },
-      deleteMultipleMotifs: { method: "DELETE", path: "/motifs" }
-    }
+      deleteMultipleMotifs: { method: "DELETE", path: "/motifs" },
+    },
   },
   userData: {
     schema: {
       motifs: [],
-      settings: []
+      settings: [],
     },
     savedItemLimit: {
       motifs: 10,
-      settings: 10
-    }
+      settings: 10,
+    },
   },
   paginationViews: { motifs: `${nameSpace}.user.motifs` },
   pagination: {
-    itemsPerPage: 10
+    itemsPerPage: 10,
   },
   downloadFileTypes: ["midi", "json"],
   motifSorts: ["created", "name"],
-  motifGenerationDisplayCount: 2
+  motifGenerationDisplayCount: 2,
 };
 export default Config;

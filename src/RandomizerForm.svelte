@@ -40,14 +40,16 @@
         id: "key",
         label: "Key",
         value: "c",
-        options: notes
+        options: notes,
+        info: "The tonic of the melody"
       },
       {
         type: "select",
         id: "mode",
         label: "Mode",
         value: "chromatic",
-        options: Object.keys(modes)
+        options: Object.keys(modes),
+        info: "The sequence of intervals that comprise the scale"
       }
     ],
     [

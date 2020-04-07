@@ -20,6 +20,7 @@
   export let topControls = true;
   export let formControls = ["toggle", "reset", "apply"];
   export let formOpen = false;
+
   let scrollPos;
   const apiUrl = submitOptions
     ? `${Config.api.baseURL}${submitOptions.path}`
@@ -170,9 +171,10 @@
     console.dir(reqBody);
     // rollDice();
     // toggleLoader(doc.querySelector("#randomize .dice"), true);
-    let [data, error] = await Utils.http.awaitFetch(
+    let [data, error] = await Utils.http.awaitFetchTimeout(
       apiUrl,
-      getApiParams(reqBody)
+      getApiParams(reqBody),
+      submitOptions.timeoutMilliseconds
     );
     if (data) {
       responseCallbackFn(data);
@@ -180,7 +182,7 @@
       dispatch("displayAlert", {
         visible: true,
         type: "error",
-        message: `${formTitle} API operation failed.\n${error}`,
+        message: `${formTitle} API operation failed.\n${error.message}`,
         displayTimeMs: 1500,
         dismissable: true
       });

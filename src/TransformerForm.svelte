@@ -33,13 +33,15 @@
         value: 0,
         step: 1,
         min: -11,
-        max: 11
+        max: 11,
+        info: "Move the melody up or down in pitch"
       },
       {
         type: "checkbox",
         id: "invert",
         label: "Invert",
-        value: false
+        value: false,
+        info: "Turn the melody upside-down"
       }
     ],
     [
@@ -47,13 +49,15 @@
         type: "checkbox",
         id: "reverse_pitch_1",
         label: "Reverse Pitches",
-        value: false
+        value: false,
+        info: "Turn the melody's pitches backwards"
       },
       {
         type: "checkbox",
         id: "reverse_rhythm_0",
         label: "Reverse Durations",
-        value: false
+        value: false,
+        info: "Turn the melody's note durations backwards"
       }
     ],
     [
@@ -64,7 +68,8 @@
         value: 0,
         step: 2,
         min: 0,
-        max: 4
+        max: 4,
+        info: "Increase the duration of notes by this factor"
       },
       {
         type: "number",
@@ -73,7 +78,8 @@
         value: 0,
         step: 2,
         min: 0,
-        max: 4
+        max: 4,
+        info: "Reduce the duration of notes by this factor"
       },
       {
         type: "number",
@@ -82,7 +88,8 @@
         value: 0,
         step: 1,
         min: 0,
-        max: 64
+        max: 64,
+        info: "Offset the start of the melody by this many 64th notes"
       }
     ],
     [
@@ -91,7 +98,8 @@
         id: "name",
         label: "Name",
         max: 16,
-        apiField: false
+        apiField: false,
+        info: "The name of the new transformed motif"
       }
     ]
   ];

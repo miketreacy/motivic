@@ -92,7 +92,6 @@
     widows: 100%;
     top: -25px;
     position: relative;
-    pointer-events: none;
   }
   .submit {
     background-color: var(--theme_color_1);
@@ -136,6 +135,7 @@
     padding: 10px;
     text-align: left;
     white-space: pre-wrap;
+    background-color: var(--theme_color_5);
   }
   [data-success="false"] {
     border: 2px solid var(--theme_color_8);

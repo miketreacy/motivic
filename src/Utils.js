@@ -6,7 +6,7 @@ let win = window;
 let doc = document;
 const Utils = {
   general: {
-    clone: function(val) {
+    clone: function (val) {
       return JSON.parse(JSON.stringify(val));
     },
 
@@ -15,7 +15,7 @@ const Utils = {
      * @param {Array} arr An array
      * @returns {Array} unique array
      */
-    unique: function(arr) {
+    unique: function (arr) {
       return [...new Set([...arr])];
     },
 
@@ -26,8 +26,8 @@ const Utils = {
      * @param {number} step Distance between range members
      * @returns {Array} Range
      */
-    range: function(size, startAt = 0, step = 1) {
-      return [...Array(size).keys()].map(i => i * step + startAt);
+    range: function (size, startAt = 0, step = 1) {
+      return [...Array(size).keys()].map((i) => i * step + startAt);
     },
 
     /**
@@ -37,13 +37,13 @@ const Utils = {
      * @param {string} [type] Optional type of string (alpha or num).
      * @returns {string} A random alphanumeric string.
      */
-    randomString: function(length, type = "alphaNum") {
+    randomString: function (length, type = "alphaNum") {
       let alpha = "abcdefghijklmnopqrstuvwxyz";
       let num = "0123456789";
       let charMap = {
         alpha: alpha.toUpperCase() + alpha,
         num: num,
-        alphaNum: num + alpha + num + alpha.toUpperCase() + num
+        alphaNum: num + alpha + num + alpha.toUpperCase() + num,
       };
       let text = "";
 
@@ -60,14 +60,12 @@ const Utils = {
      * @param {number} totalCharSpace total amount of spaces to fill
      * @returns {string} padded string
      */
-    leftPad: function(str, totalCharSpace) {
+    leftPad: function (str, totalCharSpace) {
       let prefix = "";
       let result = str;
       let gap = totalCharSpace - str.length;
       if (gap > 0) {
-        prefix = Array(gap)
-          .fill(" ")
-          .join("");
+        prefix = Array(gap).fill(" ").join("");
       }
       return `${prefix}${result}`;
     },
@@ -77,7 +75,7 @@ const Utils = {
      * @param {string} str String to singularize
      * @returns {string} Singularized string
      */
-    singularize: function(str) {
+    singularize: function (str) {
       let split = str.split("");
       return split.filter((char, i, arr) => i < arr.length - 1).join("");
     },
@@ -85,7 +83,7 @@ const Utils = {
      * An immutable wrapper around Array.prototype.sort() that doesn't mutate the original array.
      * @param {*} arr
      */
-    immutableSort: function(arr) {
+    immutableSort: function (arr) {
       return arr.concat().sort();
     },
     /**
@@ -94,7 +92,7 @@ const Utils = {
      * @param {*} sortOrder
      * @returns {Function} compareFunction to be passed to Array.prototype.sort()
      */
-    objectKeySorterAlpha: function(key, sortOrder = "asc") {
+    objectKeySorterAlpha: function (key, sortOrder = "asc") {
       const alphaSortMap = {
         asc: (a, b) => {
           let aVal = a[key].toLowerCase();
@@ -117,7 +115,7 @@ const Utils = {
             return 1;
           }
           return 0;
-        }
+        },
       };
       return alphaSortMap[sortOrder];
     },
@@ -128,14 +126,18 @@ const Utils = {
      * @param {*} convertorFn
      * @returns {Function} compareFunction to be passed to Array.prototype.sort()
      */
-    objectKeySorterNum: function(key, sortOrder = "asc", convertorFn = x => x) {
+    objectKeySorterNum: function (
+      key,
+      sortOrder = "asc",
+      convertorFn = (x) => x
+    ) {
       const alphaSortMap = {
         asc: (a, b) => {
           return convertorFn(a[key]) - convertorFn(b[key]);
         },
         desc: (a, b) => {
           return convertorFn(b[key]) - convertorFn(a[key]);
-        }
+        },
       };
       return alphaSortMap[sortOrder];
     },
@@ -145,8 +147,8 @@ const Utils = {
      * @param {boolean} displayTime
      * @returns {string} formatted date string
      */
-    dateDisplay: function(date, displayTime = true) {
-      const pad = n => (n < 10 ? "0" + n.toString() : n.toString());
+    dateDisplay: function (date, displayTime = true) {
+      const pad = (n) => (n < 10 ? "0" + n.toString() : n.toString());
       let days = pad(date.getDate());
       let mons = pad(date.getMonth() + 1);
       let year = date.getFullYear();
@@ -169,7 +171,7 @@ const Utils = {
      * @param {number} interval  The number of milliseconds to wait before the callback can be fired again.
      * @param {Array} cbArgs Array of arguments to be applied to the callback function.
      */
-    throttle: function(timeout, cb, interval, cbArgs) {
+    throttle: function (timeout, cb, interval, cbArgs) {
       // ignore events as long as a callback execution is in the queue
       cbArgs = cbArgs && cbArgs.length ? [...cbArgs] : null;
       if (!timeout) {
@@ -180,7 +182,25 @@ const Utils = {
           }
         }, interval);
       }
-    }
+    },
+
+    /**
+     * A higher-order timeout wrapper for promises, such as window.fetch()
+     * @param {number} ms Milliseconds to wait before rejecting promise
+     */
+    timeout: function (ms) {
+      /**
+       * @param {Promise} promise Promise to wrap
+       */
+      return function (promise) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            reject(new Error(`fetch timed out after ${ms} ms`));
+          }, ms);
+          promise.then(resolve, reject);
+        });
+      };
+    },
   },
   http: {
     /**
@@ -189,23 +209,32 @@ const Utils = {
      * @param {Object} params fetch params object
      * @returns {Array} Tuple of [data, error]
      */
-    awaitFetch: async function(url, params) {
+    awaitFetch: async function (url, params, wrapper = Function.prototype) {
       let data = null;
       let error = null;
       try {
-        let res = await win.fetch(url, params);
+        let res = await wrapper(win.fetch(url, params));
         data = await res.json();
       } catch (e) {
         console.error(e);
         error = e;
       }
       return [data, error];
-    }
+    },
+    /**
+     * Async fetch wrapper with request timeout
+     * @param {string} url URL to request
+     * @param {Object} params fetch params object
+     * @param {number} ms Milliseconds to wait before timing out
+     */
+    awaitFetchTimeout: async function (url, params, ms) {
+      return this.awaitFetch(url, params, Utils.general.timeout(ms));
+    },
   },
   melody: {
-    getVoice: function() {
+    getVoice: function () {
       return [...doc.querySelectorAll("#voice option")].filter(
-        el => el.selected
+        (el) => el.selected
       )[0].dataset.voice;
     },
 
@@ -216,7 +245,7 @@ const Utils = {
      * @param {string} initialPitch First pitch in set.
      * @returns {Array} Ordered set of scientific pitches from low to high.
      */
-    getPitchSet: function(
+    getPitchSet: function (
       lowOctave = Config.default.octave.low,
       highOctave = Config.default.octave.high,
       initialPitch = Config.default.note.pitch
@@ -230,22 +259,22 @@ const Utils = {
           set.push({
             name: n,
             octave: i,
-            value: i * 12 + idx + 1
+            value: i * 12 + idx + 1,
           });
         });
       }
       return set;
     },
 
-    getKeySet: function(key, mode, pitches) {
+    getKeySet: function (key, mode, pitches) {
       let keySet = [];
-      Config.modes[mode].forEach(step => {
+      Config.modes[mode].forEach((step) => {
         keySet.push(pitches[step].name);
       });
       return keySet;
     },
 
-    noteIsValid: function(noteName, set) {
+    noteIsValid: function (noteName, set) {
       return set.includes(noteName) || noteName === "rest";
     },
 
@@ -257,7 +286,7 @@ const Utils = {
      * @param {Array} keySet Set of pitches in the desired scale.
      * @returns {number} Transformed pitch value.
      */
-    transformNoteValue: function(value, keySet) {
+    transformNoteValue: function (value, keySet) {
       let newVal = value + 1;
       let name = this.getNoteName(newVal);
       let result = newVal;
@@ -267,13 +296,13 @@ const Utils = {
       return result;
     },
 
-    getNoteInterval: function(note, keySet) {
+    getNoteInterval: function (note, keySet) {
       return note.name === "rest"
         ? null
-        : keySet.findIndex(k => k === note.name) + 1;
+        : keySet.findIndex((k) => k === note.name) + 1;
     },
 
-    getKeyFilteredValue: function(value, keySet) {
+    getKeyFilteredValue: function (value, keySet) {
       let name = this.getNoteName(value);
       let result = value;
 
@@ -283,8 +312,8 @@ const Utils = {
       return result;
     },
 
-    sequencePitches: function(pitches, pitch) {
-      let tonicIndex = pitches.findIndex(p => p === pitch);
+    sequencePitches: function (pitches, pitch) {
+      let tonicIndex = pitches.findIndex((p) => p === pitch);
       let set = pitches.splice(tonicIndex);
       set = set.concat(pitches);
       return set;
@@ -295,7 +324,7 @@ const Utils = {
      * @param {Array} melody Set of note maps.
      * @returns {string} Initial pitch of note set.
      */
-    getInitialPitch: melody => melody.filter(n => n.value)[0],
+    getInitialPitch: (melody) => melody.filter((n) => n.value)[0],
 
     // TODO: compute all auxillary properties based on the two crucial ones (value & duration)
     /**
@@ -309,7 +338,7 @@ const Utils = {
      * @param {number} noteIdx Index of note within melody array.
      * @returns {Object} New note instance.
      */
-    getNote: function(
+    getNote: function (
       value,
       duration,
       melody,
@@ -320,7 +349,7 @@ const Utils = {
       let pitchSet = this.getPitchSet(0, 0, key);
       let keySet = this.getKeySet(key, mode, pitchSet);
       let isRest = value === null;
-      let thisValue = (v => {
+      let thisValue = ((v) => {
         let val = v;
         if (!isRest) {
           val = val < 0 ? (val % 12) + 12 : val;
@@ -337,7 +366,7 @@ const Utils = {
         : thisValue - (initialPitch ? initialPitch.value : thisValue);
       let interval = this.getNoteInterval(
         {
-          name
+          name,
         },
         keySet
       );
@@ -353,44 +382,44 @@ const Utils = {
         duration,
         steps,
         startingBeat,
-        interval
+        interval,
       };
     },
 
-    getNoteName: function(value = Config.default.note.value) {
+    getNoteName: function (value = Config.default.note.value) {
       let noteModulo = value % 12;
       let noteIndex = noteModulo ? noteModulo - 1 : 11;
       let octavePitches = this.getPitchSet(0, 0);
       return octavePitches[noteIndex].name;
     },
 
-    getNoteOctave: function(value = Config.default.note.value) {
+    getNoteOctave: function (value = Config.default.note.value) {
       let noteModulo = value % 12;
       return noteModulo ? Math.floor(value / 12) : Math.floor(value / 12) - 1;
-    }
+    },
   },
   file: {
     midi: {
-      getBPM: function(microSecondsPerQuarterNote) {
+      getBPM: function (microSecondsPerQuarterNote) {
         let microSecondsPerMinute = 60000000;
         return Math.round(microSecondsPerMinute / microSecondsPerQuarterNote);
       },
 
-      getNextNoteOffEvent: function(arr, idx) {
-        return arr.slice(idx + 1).find(e => e.type === 8);
+      getNextNoteOffEvent: function (arr, idx) {
+        return arr.slice(idx + 1).find((e) => e.type === 8);
       },
 
-      getTicks: function(noteDuration, timeSig) {
+      getTicks: function (noteDuration, timeSig) {
         return (
           (noteDuration * (Config.midiTicksPerQuarterNote * timeSig)) /
           Config.rhythmicUnit
         );
       },
 
-      parseFile: function(data, name) {
+      parseFile: function (data, name) {
         let result = MIDIParser.Base64(data);
         let bpm;
-        let motifs = result.track.map(t => {
+        let motifs = result.track.map((t) => {
           let melody = { notes: [] };
           melody.notes = t.event.reduce((notes, e, i, a) => {
             // tempo event
@@ -406,7 +435,7 @@ const Utils = {
               // this is the note itself, getting duration from the next noteOff deltaTime
               notes.push({
                 value: e.data[0] - 11,
-                duration: this.getNextNoteOffEvent(a, i).deltaTime / 8
+                duration: this.getNextNoteOffEvent(a, i).deltaTime / 8,
               });
             }
             return notes;
@@ -414,7 +443,7 @@ const Utils = {
           return melody;
         });
 
-        motifs = motifs.map(m => {
+        motifs = motifs.map((m) => {
           m.bpm = bpm;
           m.name = `${name}_midi-import`;
           m.mode = "chromatic";
@@ -429,8 +458,8 @@ const Utils = {
         return motifs;
       },
 
-      uploadHandler: function(fileName, callBack) {
-        return function(e) {
+      uploadHandler: function (fileName, callBack) {
+        return function (e) {
           let motifs = Utils.file.midi.parseFile.bind(Utils.file.midi)(
             e.target.result,
             fileName
@@ -439,17 +468,17 @@ const Utils = {
         };
       },
 
-      getMelody: function(melody) {
+      getMelody: function (melody) {
         let timeSig = melody.timeSignature[0];
         let midiNotes = [];
         let delayTicks = 0;
-        melody.notes.forEach(note => {
+        melody.notes.forEach((note) => {
           if (note.value) {
             midiNotes.push({
               channel: 0,
               duration: this.getTicks(note.duration, timeSig),
               pitch: note.pitch,
-              time: delayTicks
+              time: delayTicks,
             });
             delayTicks = 0;
           } else {
@@ -459,31 +488,31 @@ const Utils = {
         return midiNotes;
       },
 
-      getTrack: function(melody) {
+      getTrack: function (melody) {
         let track = new Midi.Track();
         let midiNotes = this.getMelody(melody);
 
         track.setTempo(melody.bpm);
-        midiNotes.forEach(note => {
+        midiNotes.forEach((note) => {
           track.addNote(note.channel, note.pitch, note.duration, note.time);
         });
 
         return track;
       },
 
-      download: function(motifs = []) {
+      download: function (motifs = []) {
         let a = doc.createElement("a");
         let file = new Midi.File();
 
-        motifs.forEach(m => file.addTrack(this.getTrack(m)));
+        motifs.forEach((m) => file.addTrack(this.getTrack(m)));
         a.download = `${motifs[0].name}.midi`;
         a.href = "data:audio/midi;base64," + win.btoa(file.toBytes());
         a.click();
-      }
+      },
     },
 
     json: {
-      download: function(motifs = []) {
+      download: function (motifs = []) {
         let a = doc.createElement("a");
         let data = JSON.stringify(motifs, undefined, 4);
         let blob = new Blob([data], { type: "text/json" });
@@ -495,35 +524,35 @@ const Utils = {
         win.URL.revokeObjectURL(a.href);
       },
 
-      uploadHandler: function(fileName, callBack) {
-        return function(e) {
+      uploadHandler: function (fileName, callBack) {
+        return function (e) {
           let str = e.target.result;
           let json = JSON.parse(str);
-          let motifs = json.map(m => {
+          let motifs = json.map((m) => {
             m.name = `${m.name || fileName}_json-import`;
             return m;
           });
           Utils.file.parseCallback(motifs, callBack);
         };
-      }
+      },
     },
 
     wav: {
-      download: function(motifs = []) {
+      download: function (motifs = []) {
         // TODO: wire up call to motivic_convertor WAV API
         console.log(`Call motivic_convertor API once deployed`);
-      }
+      },
     },
 
-    parseCallback: function(motifs, callBack = Function.prototype) {
+    parseCallback: function (motifs, callBack = Function.prototype) {
       let responses = motifs
-        .map(m => [m, "motifs", m.name, new Date().toISOString()])
-        .map(args => Utils.userData.processNewItem(...args));
+        .map((m) => [m, "motifs", m.name, new Date().toISOString()])
+        .map((args) => Utils.userData.processNewItem(...args));
       callBack(responses);
-    }
+    },
   },
   url: {
-    get: win => new URL(win.location.href),
+    get: (win) => new URL(win.location.href),
     /**
      * Create new history entry.
      * @param {Window} win Fresh instance of Window.
@@ -532,7 +561,7 @@ const Utils = {
      * @param {string} [opts.title] Title to associate with url.
      * @param {string} [opts.url] New url.
      */
-    create: function(win, opts) {
+    create: function (win, opts) {
       let state = opts.state || null;
       let title = opts.title || doc.querySelector("title").textContent;
       let url = opts.url || win.location.href;
@@ -547,19 +576,19 @@ const Utils = {
      * @param {string} [opts.title] Title to associate with url.
      * @param {string} [opts.url] New url.
      */
-    update: function(win, opts) {
+    update: function (win, opts) {
       let state = opts.state || null;
       let title = opts.title || doc.querySelector("title").textContent;
       let url = opts.url || win.location.href;
 
       win.history.replaceState(state, title, url);
-    }
+    },
   },
   userData: {
     /**
      * Gets initial memory state from localStorage
      */
-    init: function() {
+    init: function () {
       const schema = Config.userData.schema;
       return Object.keys(schema).reduce((map, k) => {
         map[k] = Utils.storage.get.bind(Utils.storage)(k) || [];
@@ -576,7 +605,7 @@ const Utils = {
      * @param {string} parentId Id of relative theme motif if item is variation
      * @param {Array} transformations List of transformations applied if item is variation
      */
-    processNewItem: function(
+    processNewItem: function (
       item,
       type,
       name = "",
@@ -590,7 +619,7 @@ const Utils = {
         type,
         name,
         parentId,
-        transformations
+        transformations,
       });
       let newItem = this._initSavedItem(
         item,
@@ -603,7 +632,7 @@ const Utils = {
       return this.persist(newItem, type, false);
     },
 
-    _initSavedItem: function(
+    _initSavedItem: function (
       item,
       name,
       id,
@@ -616,14 +645,14 @@ const Utils = {
         transformations,
         id: id || Utils.general.randomString(8),
         parent: parentId,
-        saved: { local: false, cloud: false }
+        saved: { local: false, cloud: false },
       };
       // add created timestamp if there is none
       savedItem.created = savedItem.created || new Date().toISOString();
       return Object.assign(savedItem, initMap);
     },
 
-    getNameAndVersion: function(name) {
+    getNameAndVersion: function (name) {
       const split = name.split("_");
       let version = parseInt(split[split.length - 1]);
       const isVersioned = !isNaN(version);
@@ -632,7 +661,7 @@ const Utils = {
       return [baseName, version];
     },
 
-    getNameSuffix: function(oldVersion) {
+    getNameSuffix: function (oldVersion) {
       let newSuffix = "_1";
       if (oldVersion !== null) {
         newSuffix = `_${oldVersion + 1}`;
@@ -646,7 +675,7 @@ const Utils = {
      * @param {string} type Type of item
      * @param {boolean} add Should this item be added? (if false, then delete)
      */
-    store: function(item, type, add = true) {
+    store: function (item, type, add = true) {
       let storedItems = Utils.storage.get.bind(Utils.storage)(type);
       const limit = Config.userData.savedItemLimit[type];
       const action = add ? "saved" : "deleted";
@@ -665,7 +694,7 @@ const Utils = {
           `${Utils.general.singularize(type)} ${
             item.name
           } ${action} successfully!`,
-          item
+          item,
         ];
       } catch (e) {
         return [
@@ -675,7 +704,7 @@ const Utils = {
           }" could not be ${action} due to the following error:\n\n${
             e.message
           }`,
-          item
+          item,
         ];
       }
     },
@@ -687,8 +716,8 @@ const Utils = {
      * @param {boolean} remove Should this item be deleted?
      * @returns {Array} Updated item list
      */
-    mutateList: function(list, item, remove = false) {
-      const itemIdx = list.findIndex(listItem => listItem.id === item.id);
+    mutateList: function (list, item, remove = false) {
+      const itemIdx = list.findIndex((listItem) => listItem.id === item.id);
       if (remove) {
         if (itemIdx > -1) {
           list = list.filter((_, i) => i !== itemIdx);
@@ -708,8 +737,8 @@ const Utils = {
      * @param {string} type Type of item (motifs, settings, etc)
      * @returns {Object} validated item
      */
-    validate: function(item, type) {
-      const existingItemNames = win.MOTIVIC.user[type].map(m => m.name);
+    validate: function (item, type) {
+      const existingItemNames = win.MOTIVIC.user[type].map((m) => m.name);
       const nameMap = existingItemNames
         .map(this.getNameAndVersion)
         .reduce((map, [name, version]) => {
@@ -720,7 +749,7 @@ const Utils = {
           }
           return map;
         }, {});
-      const existingNames = Object.keys(nameMap).map(k => k);
+      const existingNames = Object.keys(nameMap).map((k) => k);
       let [thisName] = this.getNameAndVersion(item.name);
       if (existingNames.includes(thisName)) {
         item.name = `${thisName}${this.getNameSuffix(nameMap[thisName])}`;
@@ -733,7 +762,7 @@ const Utils = {
      * @param {string} type Type of item (motifs, settings, etc)
      * @param {boolean} store Should this motif be persisted to localStorage?
      */
-    persist: function(item, type, store = false) {
+    persist: function (item, type, store = false) {
       // Storing the item in active memory
       const itemStoreMap = { motifs: motifStore, settings: settingStore };
       itemStoreMap[type].add(item);
@@ -744,7 +773,7 @@ const Utils = {
             `${Utils.general.singularize(type)} ${
               item.name
             } saved to memory successfully!`,
-            item
+            item,
           ];
     },
 
@@ -753,7 +782,7 @@ const Utils = {
      * @param {Object} item Item to remove
      * @param {string} type Type of item (motifs, settings, etc)
      */
-    remove: function(item, type) {
+    remove: function (item, type) {
       // Removing the item from active memory
       const itemStoreMap = { motifs: motifStore, settings: settingStore };
       itemStoreMap[type].remove(item);
@@ -761,15 +790,15 @@ const Utils = {
       return this.store.bind(this)(item, type, false);
     },
 
-    getItems: function(type, filterFn) {
+    getItems: function (type, filterFn) {
       return win[Config.nameSpace].user[type].filter(filterFn);
-    }
+    },
   },
   storage: {
-    init: function() {
+    init: function () {
       let storage = this.get.bind(this)() || {};
       const schema = Config.userData.schema;
-      Object.keys(schema).forEach(k => {
+      Object.keys(schema).forEach((k) => {
         storage[k] = storage[k] || schema[k];
       });
       try {
@@ -779,7 +808,7 @@ const Utils = {
       }
     },
 
-    set: function(key, value) {
+    set: function (key, value) {
       let storage = {};
       try {
         storage = this.get.bind(this)() || {};
@@ -799,7 +828,7 @@ const Utils = {
       }
     },
 
-    update: function(payload) {
+    update: function (payload) {
       try {
         localStorage.setItem(Config.nameSpace, JSON.stringify(payload));
       } catch (err) {
@@ -810,7 +839,7 @@ const Utils = {
       }
     },
 
-    get: function(key = null) {
+    get: function (key = null) {
       let storage = {};
       try {
         storage = JSON.parse(localStorage.getItem(Config.nameSpace));
@@ -822,8 +851,8 @@ const Utils = {
         throw e;
       }
       return key ? storage[key] : storage;
-    }
-  }
+    },
+  },
 };
 
 export default Utils;
