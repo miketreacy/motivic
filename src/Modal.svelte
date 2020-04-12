@@ -69,6 +69,7 @@
     position: absolute;
     top: 10px;
     right: 10px;
+    z-index: var(--front);
   }
 </style>
 

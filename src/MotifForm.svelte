@@ -46,19 +46,19 @@
     console.dir(formStateDefault);
   }
 
-  function validateOctaves(field, newState, oldState) {
-    let lowOctave = oldState["octave_low"];
-    let highOctave = oldState["octave_high"];
-    if (field === "octave_low") {
-      lowOctave = newState[field];
-      highOctave = Math.max(lowOctave, highOctave);
+  function validateMinMaxFields(field, minField, maxField, newState, oldState) {
+    let minVal = oldState[minField];
+    let maxVal = oldState[maxField];
+    if (field === minField) {
+      minVal = newState[field];
+      maxVal = Math.max(minVal, maxVal);
     }
-    if (field === "octave_high") {
-      highOctave = newState[field];
-      lowOctave = Math.min(highOctave, lowOctave);
+    if (field === maxField) {
+      maxVal = newState[field];
+      minVal = Math.min(maxVal, minVal);
     }
-    newState["octave_high"] = highOctave;
-    newState["octave_low"] = lowOctave;
+    newState[minField] = minVal;
+    newState[maxField] = maxVal;
     return newState;
   }
 
@@ -68,7 +68,31 @@
     let newState = { [field]: value };
 
     if (field.includes("octave_")) {
-      newState = validateOctaves(field, newState, oldState);
+      newState = validateMinMaxFields(
+        field,
+        "octave_low",
+        "octave_high",
+        newState,
+        oldState
+      );
+    }
+    if (field.includes("leap_")) {
+      newState = validateMinMaxFields(
+        field,
+        "leap_min",
+        "leap_max",
+        newState,
+        oldState
+      );
+    }
+    if (field.includes("duration_")) {
+      newState = validateMinMaxFields(
+        field,
+        "duration_min",
+        "duration_max",
+        newState,
+        oldState
+      );
     }
     newState = Object.entries(newState).reduce((obj, [k, v]) => {
       obj[k] = v;
@@ -184,7 +208,8 @@
         type: "error",
         message: `${formTitle} API operation failed.\n${error.message}`,
         displayTimeMs: 1500,
-        dismissable: true
+        dismissable: true,
+        top: 45
       });
     }
 
