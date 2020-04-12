@@ -104,6 +104,7 @@
     padding: 0;
     justify-content: space-between;
     box-sizing: content-box;
+    min-width: 140px;
   }
 
   .qty-controls.rough button.fine {
@@ -114,7 +115,7 @@
     box-sizing: border-box;
     padding: 0;
     flex: 1 1 0;
-    min-width: 0;
+    min-width: var(--touch_min_width);
     max-width: var(--touch_min_width);
     text-align: center;
     border: none;

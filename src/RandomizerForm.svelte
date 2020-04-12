@@ -45,6 +45,8 @@
   const submitOptions = Config.api.operations.randomizer;
   const dispatch = createEventDispatcher();
 
+  let rowLayout = "";
+
   function getLeapRange(lowOctave, highOctave) {
     let minNoteVal = Utils.melody.getNoteValue("c", lowOctave);
     let maxNoteVal = Utils.melody.getNoteValue("b", highOctave);
@@ -86,7 +88,8 @@
           step: 1,
           min: 0,
           max: 8,
-          info: "Uses piano octaves (Scientific Pitch Notation)"
+          info: "Uses piano octaves (Scientific Pitch Notation)",
+          rowLayout
         },
         {
           type: "number",
@@ -96,7 +99,8 @@
           step: 1,
           min: 0,
           max: 8,
-          info: "Uses piano octaves (Scientific Pitch Notation)"
+          info: "Uses piano octaves (Scientific Pitch Notation)",
+          rowLayout
         }
       ],
       [
@@ -108,7 +112,8 @@
           step: 1,
           min: leapRange.min.min,
           max: leapRange.min.max,
-          info: "Minimum leap (in half-steps) between two consecutive notes"
+          info: "Minimum leap (in half-steps) between two consecutive notes",
+          rowLayout
         },
         {
           type: "number",
@@ -118,7 +123,8 @@
           step: 1,
           min: leapRange.max.min,
           max: leapRange.max.max,
-          info: "Maximum leap (in half-steps) between two consecutive notes"
+          info: "Maximum leap (in half-steps) between two consecutive notes",
+          rowLayout
         }
       ],
       [
@@ -128,7 +134,8 @@
           label: "min note duration",
           value: 4,
           options: noteDurations,
-          info: "Minimum note length"
+          info: "Minimum note length",
+          rowLayout
         },
         {
           type: "select",
@@ -136,7 +143,8 @@
           label: "max note duration",
           value: 16,
           options: noteDurations,
-          info: "Maximum note length"
+          info: "Maximum note length",
+          rowLayout
         }
       ],
       [
@@ -146,7 +154,8 @@
           label: "time signature beat",
           value: 4,
           options: timeSignatureBeats,
-          info: "Beats per measure"
+          info: "Beats per measure",
+          rowLayout
         },
         {
           type: "select",
@@ -154,7 +163,8 @@
           label: "time signature unit",
           value: 4,
           options: timeSignatureUnits,
-          info: "Which note duration gets one beat (4 = quarter note, etc)"
+          info: "Which note duration gets one beat (4 = quarter note, etc)",
+          rowLayout
         }
       ],
       [

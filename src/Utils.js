@@ -2,6 +2,7 @@ import Midi from "jsmidgen";
 import MIDIParser from "midi-parser-js";
 import Config from "./Config.js";
 import { motifStore, settingStore } from "./Stores.js";
+
 let win = window;
 let doc = document;
 const Utils = {
@@ -212,9 +213,15 @@ const Utils = {
     awaitFetch: async function (url, params, wrapper = Function.prototype) {
       let data = null;
       let error = null;
+
       try {
         let res = await wrapper(win.fetch(url, params));
-        data = await res.json();
+        if (res.ok) {
+          data = await res.json();
+        } else {
+          let errMsg = await res.text();
+          throw Error(errMsg);
+        }
       } catch (e) {
         console.error(e);
         error = e;

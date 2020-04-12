@@ -221,6 +221,11 @@
     width: 100%;
   }
 
+  .form-row.horizontal {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
   .form-row:last-of-type {
     border-bottom: none;
   }
@@ -254,7 +259,9 @@
         <legend>settings</legend>
         <!--<button class="save-setting">save setting</button>-->
         {#each fieldRows as fields}
-          <div class="form-row">
+          <div
+            class="form-row"
+            class:horizontal={fields.some(f => f.rowLayout === 'horizontal')}>
             {#each fields as field}
               <Field
                 {...field}

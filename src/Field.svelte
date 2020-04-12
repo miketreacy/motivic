@@ -18,6 +18,7 @@
   export let form = "";
   export let roughIncrement = 0;
   export let info = "";
+  export let rowLayout = "vertical";
 </script>
 
 <style>
@@ -30,6 +31,12 @@
     justify-content: space-between;
     max-width: var(--max_main_width);
     align-self: center;
+  }
+
+  .input-wrap.vertical {
+    flex-direction: column;
+    height: 70px;
+    width: auto;
   }
 
   .input-wrap.hidden {
@@ -63,7 +70,10 @@
 </style>
 
 {#if wrap}
-  <div class="input-wrap" class:hidden={type === 'hidden'}>
+  <div
+    class="input-wrap"
+    class:hidden={type === 'hidden'}
+    class:vertical={rowLayout === 'horizontal'}>
     {#if label}
       <label class:center={centerLabel} for={id} title={info}>{label}</label>
     {/if}
