@@ -397,6 +397,15 @@ const Utils = {
       let noteModulo = value % 12;
       return noteModulo ? Math.floor(value / 12) : Math.floor(value / 12) - 1;
     },
+
+    getNoteValue: function (
+      name = Config.default.note.pitch,
+      octave = Config.default.note.octave
+    ) {
+      let octavePitches = this.getPitchSet(octave, octave);
+      let match = octavePitches.filter((p) => p.name === name.toLowerCase());
+      return match[0].value;
+    },
   },
   file: {
     midi: {

@@ -21,7 +21,9 @@
   function getUpdatedValue(stepChange) {
     let val = (value || min) + stepChange * step;
     let newVal = validateValue(val);
-    return Math.max(newVal - (newVal % step), step);
+    let stepAdjustedVal = newVal - (newVal % step);
+    let zeroValue = min <= 0 && stepAdjustedVal === 0;
+    return zeroValue ? 0 : Math.max(stepAdjustedVal, step);
   }
 
   function numChange(e) {

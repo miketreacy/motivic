@@ -13,6 +13,7 @@
   export let formState = {};
   export let fieldRows = [];
   export let submitOptions = null;
+  export let stateFilterFn = (field, newState, oldState) => newState;
   export let responseCallbackFn = Function.prototype;
   export let getRequestBodyFn = Function.prototype;
   export let formCanSubmitDefault = false;
@@ -46,54 +47,11 @@
     console.dir(formStateDefault);
   }
 
-  function validateMinMaxFields(field, minField, maxField, newState, oldState) {
-    let minVal = oldState[minField];
-    let maxVal = oldState[maxField];
-    if (field === minField) {
-      minVal = newState[field];
-      maxVal = Math.max(minVal, maxVal);
-    }
-    if (field === maxField) {
-      maxVal = newState[field];
-      minVal = Math.min(maxVal, minVal);
-    }
-    newState[minField] = minVal;
-    newState[maxField] = maxVal;
-    return newState;
-  }
-
   function getNewState(field, value) {
     console.log(`getNewState() field: ${field} : ${value}`);
     let oldState = Utils.general.clone(formState);
     let newState = { [field]: value };
-
-    if (field.includes("octave_")) {
-      newState = validateMinMaxFields(
-        field,
-        "octave_low",
-        "octave_high",
-        newState,
-        oldState
-      );
-    }
-    if (field.includes("leap_")) {
-      newState = validateMinMaxFields(
-        field,
-        "leap_min",
-        "leap_max",
-        newState,
-        oldState
-      );
-    }
-    if (field.includes("duration_")) {
-      newState = validateMinMaxFields(
-        field,
-        "duration_min",
-        "duration_max",
-        newState,
-        oldState
-      );
-    }
+    newState = stateFilterFn(field, newState, oldState);
     newState = Object.entries(newState).reduce((obj, [k, v]) => {
       obj[k] = v;
       return obj;

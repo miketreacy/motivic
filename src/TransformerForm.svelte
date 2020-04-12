@@ -125,7 +125,7 @@
     dispatch("displayAlert", {
       visible: true,
       type: success ? "success" : "error",
-      message: msg,
+      message: success ? "New motif variation created!" : msg,
       displayTimeMs: 1500,
       dismissable: false,
       top: 45
