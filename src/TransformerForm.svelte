@@ -29,7 +29,7 @@
       {
         type: "number",
         id: "transpose",
-        label: "Transpose",
+        label: "transpose",
         value: 0,
         step: 1,
         min: -11,
@@ -39,7 +39,7 @@
       {
         type: "checkbox",
         id: "invert",
-        label: "Invert",
+        label: "invert",
         value: false,
         info: "Turn the melody upside-down"
       }
@@ -48,14 +48,14 @@
       {
         type: "checkbox",
         id: "reverse_pitch_1",
-        label: "Reverse Pitches",
+        label: "reverse pitches",
         value: false,
         info: "Turn the melody's pitches backwards"
       },
       {
         type: "checkbox",
         id: "reverse_rhythm_0",
-        label: "Reverse Durations",
+        label: "reverse durations",
         value: false,
         info: "Turn the melody's note durations backwards"
       }
@@ -64,7 +64,7 @@
       {
         type: "number",
         id: "augment",
-        label: "Augment",
+        label: "augment",
         value: 0,
         step: 2,
         min: 0,
@@ -74,7 +74,7 @@
       {
         type: "number",
         id: "diminish",
-        label: "Diminish",
+        label: "diminish",
         value: 0,
         step: 2,
         min: 0,
@@ -84,7 +84,7 @@
       {
         type: "number",
         id: "stagger",
-        label: "Stagger",
+        label: "stagger",
         value: 0,
         step: 1,
         min: 0,
@@ -96,7 +96,7 @@
       {
         type: "text",
         id: "name",
-        label: "Name",
+        label: "name",
         max: 16,
         apiField: false,
         info: "The name of the new transformed motif"

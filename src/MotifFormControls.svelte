@@ -15,11 +15,11 @@
 <style>
   .form-controls {
     flex-direction: row !important;
+    justify-content: space-between;
     border-style: none;
     padding: 10px;
     margin: 0px;
     display: flex;
-    flex-direction: column;
     transition: background-color 0.5s ease;
   }
 
@@ -34,7 +34,7 @@
     border-style: none;
     padding: 4px 12px 6px;
     margin: 5px;
-    max-width: 45px;
+    max-width: 57px;
     transition: background-color 0.5s ease;
   }
 </style>
@@ -52,7 +52,7 @@
   {/if}
   {#if controls.includes('apply')}
     <button class="apply" on:click={submitFormFn} disabled={!formCanSubmit}>
-      <span>apply</span>
+      <span>submit</span>
     </button>
   {/if}
 </div>

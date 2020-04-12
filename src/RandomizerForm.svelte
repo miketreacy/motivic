@@ -38,7 +38,7 @@
       {
         type: "select",
         id: "key",
-        label: "Key",
+        label: "key",
         value: "c",
         options: notes,
         info: "The tonic of the melody"
@@ -46,7 +46,7 @@
       {
         type: "select",
         id: "mode",
-        label: "Mode",
+        label: "mode",
         value: "chromatic",
         options: Object.keys(modes),
         info: "The sequence of intervals that comprise the scale"
@@ -56,7 +56,7 @@
       {
         type: "number",
         id: "octave_low",
-        label: "Low Octave",
+        label: "low octave",
         value: 3,
         step: 1,
         min: 0,
@@ -66,7 +66,7 @@
       {
         type: "number",
         id: "octave_high",
-        label: "High Octave",
+        label: "high octave",
         value: 5,
         step: 1,
         min: 0,
@@ -78,7 +78,7 @@
       {
         type: "number",
         id: "leap_min",
-        label: "Min Leap",
+        label: "min leap",
         value: 1,
         step: 1,
         min: 1,
@@ -88,7 +88,7 @@
       {
         type: "number",
         id: "leap_max",
-        label: "Max Leap",
+        label: "max leap",
         value: 24,
         step: 1,
         min: 2,
@@ -100,7 +100,7 @@
       {
         type: "select",
         id: "duration_min",
-        label: "Min Note Duration",
+        label: "min note duration",
         value: 1,
         options: noteDurations,
         info: "Minimum note length"
@@ -108,7 +108,7 @@
       {
         type: "select",
         id: "duration_max",
-        label: "Max Note Duration",
+        label: "max note duration",
         value: 64,
         options: noteDurations,
         info: "Maximum note length"
@@ -118,7 +118,7 @@
       {
         type: "select",
         id: "timeSignature_beat_0",
-        label: "Time Signature Beat",
+        label: "time signature beat",
         value: 4,
         options: timeSignatureBeats,
         info: "Beats per measure"
@@ -126,7 +126,7 @@
       {
         type: "select",
         id: "timeSignature_unit_1",
-        label: "Time Signature Unit",
+        label: "time signature unit",
         value: 4,
         options: timeSignatureUnits,
         info: "Which note duration gets one beat (4 = quarter note, etc)"
@@ -141,7 +141,7 @@
       {
         type: "number",
         id: "tempo_units",
-        label: "Tempo(bpm)",
+        label: "tempo(bpm)",
         value: 120,
         step: 1,
         min: 60,
@@ -158,7 +158,7 @@
       {
         type: "number",
         id: "length_units",
-        label: "Measures",
+        label: "measures",
         value: 2,
         step: 1,
         min: 1,

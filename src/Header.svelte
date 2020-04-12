@@ -143,14 +143,18 @@
     right: 10px;
     top: 10px;
   }
+  #motifs.small {
+    flex-direction: column;
+  }
 
   .motif-count {
-    padding-left: 2px;
     font-size: var(--theme_font_size_2);
+    padding-left: 2px;
   }
 
   .motif-count.small {
     font-size: var(--theme_font_size_1);
+    padding-left: 0;
   }
 
   header.scrolldown {
@@ -202,7 +206,10 @@
   {/if}
   {#if motifs.length}
     <div class="button-wrap right">
-      <button id="motifs" on:click={toggleMotifList}>
+      <button
+        id="motifs"
+        on:click={toggleMotifList}
+        class:small={motifs.length > 9}>
         <span>&#9835;</span>
         <span class="motif-count" class:small={motifs.length > 9}>
           {motifs.length}

@@ -46,6 +46,8 @@
   .icons {
     font-size: var(--theme_font_size_4);
     margin: 0 10px;
+    /* hiding icons for now - form header too cluttered */
+    display: none;
   }
 </style>
 

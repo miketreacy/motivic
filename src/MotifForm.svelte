@@ -239,9 +239,8 @@
   }
   section[data-closed="true"] {
     padding: 10px;
-    padding-left: 30px;
     display: grid;
-    grid-template-columns: 50% 50%;
+    grid-template-columns: 40% 60%;
     grid-template-rows: 40px;
     grid-row-gap: 2px;
     justify-items: flex-start;
@@ -294,7 +293,7 @@
     <slot />
     {#if fieldRows.length}
       <fieldset class="user-input">
-        <legend>Settings</legend>
+        <legend>settings</legend>
         <!--<button class="save-setting">save setting</button>-->
         {#each fieldRows as fields}
           <div class="form-row">
