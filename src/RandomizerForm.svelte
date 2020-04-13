@@ -317,7 +317,7 @@
       message: success ? `New random motif created!` : msg,
       displayTimeMs: 1500,
       dismissable: false,
-      top: 45
+      top: 48
     });
     newMotif = createdMotif;
   }

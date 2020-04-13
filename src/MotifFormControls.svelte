@@ -9,6 +9,7 @@
   export let controls = [];
   export let scrollDown = false;
   export let sticky = false;
+  export let loading = false;
   let iconMap = {
     randomizer: ["&#9861;"],
     transformer: ["&#10226;"]
@@ -27,6 +28,9 @@
     background-color: var(--theme_color_2);
     border-radius: 5px;
   }
+  .form-controls.open {
+    width: 100%;
+  }
   .form-controls.sticky {
     position: sticky;
     position: -webkit-sticky;
@@ -35,9 +39,7 @@
 
   .form-controls.sticky.scrolldown {
     top: 0px;
-    justify-content: flex-end;
-    align-self: flex-end;
-    /* padding: 5px; */
+    padding: 5px;
     z-index: var(--front);
     border: 1px dashed var(--theme_color_1);
   }
@@ -46,7 +48,6 @@
     padding: 0;
     margin: 0;
   }
-
   button {
     flex-direction: row;
     flex: 1 1 0;
@@ -56,10 +57,21 @@
     max-width: 57px;
     transition: background-color 0.5s ease;
   }
+
+  .form-controls.open button {
+    max-width: none;
+  }
+  /*Desktop*/
+  @media (min-width: 1025px) {
+    .form-controls.open.sticky.scrolldown {
+      width: 70%;
+    }
+  }
 </style>
 
 <div
   class="form-controls"
+  class:open={formOpen}
   class:scrolldown={scrollDown && formOpen}
   class:sticky={formOpen && sticky}
   data-closed={!formOpen}
@@ -76,7 +88,11 @@
   {/if}
   {#if controls.includes('submit')}
     <button class="submit" on:click={submitFormFn} disabled={!formCanSubmit}>
-      <span>submit</span>
+      {#if loading}
+        <div class="spinner" transition:fade />
+      {:else}
+        <span>submit</span>
+      {/if}
     </button>
   {/if}
 </div>

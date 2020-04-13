@@ -32,7 +32,7 @@
   let formStateDefault = {};
   let formInDefaultState = true;
   let formCanSubmit = true;
-  let formIsSubmitting = false;
+  let loading = false;
   const dispatch = createEventDispatcher();
 
   function dispatchFormToggle(open) {
@@ -150,7 +150,7 @@
 
   async function submitFormFn() {
     newMotif = null;
-    formIsSubmitting = true;
+    loading = true;
     scrollPos = 0;
     const reqBody = getRequestBodyFn(formState);
     console.info(`${submitOptions.method} ${submitOptions.path} request body:`);
@@ -175,7 +175,7 @@
       });
     }
 
-    formIsSubmitting = false;
+    loading = false;
   }
 
   function handleAuditionToggle(event) {
@@ -202,7 +202,7 @@
 
   $: {
     formInDefaultState = isInDefaultState(formState, formStateDefault);
-    formCanSubmit = canFormSubmit(formInDefaultState, formIsSubmitting);
+    formCanSubmit = canFormSubmit(formInDefaultState, loading);
     fieldRows = getUpdatedFieldRows(formState);
   }
   $: newMotif = getNewMotif(newMotif, motifs);
@@ -246,11 +246,6 @@
   .form-row:last-of-type {
     border-bottom: none;
   }
-  .spinner {
-    position: absolute;
-    top: 45px;
-    right: 110px;
-  }
 </style>
 
 <svelte:window bind:scrollY={scrollPos} />
@@ -269,10 +264,8 @@
         {formCanSubmit}
         {scrollDown}
         sticky={stickyControls}
+        {loading}
         controls={formControls} />
-    {/if}
-    {#if formIsSubmitting}
-      <div class="spinner" transition:fade />
     {/if}
     {#if newMotif}
       <MotifAudition
@@ -321,5 +314,6 @@
     {submitFormFn}
     {formCanSubmit}
     {scrollDown}
+    {loading}
     controls={formControls} />
 </section>

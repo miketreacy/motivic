@@ -53,7 +53,7 @@
 
   .wrap {
     background-color: rgba(255, 255, 255, 1);
-    margin: 10px 0;
+    margin: 10px 0 0 0;
     flex-direction: row;
     position: relative;
     width: 100%;
