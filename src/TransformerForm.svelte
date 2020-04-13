@@ -8,6 +8,7 @@
   export let motif = null;
   export let motifs = [];
   export let selectedMotifId = "";
+  export let scrollDown = false;
   const formId = "transformer";
   const formTitle = "Transformer";
   const formInfo =
@@ -198,6 +199,8 @@
   {fieldRows}
   {formOpen}
   {newMotif}
+  {motifs}
+  {scrollDown}
   on:displayToggle
   on:displayCrudModal>
   {#if motifs.length}

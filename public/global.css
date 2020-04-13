@@ -250,6 +250,32 @@ section {
   color: var(--theme_color_6);
 }
 
+/* spinner icon */
+.spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+}
+.spinner:after {
+  content: " ";
+  display: block;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 6px solid var(--theme_color_1);
+  border-color: var(--theme_color_1) transparent var(--theme_color_1)
+    transparent;
+  animation: spinner 1s linear infinite;
+}
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* Viewport Breakpoints*/
 
 /*Mobile Landscape*/

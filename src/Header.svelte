@@ -176,6 +176,15 @@
     font-style: normal;
     padding: 0 10px;
   }
+  /* Tablet */
+  @media (min-width: 768px) {
+    .button-wrap.left {
+      left: 30vw;
+    }
+    .button-wrap.right {
+      right: 30vw;
+    }
+  }
 
   /*Desktop*/
   @media (min-width: 1025px) {

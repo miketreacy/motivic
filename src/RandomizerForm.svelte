@@ -4,6 +4,8 @@
   import Config from "./Config.js";
   import Utils from "./Utils";
   export let formOpen = false;
+  export let motifs = [];
+  export let scrollDown = false;
   const {
     notes,
     modes,
@@ -344,6 +346,9 @@
   {formState}
   {formOpen}
   {newMotif}
+  {motifs}
+  {scrollDown}
+  stickyControls={true}
   on:displayToggle
   on:displayCrudModal
   on:displayAlert />

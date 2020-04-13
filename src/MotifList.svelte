@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import { createEventDispatcher } from "svelte";
+  import { fade } from "svelte/transition";
   import Config from "./Config.js";
   import Utils from "./Utils.js";
   import AudioControls from "./AudioControls.svelte";
@@ -450,7 +451,8 @@
   class="motifs"
   class:nested={Boolean(parentId)}
   class:scrolldown={scrollDown}
-  data-closed={!listOpen}>
+  data-closed={!listOpen}
+  in:fade>
 
   {#if listOpen && motifs.length}
     <h2 on:click={toggleOpen}>{title} ({motifs.length})</h2>

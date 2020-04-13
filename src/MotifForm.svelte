@@ -1,6 +1,6 @@
 <script>
-  import { onMount } from "svelte";
-  import { createEventDispatcher } from "svelte";
+  import { onMount, createEventDispatcher } from "svelte";
+  import { fade } from "svelte/transition";
   import Config from "./Config.js";
   import Utils from "./Utils";
   import Field from "./Field.svelte";
@@ -19,8 +19,11 @@
   export let formCanSubmitDefault = false;
   export let newMotif = null;
   export let topControls = true;
-  export let formControls = ["toggle", "reset", "apply"];
+  export let formControls = ["toggle", "reset", "submit"];
   export let formOpen = false;
+  export let motifs = [];
+  export let scrollDown = false;
+  export let stickyControls = false;
 
   let scrollPos;
   const apiUrl = submitOptions
@@ -146,6 +149,7 @@
   }
 
   async function submitFormFn() {
+    newMotif = null;
     formIsSubmitting = true;
     scrollPos = 0;
     const reqBody = getRequestBodyFn(formState);
@@ -174,21 +178,34 @@
     formIsSubmitting = false;
   }
 
+  function handleAuditionToggle(event) {
+    newMotif = event.detail.motif;
+  }
+
+  function getNewMotif(newMotif, motifs) {
+    if (!newMotif) {
+      return null;
+    }
+    let match = motifs.find(m => m.id === newMotif.id);
+    if (match && !match.saved.local) {
+      return match;
+    } else {
+      return null;
+    }
+  }
+
   onMount(() => {
     // store initial values as defaults
     formStateDefault = Utils.general.clone(formState);
     // logAll();
   });
 
-  function handleAuditionToggle(event) {
-    newMotif = event.detail.motif;
-  }
-
   $: {
     formInDefaultState = isInDefaultState(formState, formStateDefault);
     formCanSubmit = canFormSubmit(formInDefaultState, formIsSubmitting);
     fieldRows = getUpdatedFieldRows(formState);
   }
+  $: newMotif = getNewMotif(newMotif, motifs);
 </script>
 
 <style>
@@ -229,10 +246,16 @@
   .form-row:last-of-type {
     border-bottom: none;
   }
+  .spinner {
+    position: absolute;
+    top: 45px;
+    right: 110px;
+  }
 </style>
 
 <svelte:window bind:scrollY={scrollPos} />
 <section id={formId} data-closed={!formOpen}>
+
   <MotifFormHeader {formId} {formTitle} {formInfo} {formOpen} />
 
   {#if formOpen}
@@ -244,7 +267,12 @@
         {resetFormFn}
         {submitFormFn}
         {formCanSubmit}
+        {scrollDown}
+        sticky={stickyControls}
         controls={formControls} />
+    {/if}
+    {#if formIsSubmitting}
+      <div class="spinner" transition:fade />
     {/if}
     {#if newMotif}
       <MotifAudition
@@ -255,7 +283,7 @@
     {/if}
     <slot />
     {#if fieldRows.length}
-      <fieldset class="user-input">
+      <fieldset class="user-input" in:fade>
         <legend>settings</legend>
         <!--<button class="save-setting">save setting</button>-->
         {#each fieldRows as fields}
@@ -292,5 +320,6 @@
     {resetFormFn}
     {submitFormFn}
     {formCanSubmit}
+    {scrollDown}
     controls={formControls} />
 </section>

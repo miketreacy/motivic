@@ -34,6 +34,7 @@
     text-align: left;
     align-self: flex-start;
     flex: 1 1 0;
+    cursor: pointer;
   }
 
   button {

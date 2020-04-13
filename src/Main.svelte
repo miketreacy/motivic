@@ -145,6 +145,8 @@
       {#if showSectionMap.randomizer}
         <RandomizerForm
           formOpen={openSection === 'randomizer'}
+          {motifs}
+          {scrollDown}
           on:displayToggle
           on:displayAlert={handleDisplayAlert}
           on:displayCrudModal />
@@ -160,6 +162,7 @@
         <TransformerForm
           formOpen={openSection === 'transformer'}
           {motifs}
+          {scrollDown}
           selectedMotifId={motifs.length ? motifs[0].id : ''}
           on:displayToggle
           on:displayAlert={handleDisplayAlert}

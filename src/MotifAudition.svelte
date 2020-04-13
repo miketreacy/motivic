@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
+  import { fade, fly } from "svelte/transition";
   import AudioControls from "./AudioControls.svelte";
   import CrudControls from "./CrudControls.svelte";
   export let motif;
@@ -42,7 +43,10 @@
   }
 </style>
 
-<div class="motif-audition">
+<div
+  class="motif-audition"
+  in:fly={{ x: -200, duration: 1000 }}
+  out:fly={{ x: 200, duration: 1000 }}>
   <div class="new-motif">
     <span>audition:</span>
     <span class="motif-name">{motif.name}</span>

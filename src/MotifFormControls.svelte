@@ -1,4 +1,5 @@
 <script>
+  import { fade } from "svelte/transition";
   export let formOpen = false;
   export let formInDefaultState = true;
   export let formCanSubmit = false;
@@ -6,6 +7,8 @@
   export let resetFormFn = () => null;
   export let submitFormFn = () => null;
   export let controls = [];
+  export let scrollDown = false;
+  export let sticky = false;
   let iconMap = {
     randomizer: ["&#9861;"],
     transformer: ["&#10226;"]
@@ -21,6 +24,22 @@
     margin: 0px;
     display: flex;
     transition: background-color 0.5s ease;
+    background-color: var(--theme_color_2);
+    border-radius: 5px;
+  }
+  .form-controls.sticky {
+    position: sticky;
+    position: -webkit-sticky;
+    top: 59px;
+  }
+
+  .form-controls.sticky.scrolldown {
+    top: 0px;
+    justify-content: flex-end;
+    align-self: flex-end;
+    /* padding: 5px; */
+    z-index: var(--front);
+    border: 1px dashed var(--theme_color_1);
   }
 
   .form-controls[data-closed="true"] {
@@ -39,7 +58,12 @@
   }
 </style>
 
-<div class="form-controls" data-closed={!formOpen}>
+<div
+  class="form-controls"
+  class:scrolldown={scrollDown && formOpen}
+  class:sticky={formOpen && sticky}
+  data-closed={!formOpen}
+  in:fade>
   {#if controls.includes('toggle')}
     <button class="toggle" on:click={toggleFormFn}>
       {formOpen ? 'close' : 'open'}
@@ -50,8 +74,8 @@
       reset
     </button>
   {/if}
-  {#if controls.includes('apply')}
-    <button class="apply" on:click={submitFormFn} disabled={!formCanSubmit}>
+  {#if controls.includes('submit')}
+    <button class="submit" on:click={submitFormFn} disabled={!formCanSubmit}>
       <span>submit</span>
     </button>
   {/if}
