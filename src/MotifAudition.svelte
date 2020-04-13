@@ -4,7 +4,7 @@
   import AudioControls from "./AudioControls.svelte";
   import CrudControls from "./CrudControls.svelte";
   export let motif;
-  export let transitionOutMap = { x: 0, duration: 0 };
+
   const dispatch = createEventDispatcher();
 
   function dismissAudition() {
@@ -46,8 +46,8 @@
 
 <div
   class="motif-audition"
-  in:fly={{ x: -200, duration: 1000 }}
-  out:fly={transitionOutMap}>
+  in:fly|local={{ x: -200, duration: 1000 }}
+  out:fly|local={{ x: 200, duration: 1000 }}>
   <div class="new-motif">
     <span>audition:</span>
     <span class="motif-name">{motif.name}</span>

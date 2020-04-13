@@ -1,4 +1,5 @@
 <script>
+  import { slide } from "svelte/transition";
   export let settings = [];
   export let title = "";
   let displayList = false;
@@ -38,6 +39,10 @@
     background-color: var(--theme_color_4);
     border: 1px solid var(--theme_color_7);
     border-radius: 5px;
+    margin-block-start: auto;
+    margin-block-end: auto;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
   }
   .setting {
     justify-content: space-between;
@@ -60,7 +65,7 @@
     <div class="title" on:click={toggleDisplay}>{title}</div>
   {/if}
   {#if displayList}
-    <dl class="list">
+    <dl class="list" transition:slide|local={{ y: -50, duration: 250 }}>
       {#each Object.entries(settings) as [name, value]}
         <div class="setting">
           <dt class="key">{name}</dt>
