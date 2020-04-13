@@ -25,6 +25,10 @@
   export let scrollDown = false;
   export let stickyControls = false;
 
+  let auditionTransitionOutMap = formOpen
+    ? { x: 0, duration: 0 }
+    : { x: 200, duration: 1000 };
+
   let scrollPos;
   const apiUrl = submitOptions
     ? `${Config.api.baseURL}${submitOptions.path}`
@@ -36,6 +40,9 @@
   const dispatch = createEventDispatcher();
 
   function dispatchFormToggle(open) {
+    auditionTransitionOutMap = open
+      ? { x: 200, duration: 1000 }
+      : { x: 0, duration: 0 };
     dispatch("displayToggle", { section: formId, open: open });
   }
 
@@ -270,6 +277,7 @@
     {#if newMotif}
       <MotifAudition
         motif={newMotif}
+        transitionOutMap={auditionTransitionOutMap}
         on:toggleMotifAudition={handleAuditionToggle}
         on:displayCrudModal
         on:displayAlert />
