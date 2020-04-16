@@ -578,14 +578,12 @@
             {Utils.general.dateDisplay(new Date(created))}
           </div>
           {#if expandedMotifId === motifId}
-            <!-- TODO: assign uploaded motifs tempo, length, timeSignature, etc so I can expect these props to exist -->
-            {#if key && mode && length && tempo && timeSignature}
-              <div class="motif-settings">
-                <MotifSettingsList
-                  title="settings"
-                  settings={{ key: key, mode: mode, [tempo.type]: tempo.units, 'time signature': `${timeSignature.join('/')}`, [length.type]: length.units }} />
-              </div>
-            {/if}
+            <!-- TODO: assign uploaded motifs tempo, length, timeSignature, etc so I can expect all these props to exist -->
+            <div class="motif-settings">
+              <MotifSettingsList
+                title="settings"
+                settings={{ key, mode, tempo, timeSignature, length }} />
+            </div>
 
             <!-- disabling motif view for now!!!
             TODO: enable this later when grid view is ready!

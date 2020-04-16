@@ -1,12 +1,33 @@
 <script>
   import { slide } from "svelte/transition";
-  export let settings = [];
+  export let settings = {};
   export let title = "";
   let displayList = false;
 
   function toggleDisplay() {
     displayList = !displayList;
   }
+
+  let formattedSettings = Object.keys(settings).reduce((map, key) => {
+    let value = settings[key];
+
+    if (value !== undefined && value !== null) {
+      if (key === "tempo" || key === "length") {
+        if (typeof value === "object" && "type" in value && "units" in value) {
+          map[value.type] = value.units;
+        }
+      } else if (key === "timeSignature" && Array.isArray(value)) {
+        map["time signature"] = `${value.join("/")}`;
+      } else if (key === "reverse") {
+        // TODO: add logic for parsing reverse transformation settings
+        map[key] = value;
+      } else {
+        map[key] = value;
+      }
+    }
+
+    return map;
+  }, {});
 </script>
 
 <style>
@@ -66,7 +87,7 @@
   {/if}
   {#if displayList}
     <dl class="list" transition:slide|local={{ y: -50, duration: 250 }}>
-      {#each Object.entries(settings) as [name, value]}
+      {#each Object.entries(formattedSettings) as [name, value]}
         <div class="setting">
           <dt class="key">{name}</dt>
           <dd class="value">{value}</dd>

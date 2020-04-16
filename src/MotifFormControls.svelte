@@ -19,7 +19,6 @@
 <style>
   .form-controls {
     flex-direction: row !important;
-    justify-content: space-between;
     border-style: none;
     padding: 10px;
     margin: 0px;
@@ -59,7 +58,7 @@
   }
 
   .form-controls.open button {
-    max-width: none;
+    max-width: 100px;
   }
   /*Desktop*/
   @media (min-width: 1025px) {

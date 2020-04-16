@@ -421,6 +421,45 @@ const Utils = {
         return Math.round(microSecondsPerMinute / microSecondsPerQuarterNote);
       },
 
+      getTimeSignature: function (data) {
+        let [beats, exponent] = data;
+        let units = Math.pow(2, exponent);
+        console.info(`MIDI time signature event data`);
+        console.dir(data);
+        console.info(`MIDI time signature parsed as ${beats}/${units}`);
+        return [beats, units];
+      },
+      getKeySignature: function (data) {
+        console.info(`MIDI key signature event data`);
+        console.dir(data);
+        let key = "";
+        let mode = "";
+        if (data && Array.isArray(data)) {
+          const keySigMap = {
+            sharps: ["c", "g", "d", "a", "e", "b", "f#", "c#"],
+            flats: ["c", "f", "bb", "eb", "ab", "db", "gb", "cb"],
+          };
+          let map = {
+            major: false,
+            minor: false,
+            sharps: 0,
+            flats: 0,
+          };
+          let [accidentals, scale] = data;
+          scale = scale ? "minor" : "major";
+          map[scale] = true;
+          let accidentalType = accidentals > 0 ? "sharps" : "flats";
+          let accidentalCount = Math.abs(accidentals);
+          map[accidentalType] = accidentalCount;
+
+          key = keySigMap[accidentalType][accidentalCount];
+          mode = map.minor ? "aolian" : "ionian";
+        }
+
+        console.info(`MIDI key signature parsed as ${key}/${mode}`);
+        return [key, mode];
+      },
+
       getNextNoteOffEvent: function (arr, idx) {
         return arr.slice(idx + 1).find((e) => e.type === 8);
       },
@@ -433,43 +472,70 @@ const Utils = {
       },
 
       parseFile: function (data, name) {
-        let result = MIDIParser.Base64(data);
-        let bpm;
-        let motifs = result.track.map((t) => {
-          let melody = { notes: [] };
-          melody.notes = t.event.reduce((notes, e, i, a) => {
-            // tempo event
-            if (e.type === 255 && e.metaType === 81) {
-              bpm = this.getBPM(e.data);
+        let parsedFile = MIDIParser.Base64(data);
+        // TODO: make a decision about polyphony here
+        // either only parse the first MIDI track ~or~
+        // create a polyphonice motif with one note set per MIDI track
+        let motifs = parsedFile.track.map((t) => {
+          let motif = {
+            name: `${name}_midi-import`,
+            bpm: 120,
+            // defaulting to 4/4 because sanity
+            timeSignature: [4, 4],
+            key: "",
+            mode: "chromatic",
+            notes: [],
+          };
+
+          motif.notes = t.event.reduce((notes, event, idx, arr) => {
+            let note = null;
+            let value;
+            let duration;
+            // parse meta events
+            if (event.type === 255) {
+              // tempo event
+              if (event.metaType === 81) {
+                motif.bpm = this.getBPM(event.data);
+              }
+              // time signature event
+              if (event.metaType === 88) {
+                motif.timeSignature = this.getTimeSignature(event.data);
+              }
+              // key signature event
+              if (event.metaType === 89) {
+                [motif.key, motif.mode] = this.getKeySignature(event.data);
+              }
             }
             // noteOn event
-            if (e.type === 9) {
-              if (e.deltaTime) {
+            if (event.type === 9) {
+              if (event.deltaTime) {
                 // this accounts for any rests preceding the noteOn event
-                notes.push({ value: null, duration: e.deltaTime / 8 });
+                value = null;
+                duration = event.deltaTime / 8;
+                note = Utils.melody.getNote.bind(Utils.melody)(
+                  value,
+                  duration,
+                  motif,
+                  idx
+                );
+                notes.push(note);
               }
               // this is the note itself, getting duration from the next noteOff deltaTime
-              notes.push({
-                value: e.data[0] - 11,
-                duration: this.getNextNoteOffEvent(a, i).deltaTime / 8,
-              });
+              value = event.data[0] - 11;
+              let nextNote = this.getNextNoteOffEvent(arr, idx);
+              duration = nextNote.deltaTime / 8;
+
+              note = Utils.melody.getNote.bind(Utils.melody)(
+                value,
+                duration,
+                motif,
+                idx
+              );
+              notes.push(note);
             }
             return notes;
           }, []);
-          return melody;
-        });
-
-        motifs = motifs.map((m) => {
-          m.bpm = bpm;
-          m.name = `${name}_midi-import`;
-          m.mode = "chromatic";
-          // TODO: parse time signature of uploaded MIDI file?
-          // TODO: default to 4/4 for now.
-          m.timeSignature = [4, 4];
-          m.notes = m.notes.map((n, i) =>
-            Utils.melody.getNote.bind(Utils.melody)(n.value, n.duration, m, i)
-          );
-          return m;
+          return motif;
         });
         return motifs;
       },
@@ -504,10 +570,25 @@ const Utils = {
         return midiNotes;
       },
 
+      addMetaEventsToTrack: function (track) {
+        // track.events.push(new Midi.MetaEvent({
+        //   type: MetaEvent.TEMPO,
+        //   data: Util.mpqnFromBpm(bpm),
+        //   time: time || 0,
+        // }));
+        // TODO: encode key, mode, and time signature following above example
+        // reference the classes below:
+        // Midi.MetaEvent.KEY_SIG
+        // Midi.MetaEvent.TIME_SIG
+        return track;
+      },
+
       getTrack: function (melody) {
         let track = new Midi.Track();
         let midiNotes = this.getMelody(melody);
 
+        // TODO: set meta properties like tempo, time signature, and key
+        track = this.addMetaEventsToTrack(track);
         track.setTempo(melody.bpm);
         midiNotes.forEach((note) => {
           track.addNote(note.channel, note.pitch, note.duration, note.time);
