@@ -49,12 +49,12 @@
 
 <footer class:scrollup={scrollUp}>
   <div class="social">
-    <a
+    <!-- <a
       href="https://github.com/miketreacy/motivic"
       target="_blank"
       rel="noopener noreferrer">
       <span class="social-icon" id="github" />
-    </a>
+    </a> -->
     <a
       href="https://twitter.com/mstreacy"
       target="_blank"
