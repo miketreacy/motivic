@@ -1,88 +1,88 @@
 /* GLOBAL CSS VARIABLES */
 :root {
-  /* aka HTML color deepskyblue*/
-  --theme_color_1: rgba(0, 191, 255, 1);
-  --theme_color_2: rgba(255, 255, 255, 1);
-  --theme_color_2b: rgba(255, 255, 255, 0);
-  --theme_color_3: rgba(0, 0, 0, 1);
-  --theme_color_3b: rgba(0, 0, 0, 0);
-  --theme_color_4: rgba(238, 250, 255, 1);
-  --theme_color_5: rgba(238, 238, 238, 1);
-  --theme_color_6: rgba(204, 192, 20, 1);
-  --theme_color_7: rgba(178, 167, 9, 1);
-  --theme_color_8: rgba(255, 25, 84, 1);
-  --theme_color_9: rgba(255, 255, 0, 1);
-  --theme_color_10: rgba(192, 192, 192, 1);
+    /* aka HTML color deepskyblue*/
+    --theme_color_1: rgba(0, 191, 255, 1);
+    --theme_color_2: rgba(255, 255, 255, 1);
+    --theme_color_2b: rgba(255, 255, 255, 0);
+    --theme_color_3: rgba(0, 0, 0, 1);
+    --theme_color_3b: rgba(0, 0, 0, 0);
+    --theme_color_4: rgba(238, 250, 255, 1);
+    --theme_color_5: rgba(238, 238, 238, 1);
+    --theme_color_6: rgba(204, 192, 20, 1);
+    --theme_color_7: rgba(178, 167, 9, 1);
+    --theme_color_8: rgba(255, 25, 84, 1);
+    --theme_color_9: rgba(255, 255, 0, 1);
+    --theme_color_10: rgba(192, 192, 192, 1);
 
-  --theme_font_1: "Helvetica";
-  /* prevents auto input-zoom on mobile
+    --theme_font_1: 'Helvetica';
+    /* prevents auto input-zoom on mobile
     http://blog.osmosys.asia/2017/01/05/prevent-ios-from-zooming-in-on-input-fields/*/
-  --theme_font_size_base: 16px;
-  --theme_font_size_0: 0.5rem;
-  --theme_font_size_0b: 0.65rem;
-  --theme_font_size_1: 0.75rem;
-  --theme_font_size_2: 1rem;
-  --theme_font_size_2b: 1.25rem;
-  --theme_font_size_3: 1.5rem;
-  --theme_font_size_4: 2rem;
+    --theme_font_size_base: 16px;
+    --theme_font_size_0: 0.5rem;
+    --theme_font_size_0b: 0.65rem;
+    --theme_font_size_1: 0.75rem;
+    --theme_font_size_2: 1rem;
+    --theme_font_size_2b: 1.25rem;
+    --theme_font_size_3: 1.5rem;
+    --theme_font_size_4: 2rem;
 
-  --header_offset: 65px;
-  --nav_offset: 0px;
-  --footer_offset: 74px;
-  --max_main_width: 540px;
+    --header_offset: 65px;
+    --nav_offset: 0px;
+    --footer_offset: 74px;
+    --max_main_width: 540px;
 
-  /*z-index Variables*/
-  --front: 1000;
-  --middle: 500;
-  --back: 250;
-  --obscured: 0;
+    /*z-index Variables*/
+    --front: 1000;
+    --middle: 500;
+    --back: 250;
+    --obscured: 0;
 
-  /*Timing Variables*/
-  --timing_now: 0ms;
-  --timing_fastest: 250ms;
-  --timing_fast: 500ms;
-  --timing_slow: 750ms;
-  --timing_slowest: 1000ms;
+    /*Timing Variables*/
+    --timing_now: 0ms;
+    --timing_fastest: 250ms;
+    --timing_fast: 500ms;
+    --timing_slow: 750ms;
+    --timing_slowest: 1000ms;
 
-  /*Break points*/
-  --layout_min_width: 370px;
-  --layout_mobile_width: 480px;
-  --layout_tablet_width: 768px;
-  --layout_desktop_width: 1025px;
-  --layout_widescreen_width: 1300px;
+    /*Break points*/
+    --layout_min_width: 370px;
+    --layout_mobile_width: 480px;
+    --layout_tablet_width: 768px;
+    --layout_desktop_width: 1025px;
+    --layout_widescreen_width: 1300px;
 
-  /* Touch */
-  --touch_min_height: 40px;
-  --touch_min_width: 40px;
+    /* Touch */
+    --touch_min_height: 40px;
+    --touch_min_width: 40px;
 }
 
 :focus {
-  outline: var(--theme_color_6) auto 5px;
+    outline: var(--theme_color_6) auto 5px;
 }
 
 body {
-  display: flex;
-  z-index: var(--back);
-  flex-direction: column;
-  text-align: center;
-  background-color: var(--theme_color_2);
-  font-family: var(--theme_font_1);
-  flex-wrap: wrap;
-  margin: 0 auto;
-  box-sizing: border-box;
-  align-items: center;
-  font-size: var(--theme_font_size_base);
-  min-width: var(--layout_min_width);
+    display: flex;
+    z-index: var(--back);
+    flex-direction: column;
+    text-align: center;
+    background-color: var(--theme_color_2);
+    font-family: var(--theme_font_1);
+    flex-wrap: wrap;
+    margin: 0 auto;
+    box-sizing: border-box;
+    align-items: center;
+    font-size: var(--theme_font_size_base);
+    min-width: var(--layout_min_width);
 }
 
 a,
 a:visited {
-  text-decoration: none;
-  color: var(--theme_color_3);
+    text-decoration: none;
+    color: var(--theme_color_3);
 }
 
 a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 header,
@@ -90,8 +90,8 @@ nav,
 main,
 section,
 footer {
-  box-sizing: border-box;
-  display: flex;
+    box-sizing: border-box;
+    display: flex;
 }
 
 p,
@@ -103,99 +103,100 @@ button,
 table,
 details,
 summary {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    box-sizing: border-box;
 }
 
 h1 {
-  font-size: var(--theme_font_size_4);
+    font-size: var(--theme_font_size_4);
 }
 
 h2 {
-  font-size: var(--theme_font_size_3);
+    font-size: var(--theme_font_size_3);
 }
 
 h3 {
-  font-size: var(--theme_font_size_2);
+    font-size: var(--theme_font_size_2);
 }
 
 button,
 input,
 select {
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
-  color: var(--theme_color_2);
-  font-size: var(--theme_font_size_2);
-  background-color: var(--theme_color_1);
-  border: none;
-  border-radius: 5px;
-  min-height: 30px;
-  outline: none;
-  padding: 5px;
-  height: var(--touch_min_height);
-  margin: 0;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    color: var(--theme_color_2);
+    font-size: var(--theme_font_size_2);
+    background-color: var(--theme_color_1);
+    border: none;
+    border-radius: 5px;
+    min-height: 30px;
+    outline: none;
+    padding: 5px;
+    height: var(--touch_min_height);
+    box-sizing: border-box;
+    margin: 0;
 }
 button,
 select {
-  min-width: var(--touch_min_width);
+    min-width: var(--touch_min_width);
 }
 
 select {
-  -webkit-appearance: none;
-  padding: 10px;
+    -webkit-appearance: none;
+    padding: 10px;
 }
 
 button:focus,
 a:focus,
 input:focus,
 select:focus {
-  outline: none;
+    outline: none;
 }
 
 button:disabled,
 select:disabled {
-  cursor: not-allowed;
-  background-color: var(--theme_color_4);
-  color: var(--theme_color_6);
+    cursor: not-allowed;
+    background-color: var(--theme_color_4);
+    color: var(--theme_color_6);
 }
 
 button > span {
-  display: flex;
+    display: flex;
 }
 
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 ul {
-  list-style: none;
+    list-style: none;
 }
 
 ul,
 ol {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  padding: 0;
-  margin: 0;
-  align-items: center;
-  box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+    align-items: center;
+    box-sizing: border-box;
 }
 
 li {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 h1 {
-  text-transform: uppercase;
-  color: var(--theme_color_3);
-  margin: 0;
+    text-transform: uppercase;
+    color: var(--theme_color_3);
+    margin: 0;
 }
 
 h1,
@@ -204,96 +205,96 @@ h3,
 h4,
 p,
 div {
-  margin: 0;
+    margin: 0;
 }
 
 .hide {
-  display: none;
+    display: none;
 }
 section {
-  margin: 0;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  position: relative;
+    margin: 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    position: relative;
 }
 
 .motif-controls {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  justify-content: space-evenly;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-evenly;
 }
 .motif-controls button,
 .motif-controls input,
 .motif-controls select {
-  font-size: var(--theme_font_size_1);
-  border: none;
-  border-radius: 5px;
-  border-style: none;
-  padding: 4px 12px 6px;
-  margin: 0px;
-  max-width: 100px;
-  display: flex;
-  flex-direction: column;
-  transition-property: background-color, color;
-  transition-duration: 0.5s;
-  transition-timing-function: ease;
-  flex: 1 1 0;
+    font-size: var(--theme_font_size_1);
+    border: none;
+    border-radius: 5px;
+    border-style: none;
+    padding: 4px 12px 6px;
+    margin: 0px;
+    max-width: 100px;
+    display: flex;
+    flex-direction: column;
+    transition-property: background-color, color;
+    transition-duration: 0.5s;
+    transition-timing-function: ease;
+    flex: 1 1 0;
 }
 .motif-controls button:disabled,
 .motif-controls select:disabled,
 .motif-controls input:disabled {
-  cursor: not-allowed;
-  background-color: var(--theme_color_4);
-  color: var(--theme_color_6);
+    cursor: not-allowed;
+    background-color: var(--theme_color_4);
+    color: var(--theme_color_6);
 }
 
 /* spinner icon */
 
 .spinner:after {
-  content: " ";
-  display: block;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 6px solid var(--theme_color_1);
-  border-color: var(--theme_color_1) transparent var(--theme_color_1)
-    transparent;
-  animation: spinner 1s linear infinite;
+    content: ' ';
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 6px solid var(--theme_color_1);
+    border-color: var(--theme_color_1) transparent var(--theme_color_1)
+        transparent;
+    animation: spinner 1s linear infinite;
 }
 @keyframes spinner {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* Viewport Breakpoints*/
 
 /*Mobile Landscape*/
 @media (min-width: var(--layout_mobile_width)) {
-  section {
-    max-width: 75vw;
-  }
+    section {
+        max-width: 75vw;
+    }
 }
 
 /*Tablet*/
 @media (min-width: var(--layout_tablet_width)) {
-  section.form {
-    max-width: 50vw;
-  }
+    section.form {
+        max-width: 50vw;
+    }
 }
 
 /*Desktop*/
 @media (min-width: var(--layout_desktop_width)) {
-  :root {
-    --header_offset: 83px;
-    --nav_offset: 0px;
-  }
+    :root {
+        --header_offset: 83px;
+        --nav_offset: 0px;
+    }
 }
 
 /*Widescreen*/

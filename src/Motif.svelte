@@ -15,26 +15,6 @@
   let gridWidth;
   let innerWidth = 375;
 
-  function hasSettings(motif) {
-    return (
-      motif.key &&
-      motif.mode &&
-      motif.length &&
-      motif.tempo &&
-      motif.timeSignature
-    );
-  }
-
-  function getMotifSettings(motif) {
-    return {
-      key: motif.key,
-      mode: motif.mode,
-      [motif.tempo.type]: motif.tempo.units,
-      "time signature": `${motif.timeSignature.join("/")}`,
-      [motif.length.type]: motif.length.units
-    };
-  }
-
   function getTransformations(motif) {
     return motif.transformations.reduce((map, { type, params }) => {
       map[type] = params.join(", ");
@@ -87,13 +67,11 @@
   </div>
   <!-- TODO: assign uploaded motifs tempo, length, timeSignature, etc so I can expect these props to exist -->
   <div class="settings">
-    {#if hasSettings(motif)}
-      <div class="motif-settings">
-        <MotifSettingsList
-          title="settings"
-          settings={getMotifSettings(motif)} />
-      </div>
-    {/if}
+
+    <div class="motif-settings">
+      <MotifSettingsList title="settings" settings={motif.meta} />
+    </div>
+
     {#if motif.transformations && motif.transformations.length}
       <div class="transformations">
         <MotifSettingsList

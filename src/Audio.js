@@ -8,7 +8,7 @@ export function newAudioContext() {
   // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
   let ctx = new (window.AudioContext || window.webkitAudioContext)({
     latencyHint: "playback",
-    sampleRate: 44000
+    sampleRate: 44000,
   });
   // make sure context exists to prevent Safari iOS bug
   if (ctx) {
@@ -47,8 +47,8 @@ function _getMelodyTimeDuration(melody) {
       _getNoteTimeDuration(
         Config.rhythmicUnit,
         note.duration,
-        melody.bpm,
-        melody.timeSignature[1]
+        melody.meta.tempo.units,
+        melody.meta.timeSignature[1]
       )
     );
   }, 0);
@@ -112,8 +112,8 @@ export function playMelody(
       session.ctx,
       melody.notes[i],
       time,
-      melody.bpm,
-      melody.timeSignature,
+      melody.meta.tempo.units,
+      melody.meta.timeSignature,
       voice
     );
   }
@@ -150,7 +150,7 @@ export function loopMelody(session, melody, time, voice) {
  */
 export function stopLoop(session) {
   if (session.timeoutIDs) {
-    session.timeoutIDs.forEach(id => window.clearTimeout(id));
+    session.timeoutIDs.forEach((id) => window.clearTimeout(id));
   }
   session.timeoutIDs = [];
   session.isPlaying = false;

@@ -254,7 +254,14 @@
     let gridMelody = mapMelody(getMelody());
     let name =
       doc.querySelector("#input-controls .name").value || "My Grid Motif";
-    processNewMotif(gridMelody, name, "theme", "", "Grid melody created");
+    processNewItem(
+      gridMelody,
+      "motifs",
+      name,
+      "theme",
+      "",
+      "Grid melody created"
+    );
   }
 
   function getGridViewBox(width, height, columns, rows, horizontalGrids) {
