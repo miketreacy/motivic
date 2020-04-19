@@ -1,102 +1,102 @@
 <script>
-  import { createEventDispatcher } from "svelte";
-  export let id = "";
-  export let options = [];
-  export let displayCompact = false;
-  export let disabled = true;
-  export let optionIconMap = null;
+    import { createEventDispatcher } from 'svelte'
+    export let id = ''
+    export let options = []
+    export let displayCompact = false
+    export let disabled = true
+    export let optionIconMap = null
 
-  const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher()
 
-  let iconContent = "";
-  let selection = options[0][0];
+    let iconContent = ''
+    let selection = options[0][0]
 
-  function resetSelection(disabled) {
-    return disabled ? options[0][0] : selection;
-  }
+    function resetSelection(disabled) {
+        return disabled ? options[0][0] : selection
+    }
 
-  function getOptionDisplay(name, isCompact = false) {
-    let shortName = options.find(([full, _]) => full === name)[1];
-    return isCompact ? shortName : name;
-  }
+    function getOptionDisplay(name, isCompact = false) {
+        let shortName = options.find(([full, _]) => full === name)[1]
+        return isCompact ? shortName : name
+    }
 
-  function updateSelection(option) {
-    dispatch("updateSelection", { selection: option });
-  }
+    function updateSelection(option) {
+        dispatch('updateSelection', { selection: option })
+    }
 
-  $: iconContent = optionIconMap[selection];
-  $: selection = resetSelection(disabled);
-  $: updateSelection(selection);
+    $: iconContent = optionIconMap[selection]
+    $: selection = resetSelection(disabled)
+    $: updateSelection(selection)
 </script>
 
 <style>
-  .wrap {
-    position: relative;
-    white-space: normal;
-    min-width: 58.2px;
-    flex: 1 1 0;
-    max-width: 100px;
-    margin: 0;
-    box-sizing: border-box;
-  }
-  .wrap.compact {
-    max-width: 60px;
-    min-width: var(--touch);
-    margin: 0px;
-  }
-  .icon {
-    position: absolute;
-    z-index: var(--front);
-    top: 3px;
-    color: var(--theme_color_2);
-    pointer-events: none;
-  }
-  [disabled="true"] .icon {
-    color: var(--theme_color_6);
-  }
-  .value {
-    position: absolute;
-    z-index: var(--front);
-    color: var(--theme_color_2);
-    pointer-events: none;
-    top: 20px;
-    font-size: var(--theme_font_size_1);
-  }
-  [disabled="true"] .value {
-    color: var(--theme_color_6);
-  }
-  .compact .value {
-    top: 13px;
-  }
-  select {
-    white-space: pre;
-    padding-top: 20px;
-    margin: 0;
-    color: var(--theme_color_1);
-  }
-  select:disabled {
-    color: var(--theme_color_4);
-  }
-  .compact select {
-    padding: 12px 7px 7px 7px;
-  }
-  option {
-    white-space: pre;
-  }
+    .wrap {
+        position: relative;
+        white-space: normal;
+        min-width: 58.2px;
+        flex: 1 1 0;
+        max-width: 100px;
+        margin: 0;
+        box-sizing: border-box;
+    }
+    .wrap.compact {
+        max-width: 60px;
+        min-width: var(--touch);
+        margin: 0px;
+    }
+    .icon {
+        position: absolute;
+        z-index: var(--front);
+        top: 3px;
+        color: var(--theme_color_2);
+        pointer-events: none;
+    }
+    [disabled='true'] .icon {
+        color: var(--theme_color_6);
+    }
+    .value {
+        position: absolute;
+        z-index: var(--front);
+        color: var(--theme_color_2);
+        pointer-events: none;
+        top: 20px;
+        font-size: var(--theme_font_size_1);
+    }
+    [disabled='true'] .value {
+        color: var(--theme_color_6);
+    }
+    .compact .value {
+        top: 13px;
+    }
+    select {
+        white-space: pre;
+        padding-top: 20px;
+        margin: 0;
+        color: var(--theme_color_1);
+    }
+    select:disabled {
+        color: var(--theme_color_4);
+    }
+    .compact select {
+        padding: 12px 7px 7px 7px;
+    }
+    option {
+        white-space: pre;
+    }
 </style>
 
 <div class="wrap" {disabled} class:compact={displayCompact}>
-  {#if !displayCompact}
-    <span class="icon">
-      {@html iconContent}
-    </span>
-  {/if}
-  <span class="value">{getOptionDisplay(selection, displayCompact)}</span>
-  <select bind:value={selection} {disabled} {id}>
-    {#each options as [fullName, shortName]}
-      <option value={fullName}>
-        <span>{fullName}</span>
-      </option>
-    {/each}
-  </select>
+    {#if !displayCompact}
+        <span class="icon">
+            {@html iconContent}
+        </span>
+    {/if}
+    <span class="value">{getOptionDisplay(selection, displayCompact)}</span>
+    <select bind:value={selection} {disabled} {id}>
+        {#each options as [fullName, shortName]}
+            <option value={fullName}>
+                <span>{fullName}</span>
+            </option>
+        {/each}
+    </select>
 </div>

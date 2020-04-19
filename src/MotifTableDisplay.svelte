@@ -2,14 +2,14 @@
     <details class="motif-details">
         <summary class="motif-summary">
             <div class="motif-display-header">
-                <div class="motif-name"></div>
+                <div class="motif-name" />
             </div>
         </summary>
         <table class="motif-table">
-        <caption>motif notes</caption>
+            <caption>motif notes</caption>
             <thead>
                 <tr>
-                    <th class="note-number"></th>
+                    <th class="note-number" />
                     <th>pitch</th>
                     <th>oct</th>
                     <th>dur</th>
@@ -17,7 +17,7 @@
                     <th>int</th>
                 </tr>
             </thead>
-            <tbody></tbody>
+            <tbody />
         </table>
     </details>
 </div>

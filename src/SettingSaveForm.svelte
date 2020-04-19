@@ -10,8 +10,7 @@
                 id="setting_name"
                 data-setting-type=""
                 value="My Setting"
-                placeholder="My Setting"
-            />
+                placeholder="My Setting" />
         </div>
         <button class="submit">submit</button>
     </fieldset>

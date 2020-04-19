@@ -116,10 +116,6 @@
         border: none;
         background-color: initial;
     }
-
-    header .button-wrap {
-        /* position: absolute; */
-    }
     .wrap {
         height: 40px;
         width: 100%;

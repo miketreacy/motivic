@@ -1,6 +1,6 @@
 <script>
-  export let type = "";
-  export let params = [];
+    export let type = ''
+    export let params = []
 </script>
 
 <style>
