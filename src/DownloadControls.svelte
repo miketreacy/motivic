@@ -35,7 +35,7 @@
             <option>{fileType}</option>
         {/each}
     </select>
-    <button class="wav" on:click={downloadFile}>
+    <button on:click={downloadFile}>
         <span>&#8681;</span>
     </button>
 </div>

@@ -336,6 +336,13 @@ const Config = {
                 headers: new Headers({ 'Content-Type': 'application/json' }),
                 timeoutMilliseconds: 5000,
             },
+            convertor: {
+                path: '/convertor',
+                method: 'POST',
+                mode: 'cors',
+                headers: new Headers({ 'Content-Type': 'multipart/form-data' }),
+                timeoutMilliseconds: 10000,
+            },
         },
         crud: {
             createOneMotif: { method: 'POST', path: '/motif' },

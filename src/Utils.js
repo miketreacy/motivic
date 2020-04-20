@@ -210,14 +210,23 @@ const Utils = {
          * @param {Object} params fetch params object
          * @returns {Array} Tuple of [data, error]
          */
-        awaitFetch: async function (url, params, wrapper = Function.prototype) {
+        awaitFetch: async function (
+            url,
+            params,
+            wrapper = Function.prototype,
+            blob = false
+        ) {
             let data = null
             let error = null
 
             try {
                 let res = await wrapper(win.fetch(url, params))
                 if (res.ok) {
-                    data = await res.json()
+                    if (blob) {
+                        data = await res.blob()
+                    } else {
+                        data = await res.json()
+                    }
                 } else {
                     let errMsg = await res.text()
                     throw Error(errMsg)
@@ -234,8 +243,8 @@ const Utils = {
          * @param {Object} params fetch params object
          * @param {number} ms Milliseconds to wait before timing out
          */
-        awaitFetchTimeout: async function (url, params, ms) {
-            return this.awaitFetch(url, params, Utils.general.timeout(ms))
+        awaitFetchTimeout: async function (url, params, ms, blob = false) {
+            return this.awaitFetch(url, params, Utils.general.timeout(ms), blob)
         },
     },
     melody: {
@@ -657,9 +666,75 @@ const Utils = {
         },
 
         wav: {
-            download: function (motifs = []) {
+            download: async function (motifs = []) {
+                const apiConfig = {
+                    url: '/convertor',
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: new Headers({
+                        'Content-Type': 'multipart/form-data',
+                    }),
+                    timeoutMilliseconds: 10000,
+                }
+                function getApiParams(payload) {
+                    let { method, mode, headers } = apiConfig
+                    return {
+                        method,
+                        body: payload,
+                        mode,
+                        headers,
+                    }
+                }
+
                 // TODO: wire up call to motivic_convertor WAV API
+                // TODO: finish the goland API to convert JSON to WAV to prevent
+                // the intermediary MIDI step that's currently necessary.
+
+                // 1. generate a MIDI file to upload
                 console.log(`Call motivic_convertor API once deployed`)
+                let midiFile = new Midi.File()
+                motifs.forEach((m) =>
+                    midiFile.addTrack(
+                        Utils.file.midi.getTrack.bind(Utils.file.midi)(m)
+                    )
+                )
+
+                // 2. prep for MIDI file upload
+                const formData = new FormData()
+                formData.append('myMIDIFile', midiFile)
+                formData.append('wavFileName', motifs[0].name)
+                // TODO: add voice selector for WAV conversions
+                formData.append('myWaveForm', 'saw')
+
+                // 3. Make API call to upload MIDI file
+                let [blob, error] = await Utils.http.awaitFetchTimeout(
+                    apiConfig.url,
+                    getApiParams(formData),
+                    apiConfig.timeoutMilliseconds,
+                    true
+                )
+                if (blob) {
+                    let a = doc.createElement('a')
+                    a.download = `${motifs[0].name}.wav`
+                    const reader = new FileReader()
+                    reader.onloadend = function () {
+                        let dataUrl = reader.result
+                        a.href = dataUrl
+                        a.click()
+                        console.info('file downloaded')
+                    }
+                    reader.readAsDataURL(blob)
+                    // let objectURL = URL.createObjectURL(blob)
+                    // a.href = 'data:audio/wav;base64,' + win.btoa(file.toBytes())
+                    // a.href = objectURL
+                    // a.click()
+
+                    // do what here?
+                } else {
+                    console.error(error)
+                }
+                console.log('API response from /convertor...')
+                console.dir(blob)
             },
         },
 
@@ -795,7 +870,7 @@ const Utils = {
          * @param {boolean} add Should this item be added? (if false, then delete)
          */
         store: function (item, type, add = true) {
-            let storedItems = Utils.storage.get.bind(Utils.storage)(type)
+            let storedItems = Utils.storage.get.bind(Utils.storage)(type) || []
             const limit = Config.userData.savedItemLimit[type]
             const action = add ? 'saved' : 'deleted'
             if (add && storedItems.length >= limit) {
