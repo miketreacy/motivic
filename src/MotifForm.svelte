@@ -26,9 +26,7 @@
     export let stickyControls = false
 
     let scrollPos
-    const apiUrl = submitOptions
-        ? `${Config.api.baseURL}${submitOptions.path}`
-        : ''
+    const apiUrl = submitOptions ? `/api/${submitOptions.path}` : ''
     let formStateDefault = {}
     let formInDefaultState = true
     let formCanSubmit = true
