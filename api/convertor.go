@@ -1054,9 +1054,9 @@ func jsonDataConversionHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 2. CONVERT MOTIF TO AUDIO FILE
 	fmt.Println("Converting Motif...")
-	outputFileName := r.Form.Get("wavFileName")
+	outputFileName := b.Motif.Name
 	randomString := getRandomString(8)
-	wavFileoutputFilePath, _ := getFilePathFromName(outputFileDir, randomString, b.Motif.Name, "wav")
+	wavFileoutputFilePath, _ := getFilePathFromName(outputFileDir, randomString, outputFileName, "wav")
 	// channel to wait for go routine response
 	c := make(chan bool)
 	go convertMotifToWAVFile(b.Motif, wavFileoutputFilePath, b.Voice, c)

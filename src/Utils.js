@@ -671,15 +671,15 @@ const Utils = {
         },
 
         wav: {
+            // WARNING: for multipart form uploads, LET THE BROWSER SET
+            // 'Content-Type': 'multipart/form-data; boundary=???' for you,
+            // OR IT WILL FAIL
             download: async function (motifs = []) {
                 const apiConfig = {
                     url: '/api/convertor',
                     method: 'POST',
                     mode: 'cors',
                     headers: new Headers({
-                        // WARNING: LET THE BROWSER SET 'Content-Type': 'multipart/form-data; boundary=???'
-                        // OR IT WILL FAIL
-                        // 'X-Motivic-Operation': 'upload',
                         'Content-Type': 'application/json',
                     }),
                     timeoutMilliseconds: 20000,
