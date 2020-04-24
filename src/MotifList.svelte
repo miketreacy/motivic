@@ -22,6 +22,7 @@
     export let sortOrder
     export let expandedMotifId
     export let scrollDown = false
+    export let fileDownloading = false
     const generationLevels = Config.motifGenerationDisplayCount
     const dispatch = createEventDispatcher()
 
@@ -600,7 +601,9 @@
                         {#if !parentId}
                             <div class="download">
                                 <DownloadControls
-                                    selectedMotifs={[motifs.find(m => m.id === motifId)]} />
+                                    loading={fileDownloading}
+                                    selectedMotifs={[motifs.find(m => m.id === motifId)]}
+                                    on:downloadFile />
                             </div>
                         {/if}
                         {#if transformations && transformations.length}

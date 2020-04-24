@@ -1074,8 +1074,9 @@ func jsonDataConversionHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Println("Zipped File:", zipFileOutputPath)
 		serveDownloadFile(w, r, zipFileOutputPath, zipFileName)
+	} else {
+		errorResponse(w, http.StatusGatewayTimeout, "we hath failed thee")
 	}
-	errorResponse(w, http.StatusGatewayTimeout, "we hath failed thee")
 }
 
 // Handler ...
@@ -1129,5 +1130,4 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			fileDownloadHandler(w, r)
 		}
 	}
-
 }

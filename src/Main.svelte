@@ -12,9 +12,9 @@
     export let view = ''
     export let openSection = ''
     export let openItemId = ''
-    export let settings = []
     export let motifs = []
     export let scrollDown = false
+    export let fileDownloading = false
     let viewType = 'flat'
     let sortType = 'created'
     let sortOrder = 'desc'
@@ -136,11 +136,13 @@
                     {sortOrder}
                     {expandedMotifId}
                     {scrollDown}
+                    {fileDownloading}
                     on:listViewChange={handleListViewChange}
                     on:displayToggle
                     on:displayCrudModal
                     on:motifSelection
-                    on:displayAlert={handleDisplayAlert} />
+                    on:displayAlert={handleDisplayAlert}
+                    on:downloadFile />
             {/if}
             {#if showSectionMap.randomizer}
                 <RandomizerForm

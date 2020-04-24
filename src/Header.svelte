@@ -5,7 +5,6 @@
     import Field from './Field.svelte'
     export let showNav = false
     export let showUpload = false
-    export let view = ''
     export let motifs = []
     export let openSection = ''
     export let scrollDown

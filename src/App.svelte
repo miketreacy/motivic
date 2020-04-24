@@ -19,6 +19,7 @@
     let settings = []
     let modalProps = Object.assign({}, Config.itemCrudModalDefaultProps)
     let displayAlert = false
+    let fileDownloading = false
     let alertProps = {
         visible: false,
         message: '',
@@ -91,6 +92,16 @@
         alertProps = event.detail
         displayAlert = alertProps.visible
     }
+    function handleDownloadFile(event) {
+        let { type, progress, items } = event.detail
+        console.info(`fileDownload event fired: ${type} ${progress}%`)
+        if (progress < 100) {
+            fileDownloading = true
+            Utils.file[type].download.bind(Utils.file[type])(items)
+        } else {
+            fileDownloading = false
+        }
+    }
 
     function scrollHandler(scrollPos) {
         let threshold = 30
@@ -132,9 +143,11 @@
     {displayAlert}
     {alertProps}
     {scrollDown}
+    {fileDownloading}
     on:displayToggle={handleDisplayToggle}
     on:displayCrudModal={handleModalDisplay}
-    on:motifSelection={handleMotifSelection} />
+    on:motifSelection={handleMotifSelection}
+    on:downloadFile={handleDownloadFile} />
 {#if openSection === ''}
     <Footer />
 {/if}

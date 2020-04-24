@@ -1,5 +1,6 @@
 import Midi from 'jsmidgen'
 import MIDIParser from 'midi-parser-js'
+import { createEventDispatcher } from 'svelte'
 import Config from './Config.js'
 import { motifStore, settingStore } from './Stores.js'
 
@@ -642,10 +643,8 @@ const Utils = {
                 let file = new Midi.File()
 
                 motifs.forEach((m) => file.addTrack(this.getTrack(m)))
-                a.download = `${motifs[0].name}.midi`
-                a.href = 'data:audio/midi;base64,' + win.btoa(file.toBytes())
-                a.click()
-                a.remove()
+                let name = motifs[0].name
+                Utils.file.processDownload('midi', name, file, false)
             },
         },
 
@@ -654,12 +653,8 @@ const Utils = {
                 let a = doc.createElement('a')
                 let data = JSON.stringify(motifs, undefined, 4)
                 let blob = new Blob([data], { type: 'text/json' })
-
-                a.id = 'FUCK'
-                a.download = `${motifs[0].name}.json`
-                a.href = win.URL.createObjectURL(blob)
-                a.click()
-                win.URL.revokeObjectURL(a.href)
+                let name = motifs[0].name
+                Utils.file.processDownload('json', name, blob, true)
             },
 
             uploadHandler: function (fileName, callBack) {
@@ -714,18 +709,45 @@ const Utils = {
                     console.log('API response from /api/convertor...')
                     console.dir(data)
                     console.info(`starting download via anchor href hack`)
-                    let downloadURL = window.URL.createObjectURL(data)
-                    let a = doc.createElement('a')
-                    a.href = downloadURL
-                    a.target = '_blank'
-                    a.download = `${motif.name}.zip`
-                    a.click()
-                    a.remove()
+                    Utils.file.processDownload(
+                        'wav',
+                        motif.name,
+                        data,
+                        true,
+                        true
+                    )
                 } else {
                     console.error(`API reponse error: ${error.message}`)
                     console.dir(error)
                 }
             },
+        },
+
+        processDownload: function (
+            fileType,
+            name = '',
+            data,
+            blob = true,
+            zip = false
+        ) {
+            const dispatch = createEventDispatcher()
+            let downloadURL = ''
+            let fileExt = zip ? 'zip' : fileType
+            dispatch('downloadFile', { type: fileType, progress: 100 })
+            if (blob) {
+                downloadURL = window.URL.createObjectURL(data)
+            } else {
+                downloadURL =
+                    `'data:audio/${fileType};base64,` + win.btoa(data.toBytes())
+            }
+
+            let a = doc.createElement('a')
+            a.href = downloadURL
+            a.target = '_blank'
+            a.download = `${name}.${fileExt}`
+            a.click()
+            window.URL.revokeObjectURL(a.href)
+            a.remove()
         },
 
         parseCallback: function (motifs, callBack = Function.prototype) {

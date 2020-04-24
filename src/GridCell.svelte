@@ -12,7 +12,6 @@
     export let content = ''
     export let fontSize
     export let selected = false
-    export let writable
     export let audioSession
 
     function deSelectCell(el) {
