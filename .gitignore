@@ -9,9 +9,20 @@ public/build
 
 # IDE
 .idea/*
+.vscode/*
 
 # CI/CD
 now.json
 rules.json
 DEPLOY.md
 .now
+
+# binaries
+# audio files
+*.wav
+# app temp dir
+tmp/
+# app binary input
+input/*
+# app binary output
+output/*

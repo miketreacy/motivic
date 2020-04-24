@@ -324,7 +324,7 @@
             visible: true,
             type: success ? 'success' : 'error',
             message: success ? `New random motif created!` : msg,
-            displayTimeMs: 1250,
+            displayTimeMs: 1000,
             dismissable: false,
             top: 58
         })

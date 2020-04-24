@@ -214,22 +214,31 @@ const Utils = {
             url,
             params,
             wrapper = Function.prototype,
-            blob = false
+            file = false
         ) {
             let data = null
             let error = null
 
             try {
                 let res = await wrapper(win.fetch(url, params))
+
                 if (res.ok) {
-                    if (blob) {
-                        data = await res.blob()
-                    } else {
-                        data = await res.json()
+                    console.dir(res)
+
+                    try {
+                        if (file) {
+                            data = await res.blob()
+                        } else {
+                            data = await res.json()
+                        }
+                    } catch (e) {
+                        let text = await res.text()
+                        console.info(`Text response: ${text}`)
+                        data = { text }
                     }
                 } else {
                     let errMsg = await res.text()
-                    throw Error(errMsg)
+                    throw new Error(errMsg)
                 }
             } catch (e) {
                 console.error(e)
@@ -243,8 +252,8 @@ const Utils = {
          * @param {Object} params fetch params object
          * @param {number} ms Milliseconds to wait before timing out
          */
-        awaitFetchTimeout: async function (url, params, ms, blob = false) {
-            return this.awaitFetch(url, params, Utils.general.timeout(ms), blob)
+        awaitFetchTimeout: async function (url, params, ms, file = false) {
+            return this.awaitFetch(url, params, Utils.general.timeout(ms), file)
         },
     },
     melody: {
@@ -636,6 +645,7 @@ const Utils = {
                 a.download = `${motifs[0].name}.midi`
                 a.href = 'data:audio/midi;base64,' + win.btoa(file.toBytes())
                 a.click()
+                a.remove()
             },
         },
 
@@ -668,73 +678,53 @@ const Utils = {
         wav: {
             download: async function (motifs = []) {
                 const apiConfig = {
-                    url: '/convertor',
+                    url: '/api/convertor',
                     method: 'POST',
                     mode: 'cors',
                     headers: new Headers({
-                        'Content-Type': 'multipart/form-data',
+                        // WARNING: LET THE BROWSER SET 'Content-Type': 'multipart/form-data; boundary=???'
+                        // OR IT WILL FAIL
+                        // 'X-Motivic-Operation': 'upload',
+                        'Content-Type': 'application/json',
                     }),
-                    timeoutMilliseconds: 10000,
+                    timeoutMilliseconds: 20000,
                 }
                 function getApiParams(payload) {
                     let { method, mode, headers } = apiConfig
                     return {
                         method,
-                        body: payload,
+                        body: JSON.stringify(payload),
                         mode,
                         headers,
                     }
                 }
-
-                // TODO: wire up call to motivic_convertor WAV API
-                // TODO: finish the goland API to convert JSON to WAV to prevent
-                // the intermediary MIDI step that's currently necessary.
-
-                // 1. generate a MIDI file to upload
-                console.log(`Call motivic_convertor API once deployed`)
-                let midiFile = new Midi.File()
-                motifs.forEach((m) =>
-                    midiFile.addTrack(
-                        Utils.file.midi.getTrack.bind(Utils.file.midi)(m)
-                    )
-                )
-
-                // 2. prep for MIDI file upload
-                const formData = new FormData()
-                formData.append('myMIDIFile', midiFile)
-                formData.append('wavFileName', motifs[0].name)
-                // TODO: add voice selector for WAV conversions
-                formData.append('myWaveForm', 'saw')
-
-                // 3. Make API call to upload MIDI file
-                let [blob, error] = await Utils.http.awaitFetchTimeout(
+                let motif = motifs[0]
+                // 1. Make request to JSON => WAV convertor endpoint
+                console.info('JSON payload...', motifs[0])
+                console.info('making JSON => WAV call to convertor...')
+                let [data, error] = await Utils.http.awaitFetchTimeout(
                     apiConfig.url,
-                    getApiParams(formData),
+                    getApiParams({ voice: 'saw', motif }),
                     apiConfig.timeoutMilliseconds,
                     true
                 )
-                if (blob) {
-                    let a = doc.createElement('a')
-                    a.download = `${motifs[0].name}.wav`
-                    const reader = new FileReader()
-                    reader.onloadend = function () {
-                        let dataUrl = reader.result
-                        a.href = dataUrl
-                        a.click()
-                        console.info('file downloaded')
-                    }
-                    reader.readAsDataURL(blob)
-                    // let objectURL = URL.createObjectURL(blob)
-                    // a.href = 'data:audio/wav;base64,' + win.btoa(file.toBytes())
-                    // a.href = objectURL
-                    // a.click()
 
-                    // do what here?
+                // 2. Handle converted zip file response
+                if (data) {
+                    console.log('API response from /api/convertor...')
+                    console.dir(data)
+                    console.info(`starting download via anchor href hack`)
+                    let downloadURL = window.URL.createObjectURL(data)
+                    let a = doc.createElement('a')
+                    a.href = downloadURL
+                    a.target = '_blank'
+                    a.download = `${motif.name}.zip`
+                    a.click()
+                    a.remove()
                 } else {
-                    console.error(error)
+                    console.error(`API reponse error: ${error.message}`)
+                    console.dir(error)
                 }
-                console.log('API response from /convertor...')
-                console.dir(blob)
             },
         },
 

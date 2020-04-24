@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"math"
 	"math/rand"
 	"mime/multipart"
@@ -113,29 +114,200 @@ type Tempo struct {
 }
 
 // TimeSignature : Motivic.TimeSignature class
-type TimeSignature struct {
-	Beat int `json:"beat"`
-	Unit int `json:"unit"`
+type TimeSignature []int
+
+// Meta : Motivic.Meta class
+type Meta struct {
+	Key           string        `json:"key"`
+	Mode          string        `json:"mode"`
+	Tempo         Tempo         `json:"tempo"`
+	TimeSignature TimeSignature `json:"timeSignature"`
 }
 
 // Motif : Motivic.Motif melody class
 type Motif struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-	Key  string `json:"key"`
-	Mode string `json:"mode"`
-	Tempo
-	TimeSignature
-	Notes []MotifNote
+	ID    string      `json:"id"`
+	Name  string      `json:"name"`
+	Meta  Meta        `json:"meta"`
+	Notes []MotifNote `json:"notes"`
 }
+
+// ConfigFrequencies :
+type ConfigFrequencies [][]float64
+
+// ConfigNotes :
+type ConfigNotes []string
 
 // MotivicConfig : Motivic music theory config
 type MotivicConfig struct {
-	Frequencies [][]float64 `json:"frequencies"`
-	Notes       []string    `json:"notes"`
-	Pitches     []Pitch
+	Frequencies ConfigFrequencies `json:"frequencies"`
+	Notes       ConfigNotes       `json:"notes"`
+	Pitches     []Pitch           `json:"pitches"`
 }
 
+// JSONConversionRequestBody : API signature to generate a binary from JSON
+type JSONConversionRequestBody struct {
+	Motif Motif  `json:"motif"`
+	Voice string `json:"voice"`
+}
+
+var notes = []string{
+	"c",
+	"c#",
+	"d",
+	"d#",
+	"e",
+	"f",
+	"f#",
+	"g",
+	"g#",
+	"a",
+	"a#",
+	"b",
+}
+
+var freqs = [][]float64{
+	{
+		16.351,
+		17.324,
+		18.354,
+		19.445,
+		20.601,
+		21.827,
+		23.124,
+		24.499,
+		25.956,
+		27.5,
+		29.135,
+		30.868,
+	},
+	{
+		32.703,
+		34.648,
+		36.708,
+		38.891,
+		41.203,
+		43.654,
+		46.249,
+		48.999,
+		51.913,
+		55,
+		58.27,
+		61.735,
+	},
+	{
+		65.406,
+		69.296,
+		73.416,
+		77.782,
+		82.407,
+		87.307,
+		92.499,
+		97.999,
+		103.826,
+		110,
+		116.541,
+		123.471,
+	},
+	{
+		130.813,
+		138.591,
+		146.832,
+		155.563,
+		164.814,
+		174.614,
+		184.997,
+		195.998,
+		207.652,
+		220,
+		233.082,
+		246.942,
+	},
+	{
+		261.626,
+		277.183,
+		293.665,
+		311.127,
+		329.628,
+		349.228,
+		369.994,
+		391.995,
+		415.305,
+		440,
+		466.164,
+		493.883,
+	},
+	{
+		523.251,
+		554.365,
+		587.33,
+		622.254,
+		659.255,
+		698.456,
+		739.989,
+		783.991,
+		830.609,
+		880,
+		932.328,
+		987.767,
+	},
+	{
+		1046.502,
+		1108.731,
+		1174.659,
+		1244.508,
+		1318.51,
+		1396.913,
+		1479.978,
+		1567.982,
+		1661.219,
+		1760,
+		1864.655,
+		1975.533,
+	},
+	{
+		2093.005,
+		2217.461,
+		2349.318,
+		2489.016,
+		2637.021,
+		2793.826,
+		2959.955,
+		3135.964,
+		3322.438,
+		3520,
+		3729.31,
+		3951.066,
+	},
+	{
+		4186.009,
+		4434.922,
+		4698.636,
+		4978.032,
+		5274.042,
+		5587.652,
+		5919.91,
+		6271.928,
+		6644.876,
+		7040,
+		7458.62,
+		7902.132,
+	},
+	{
+		8372.018,
+		8869.844,
+		9397.272,
+		9956.064,
+		10548.084,
+		11175.304,
+		11839.82,
+		12543.856,
+		13289.752,
+		14080,
+		14917.24,
+		15804.264,
+	},
+}
 var config MotivicConfig
 
 // Index : simple utils for getting index of a slice element
@@ -158,12 +330,18 @@ func getNoteNameAndOctave(value int) (string, int) {
 }
 
 func getPitchFrequency(pitch string, octave int) float64 {
+	fmt.Println("Motivic Config...")
+	fmt.Println(config)
 	// handle rests - where pitch and octave are falsey
-	if pitch == "" {
+	if pitch == "" || pitch == "rest" {
 		return 0.00
 	}
+	fmt.Printf("note pitch: %v\n", pitch)
 	idx := Index(config.Notes, pitch)
-	return config.Frequencies[octave][idx]
+	fmt.Printf("note index: %v\n", idx)
+	freq := config.Frequencies[octave][idx]
+	fmt.Printf("note freq: %v\n", freq)
+	return freq
 }
 func (c *MotivicConfig) setPitches() {
 	var pitches []Pitch
@@ -177,14 +355,9 @@ func (c *MotivicConfig) setPitches() {
 }
 
 func initMotivicConfig() {
-	// read in app config from json file in root
-	f, err := ioutil.ReadFile("./config.json")
-	if err != nil {
-		fmt.Println("Error:", err)
-		os.Exit(1)
-	}
 	var c MotivicConfig
-	json.Unmarshal(f, &c)
+	c.Notes = notes
+	c.Frequencies = freqs
 	c.setPitches()
 
 	// assign config values to global var
@@ -194,7 +367,7 @@ func initMotivicConfig() {
 func getDurationInSeconds(dur int, t Tempo, ts TimeSignature) float64 {
 	beatsPerSec := float64(t.Units) / float64(60)
 	secsPerBeat := float64(1) / float64(beatsPerSec)
-	beatsPerNote := float64(dur) / float64(ts.Beat*ts.Unit)
+	beatsPerNote := float64(dur) / float64(ts[0]*ts[1])
 	durSecs := secsPerBeat * beatsPerNote
 	return float64(durSecs)
 }
@@ -204,7 +377,8 @@ func convertMIDIFileToWAVFile(inputFileName string, outputFilePath string, wf st
 	// parse the MIDI file to Motivic format
 	motifs, err := parseMIDIFile(inputFileName)
 	if err != nil || len(motifs) == 0 {
-		fmt.Println("ERROR: parseMIDIFile", err)
+		errMsg := fmt.Sprint("ERROR: parseMIDIFile() ", err)
+		fmt.Println(errMsg)
 		c <- success
 		return
 	}
@@ -215,6 +389,35 @@ func convertMIDIFileToWAVFile(inputFileName string, outputFilePath string, wf st
 		return
 	}
 	motif := motifs[0]
+
+	for _, n := range motif.Notes {
+		fmt.Printf("MOTIF NOTE:\t%+v\n", n)
+	}
+
+	// convert Motif to audio buffers
+	motifBuffers := motifAudioMap(motif, wf)
+	// ignore error if dir already exists
+	_ = os.Mkdir(outputFileDir, 0777)
+	// generate the audio file
+	outputFile, err := os.Create(outputFilePath)
+	if err != nil {
+		fmt.Println("ERROR:", err)
+		c <- success
+		return
+	}
+	defer outputFile.Close()
+	if err := encodeAudioFile(wavFile, motifBuffers, outputFile); err != nil {
+		fmt.Println("ERROR: encodeAudioFile", err)
+		c <- success
+		return
+	}
+	fmt.Println("Audio file generated at", outputFilePath)
+	c <- true
+	return
+}
+
+func convertMotifToWAVFile(motif Motif, outputFilePath string, wf string, c chan<- bool) {
+	success := false
 
 	for _, n := range motif.Notes {
 		fmt.Printf("MOTIF NOTE:\t%+v\n", n)
@@ -347,7 +550,8 @@ func parseMIDITrack(track *midi.Track) (Motif, error) {
 		parsedEvents = append(parsedEvents, parsedEvent)
 	}
 	parsedEvents = getNotesWithInsertedRests(parsedEvents)
-	m = Motif{Notes: parsedEvents, Tempo: t, TimeSignature: ts}
+	meta := Meta{Tempo: t, TimeSignature: ts}
+	m = Motif{Notes: parsedEvents, Meta: meta}
 	return m, nil
 }
 
@@ -410,12 +614,16 @@ func parseMIDIEvent(e *midi.AbsEv) (MotifNote, error) {
 
 // take motif and return slice of audio buffers
 func motifAudioMap(m Motif, voice string) []audio.FloatBuffer {
+	fmt.Println("mapping Motif to audio buffers")
 	var buffers []audio.FloatBuffer
 	for _, n := range m.Notes {
+		fmt.Printf("Note: %v\n", n)
 		freq := getPitchFrequency(n.Name, n.Octave)
+		fmt.Printf("note: %v octave: %v frequency %v\n", freq, n.Name, n.Octave)
 		// TODO: duration needs to be converted to seconds?
 		// TODO: fix this - right now am rounding up to nearest second
-		ds := getDurationInSeconds(n.Duration, m.Tempo, m.TimeSignature)
+		ds := getDurationInSeconds(n.Duration, m.Meta.Tempo, m.Meta.TimeSignature)
+		fmt.Printf("duration in seconds: %v\n", ds)
 		fmt.Println("AUDIO NOTE DATA:", n.Name, n.Octave, n.Pitch, "freq:", freq, "secs:", ds)
 		// TODO: handle rests!!!
 		buf := generateAudioFrequency(freq, ds, voice)
@@ -663,17 +871,27 @@ func getAbsoluteURL(path string, query string) string {
 	return fmt.Sprintf("%v://%v:%v/%v%v", protocol, domain, port, path, qs)
 }
 
+func errorResponse(w http.ResponseWriter, statusCode int, message string) {
+	var jsonData []byte
+	tsCreated := time.Now()
+	data := APIResponse{URL: "", CreatedTimeStamp: tsCreated, Success: false, Message: message}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	jsonData, _ = json.MarshalIndent(data, "", "    ")
+	w.Write(jsonData)
+}
+
 func conversionResponse(w http.ResponseWriter, outputFilePath string, fileName string) {
 	data := APIResponse{}
 	tsCreated := time.Now()
 	// conversion failed
 	if outputFilePath == "" {
-		data = APIResponse{URL: "", CreatedTimeStamp: tsCreated, Success: false, Message: "Conversion failed"}
-		w.WriteHeader(http.StatusUnprocessableEntity)
+		errorResponse(w, http.StatusUnprocessableEntity, "Conversion failed")
 	} else {
 		tsExpires := tsCreated.Local().Add(time.Minute * time.Duration(downloadTTLMins))
 		strExpires := tsExpires.Format(time.RFC1123)
-		fileURL := getAbsoluteURL("download/"+fileName, "")
+		// fileURL := getAbsoluteURL("convertor/"+fileName, "")
+		fileURL := "/api/convertor/" + fileName
 		data = APIResponse{URL: fileURL, CreatedTimeStamp: tsCreated, Success: true, Message: "File converted"}
 		fmt.Println(strExpires)
 		w.Header().Set("Expires", strExpires)
@@ -695,7 +913,7 @@ func serveDownloadFile(w http.ResponseWriter, r *http.Request, filePath string, 
 
 func fileDownloadHandler(w http.ResponseWriter, r *http.Request) {
 	paths := strings.Split(r.URL.Path, "/")
-	fileName := paths[2:len(paths)]
+	fileName := paths[2:]
 	if len(fileName) == 1 {
 		fileName := fileName[0]
 		userFileName := strings.Split(fileName, "_")[1]
@@ -704,27 +922,17 @@ func fileDownloadHandler(w http.ResponseWriter, r *http.Request) {
 			serveDownloadFile(w, r, downloadFilePath, userFileName)
 		} else {
 			fmt.Println("Requested file does not exist or has expired")
-			http.Redirect(w, r, "/", http.StatusSeeOther)
+			errorResponse(w, http.StatusNotFound, fmt.Sprintf("requested file %v does not exist or has expired", downloadFilePath))
 		}
 	} else {
 		fmt.Println("Bad request path")
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		errorResponse(w, http.StatusNotFound, "Bad request path - no file name")
 	}
 }
 
-// REST API to accept files for conversion
-// TODO: handle polyphonic MIDI - support or return helpful exception response
-// TODO: increase conversion types:
-// 		Motivic.json file => MIDI
-// 		Motivic JSON payload => MIDI
-// 		Motivic JSON payload => WAV
-// 		MIDI files => Motivic JSON response
-// 		MIDI files => Motivic.json file
 func midiFileUploadHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
-		fmt.Println(r.Method, "not accepted at upload endpoint")
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
+		errorResponse(w, http.StatusNotAcceptable, fmt.Sprintf(r.Method, "not accepted at upload endpoint"))
 	}
 	fmt.Println("MIDI File Upload Endpoint Hit")
 	// 1. PARSE UPLOADED FILE
@@ -735,9 +943,9 @@ func midiFileUploadHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(maxUploadSizeBytes)
 	midiFile, midiFileHandle, err := r.FormFile("myMIDIFile")
 	if err != nil {
-		fmt.Println("Error parsing the file upload")
-		fmt.Println(err)
-		return
+		errMsg := fmt.Sprintf("Error parsing the file upload %s", err)
+		fmt.Println(errMsg)
+		errorResponse(w, http.StatusUnprocessableEntity, errMsg)
 	}
 	defer midiFile.Close()
 	fmt.Printf("Uploaded File: \t%+v at %v\n", midiFileHandle.Filename, tsCreated)
@@ -772,7 +980,154 @@ func midiFileUploadHandler(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 		fmt.Println("Zipped File:", zipFileOutputPath)
-
 	}
-	serveDownloadFile(w, r, zipFileOutputPath, zipFileName)
+	conversionResponse(w, zipFileOutputPath, zipFileName)
+}
+
+func jsonDataConversionHandler(w http.ResponseWriter, r *http.Request) {
+	// 1. CONVERT JSON REQUEST BODY TO MOTIF STRUCT
+
+	// Use http.MaxBytesReader to enforce a maximum read of 1MB from the
+	// resquest body. A request body larger than that will now result in
+	// Decode() returning a "http: request body too large" error.
+	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
+	dec := json.NewDecoder(r.Body)
+
+	var b JSONConversionRequestBody
+
+	fmt.Println("beginning to decode JSON")
+	err := dec.Decode(&b)
+	if err != nil {
+		var syntaxError *json.SyntaxError
+		var unmarshalTypeError *json.UnmarshalTypeError
+
+		fmt.Println("JSON decoding error", err)
+
+		switch {
+		// Catch any syntax errors in the JSON and send an error message
+		// which interpolates the location of the problem to make it
+		// easier for the client to fix.
+		case errors.As(err, &syntaxError):
+			msg := fmt.Sprintf("Request body contains badly-formed JSON (at position %d): %s", syntaxError.Offset, err)
+			http.Error(w, msg, http.StatusBadRequest)
+
+		// In some circumstances Decode() may also return an
+		// io.ErrUnexpectedEOF error for syntax errors in the JSON. There
+		// is an open issue regarding this at
+		// https://github.com/golang/go/issues/25956.
+		case errors.Is(err, io.ErrUnexpectedEOF):
+			msg := fmt.Sprintf("Request body contains badly-formed JSON")
+			http.Error(w, msg, http.StatusBadRequest)
+
+		// Catch any type errors, like trying to assign a string in the
+		// JSON request body to a int field in our Person struct. We can
+		// interpolate the relevant field name and position into the error
+		// message to make it easier for the client to fix.
+		case errors.As(err, &unmarshalTypeError):
+			msg := fmt.Sprintf("Request body contains an invalid value for the %q field (at position %d)", unmarshalTypeError.Field, unmarshalTypeError.Offset)
+			http.Error(w, msg, http.StatusBadRequest)
+
+		// An io.EOF error is returned by Decode() if the request body is
+		// empty.
+		case errors.Is(err, io.EOF):
+			msg := "Request body must not be empty"
+			http.Error(w, msg, http.StatusBadRequest)
+
+		// Catch the error caused by the request body being too large. Again
+		// there is an open issue regarding turning this into a sentinel
+		// error at https://github.com/golang/go/issues/30715.
+		case err.Error() == "http: request body too large":
+			msg := "Request body must not be larger than 1MB"
+			http.Error(w, msg, http.StatusRequestEntityTooLarge)
+
+		// Otherwise default to logging the error and sending a 500 Internal
+		// Server Error response.
+		default:
+			log.Println(err.Error())
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	message := fmt.Sprintf("SUCCESS! Motif %v deserialized from JSON", b.Motif.Name)
+	fmt.Println(message)
+
+	// 2. CONVERT MOTIF TO AUDIO FILE
+	fmt.Println("Converting Motif...")
+	outputFileName := r.Form.Get("wavFileName")
+	randomString := getRandomString(8)
+	wavFileoutputFilePath, _ := getFilePathFromName(outputFileDir, randomString, b.Motif.Name, "wav")
+	// channel to wait for go routine response
+	c := make(chan bool)
+	go convertMotifToWAVFile(b.Motif, wavFileoutputFilePath, b.Voice, c)
+	success := <-c
+	go expireFile(wavFileoutputFilePath)
+
+	// 3. RETURN NEW AUDIO FILE
+	var zipFileOutputPath string = ""
+	var zipFileName string = ""
+	if success {
+		zipFileOutputPath, zipFileName = getFilePathFromName(outputFileDir, randomString, outputFileName, "zip")
+		filesToZip := []string{wavFileoutputFilePath}
+		if err := zipFiles(zipFileOutputPath, filesToZip, randomString); err != nil {
+			panic(err)
+		}
+		fmt.Println("Zipped File:", zipFileOutputPath)
+		serveDownloadFile(w, r, zipFileOutputPath, zipFileName)
+	}
+	errorResponse(w, http.StatusGatewayTimeout, "we hath failed thee")
+}
+
+// Handler ...
+// REST API to accept files for conversion
+// TODO: handle polyphonic MIDI - support or return helpful exception response
+// TODO: increase conversion types:
+// 		Motivic.json file => MIDI
+// 		Motivic JSON payload => MIDI
+// 		Motivic JSON payload => WAV
+// 		MIDI files => Motivic JSON response
+// 		MIDI files => Motivic.json file
+func Handler(w http.ResponseWriter, r *http.Request) {
+	// set the music theory config
+	initMotivicConfig()
+	// TODO: this is a hacky compromise to process distinct REST operations on the same endpoint
+	// I'm only doing this because the file conversion code currently writes a temp file to disk
+	// and since these are serverless functions, upload and download operations can't share a
+	// file system. To work around this, I'm parsing a request header check wether or not this is
+	// and upload or download request.
+
+	// Let's check out those headers!
+	for k, v := range r.Header {
+		fmt.Printf("request header: [%s] [%s]\n", k, v)
+	}
+	// Check if the payload is JSON or a file
+	var isJSONOperation = false
+	if contentTypeHeader, ok := r.Header["Content-Type"]; ok {
+		//do something here
+		if contentTypeHeader[0] == "application/json" {
+			isJSONOperation = true
+		}
+	}
+	if isJSONOperation {
+		fmt.Println("Handling as a JSON conversion...")
+		jsonDataConversionHandler(w, r)
+	} else {
+		fmt.Println("Handling as a File Upload operation...")
+
+		// Check the X-Motivic-Operation header to see if this is an upload or a download request and handle accordingly
+		var isFileUploadOperation bool = false
+
+		if operationHeader, ok := r.Header["X-Motivic-Operation"]; ok {
+			//do something here
+			if operationHeader[0] == "upload" {
+				isFileUploadOperation = true
+			}
+		}
+		if isFileUploadOperation {
+			midiFileUploadHandler(w, r)
+		} else {
+			fileDownloadHandler(w, r)
+		}
+	}
+
 }

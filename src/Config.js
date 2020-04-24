@@ -373,7 +373,7 @@ const Config = {
     pagination: {
         itemsPerPage: 10,
     },
-    downloadFileTypes: ['midi', 'json'],
+    downloadFileTypes: ['wav', 'midi', 'json'],
     motifSorts: ['created', 'name'],
     motifGenerationDisplayCount: 2,
 }
