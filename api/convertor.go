@@ -30,8 +30,8 @@ import (
 const protocol string = "http"
 const domain string = "localhost"
 const port string = "8080"
-const inputFileDir string = "./input/"
-const outputFileDir string = "./output/"
+const inputFileDir string = "/tmp/input/"
+const outputFileDir string = "/tmp/output/"
 const maxUploadSizeMb int64 = 10
 
 // 10 MB expressed with bitwise operator
@@ -1056,6 +1056,7 @@ func jsonDataConversionHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Converting Motif...")
 	outputFileName := b.Motif.Name
 	randomString := getRandomString(8)
+	// TODO: forego writing files to disk: keep bytes in memory and return a blob?
 	wavFileoutputFilePath, _ := getFilePathFromName(outputFileDir, randomString, outputFileName, "wav")
 	// channel to wait for go routine response
 	c := make(chan bool)
