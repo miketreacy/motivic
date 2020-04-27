@@ -376,5 +376,6 @@ const Config = {
     downloadFileTypes: ['wav', 'midi', 'json'],
     motifSorts: ['created', 'name'],
     motifGenerationDisplayCount: 2,
+    feedbackFormURL: 'https://bit.ly/3575Ab7',
 }
 export default Config

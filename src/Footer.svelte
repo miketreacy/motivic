@@ -58,8 +58,17 @@
         <a
             href="https://twitter.com/mstreacy"
             target="_blank"
-            rel="noopener noreferrer">
+            rel="noopener noreferrer"
+            title="contact me">
             <span class="social-icon" id="twitter" />
         </a>
+        <a
+            href="/feedback"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="user feedback">
+            <span class="social-icon" id="feedback">📥</span>
+        </a>
+
     </div>
 </footer>

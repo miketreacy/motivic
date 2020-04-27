@@ -1,7 +1,7 @@
 import App from './App.svelte'
 import Utils from './Utils'
 import { motifStore, settingStore } from './Stores.js'
-const views = ['about', 'home', 'motifs']
+const views = ['about', 'home', 'motifs', 'feedback']
 let view = 'home'
 
 /**
