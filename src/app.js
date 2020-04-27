@@ -59,8 +59,9 @@ function init() {
     let localData = Utils.userData.init.bind(Utils.userData)()
     localData.motifs.forEach((m) => motifStore.add(m))
     localData.settings.forEach((s) => settingStore.add(s))
-    let [urlView, query, queryMap, pagination] = parseURL()
-    view = urlView
+    // Commenting out for now since I'm not doing any url-based routing
+    // let [urlView, query, queryMap, pagination] = parseURL()
+    // view = urlView
     window.addEventListener('popstate', popState, false)
 }
 

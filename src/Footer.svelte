@@ -65,9 +65,10 @@
             title="contact me">
             <span class="social-icon" id="twitter" />
         </a>
-        <a href="/feedback" rel="noopener noreferrer" title="user feedback">
+        <!-- TODO: commenting out for now because the redirect to the google form isn't working -->
+        <!-- <a href="/feedback" rel="noopener noreferrer" title="user feedback">
             <span class="social-icon" id="feedback">✍</span>
-        </a>
+        </a> -->
 
     </div>
 </footer>
