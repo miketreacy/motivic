@@ -28,8 +28,11 @@
     .social-icon {
         height: 32px;
         width: 32px;
-        display: block;
         margin: 0 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: var(--theme_font_size_3);
     }
 
     #github {
@@ -62,12 +65,8 @@
             title="contact me">
             <span class="social-icon" id="twitter" />
         </a>
-        <a
-            href="/feedback"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="user feedback">
-            <span class="social-icon" id="feedback">📥</span>
+        <a href="/feedback" rel="noopener noreferrer" title="user feedback">
+            <span class="social-icon" id="feedback">✍</span>
         </a>
 
     </div>
