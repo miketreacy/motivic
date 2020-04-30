@@ -112,9 +112,16 @@
         console.info(`scrollUp = ${scrollUp}`)
     }
 
+    function handleEmptyMotifList(motifs) {
+        if (openSection === 'motifs' && !motifs.length) {
+            handleDisplayToggle({ detail: { section: '', open: false } })
+        }
+    }
+
     $: updateGlobalUserData($motifStore, 'motifs')
     $: updateGlobalUserData($settingStore, 'settings')
     $: scrollHandler(scrollPos)
+    $: handleEmptyMotifList(motifs)
 </script>
 
 <style>

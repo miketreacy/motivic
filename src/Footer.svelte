@@ -1,5 +1,6 @@
 <script>
     export let scrollUp = false
+    const feedbackFormURL = 'https://bit.ly/3575Ab7'
 </script>
 
 <style>
@@ -59,16 +60,19 @@
       <span class="social-icon" id="github" />
     </a> -->
         <a
+            href={feedbackFormURL}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="user feedback">
+            <span class="social-icon" id="feedback">✍</span>
+        </a>
+        <a
             href="https://twitter.com/mstreacy"
             target="_blank"
             rel="noopener noreferrer"
             title="contact me">
             <span class="social-icon" id="twitter" />
         </a>
-        <!-- TODO: commenting out for now because the redirect to the google form isn't working -->
-        <!-- <a href="/feedback" rel="noopener noreferrer" title="user feedback">
-            <span class="social-icon" id="feedback">✍</span>
-        </a> -->
 
     </div>
 </footer>
