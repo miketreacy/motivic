@@ -53,7 +53,8 @@
         border-style: none;
         padding: 4px 12px 6px;
         margin: 5px;
-        max-width: 57px;
+        max-width: 50px;
+        min-width: 50px;
         transition: background-color 0.5s ease;
     }
 
@@ -96,7 +97,7 @@
             {#if loading}
                 <div class="spinner" transition:fade />
             {:else}
-                <span>submit</span>
+                <span>go</span>
             {/if}
         </button>
     {/if}

@@ -19,7 +19,7 @@
     export let formCanSubmitDefault = false
     export let newMotif = null
     export let topControls = true
-    export let formControls = ['toggle', 'reset', 'submit']
+    export let formControls = ['reset', 'submit']
     export let formOpen = false
     export let motifs = []
     export let scrollDown = false
@@ -214,12 +214,10 @@
     }
     section[data-closed='true'] {
         padding: 10px;
-        display: grid;
-        grid-template-columns: 40% 60%;
-        grid-template-rows: 40px;
-        grid-row-gap: 2px;
         justify-items: flex-start;
         width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
     }
     fieldset {
         border-style: solid;
@@ -251,7 +249,12 @@
 <svelte:window bind:scrollY={scrollPos} />
 <section id={formId} data-closed={!formOpen}>
 
-    <MotifFormHeader {formId} {formTitle} {formInfo} {formOpen} />
+    <MotifFormHeader
+        {formId}
+        {formTitle}
+        {formInfo}
+        {formOpen}
+        {toggleFormFn} />
 
     {#if formOpen}
         {#if topControls}

@@ -225,7 +225,9 @@
         {/if}
 
         {#if fullDisplay}
-            <h1 on:click={loadHomeView}>Motivic</h1>
+            <h1>
+                <a href="/">Motivic</a>
+            </h1>
         {/if}
         {#if motifs.length}
             <div class="button-wrap right">

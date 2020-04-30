@@ -84,7 +84,6 @@
 <style>
     main {
         display: flex;
-        /* z-index: var(--back); */
         flex-wrap: wrap;
         flex-direction: column;
         background-color: var(--theme_color_2);
@@ -98,10 +97,11 @@
     #tools-wrap {
         width: 100%;
         margin-top: 0vh;
+        max-width: var(--layout_mobile_width);
     }
     #tools-wrap.closed {
-        /* margin-top: 10vh; */
         margin-top: var(--header_offset);
+        padding: 20px;
     }
 </style>
 

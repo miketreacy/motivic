@@ -3,6 +3,7 @@
     export let formTitle = ''
     export let formInfo = ''
     export let formOpen = false
+    export let toggleFormFn = () => null
     let showInfo = false
     let iconMap = {
         uploader: ['&#8679;'],
@@ -18,14 +19,22 @@
     h2 {
         font-size: var(--theme_font_size_4);
         flex: 1 0 0;
+        cursor: pointer;
+        z-index: var(--middle);
+        border-radius: 5px;
+        box-sizing: border-box;
     }
+
     h2[data-closed='true'] {
         font-size: var(--theme_font_size_2b);
         text-transform: lowercase;
+        padding: 10px;
+        position: relative;
+        border: 2px solid var(--theme_color_1);
     }
 
-    h2:hover {
-        position: relative;
+    h2[data-closed='false']:hover {
+        border: none;
     }
 
     /* TODO: future CSS tooltop implementation below */
@@ -57,7 +66,7 @@
             {@html iconMap[formId]}
         </span>
     {/if}
-    <h2 data-closed={!formOpen} title={formInfo}>
+    <h2 data-closed={!formOpen} title={formInfo} on:click={toggleFormFn}>
         <!-- {#if formOpen}
     <span class="icons">
       {@html iconMap[formId]}

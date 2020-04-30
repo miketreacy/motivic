@@ -15,7 +15,7 @@
         formTitle,
         formInfo,
         topControls,
-        formControls: ['toggle']
+        formControls: []
     }
     const fileUploadField = {
         type: 'file',
@@ -62,8 +62,6 @@
             reader.readAsDataURL(file)
         }
     }
-
-    $: console.log(`UploaderForm.formOpen = ${formOpen}`)
 </script>
 
 <style>
