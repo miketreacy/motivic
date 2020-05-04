@@ -835,6 +835,13 @@ const Utils = {
                 transformations
             )
             console.dir(newItem)
+            if (type === 'motifs' && !newItem.notes.length) {
+                return [
+                    false,
+                    'Unable to parse midi notes from this file.',
+                    newItem,
+                ]
+            }
             return this.persist(newItem, type, false)
         },
 

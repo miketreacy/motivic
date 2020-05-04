@@ -46,8 +46,9 @@
         let files = event.detail.value
         let file = files[0]
         let reader = new FileReader()
-        let fileName = file.name.split('.')[0]
-        let fileType = file.name.split('.')[1]
+        let dotIndex = file.name.lastIndexOf('.')
+        let fileName = file.name.substring(0, dotIndex)
+        let fileType = file.name.substring(dotIndex + 1)
         if (fileType === 'json') {
             reader.addEventListener(
                 'load',
