@@ -448,15 +448,6 @@
     .grid-display {
         padding: 10px;
     }
-
-    .input-wrap {
-        flex-direction: column;
-    }
-
-    input,
-    select {
-        width: 40px;
-    }
 </style>
 
 <svelte:window bind:innerWidth />

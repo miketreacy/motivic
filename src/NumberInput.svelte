@@ -11,6 +11,7 @@
     export let apiField
     export let displayClass = 'display-block'
     export let roughIncrement = 0
+    export let presetState = false
 
     const dispatch = createEventDispatcher()
     /**
@@ -74,7 +75,12 @@
 
     function dispatchValueChange(val) {
         if (apiField) {
-            dispatch('inputValueChange', { value: val, field: id, form })
+            dispatch('inputValueChange', {
+                value: val,
+                field: id,
+                form,
+                presetStateChange: presetState
+            })
         }
     }
 
@@ -85,7 +91,6 @@
     }
 
     onMount(() => {
-        console.log(`NumberInput.onMount() called with value = ${value}`)
         value = validateValue(value)
     })
 

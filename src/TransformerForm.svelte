@@ -31,6 +31,7 @@
                 type: 'number',
                 id: 'transpose',
                 label: 'transpose',
+                labelLink: 'https://wikipedia.org/wiki/Transposition_(music)',
                 value: 0,
                 step: 1,
                 min: -11,
@@ -41,6 +42,8 @@
                 type: 'checkbox',
                 id: 'invert',
                 label: 'invert',
+                labelLink:
+                    'https://wikipedia.org/wiki/Inversion_(music)#Melodies',
                 value: false,
                 info: 'Turn the melody upside-down'
             }
@@ -50,6 +53,7 @@
                 type: 'checkbox',
                 id: 'reverse_pitch_1',
                 label: 'reverse pitches',
+                labelLink: 'https://wikipedia.org/wiki/Retrograde_(music)',
                 value: false,
                 info: "Turn the melody's pitches backwards"
             },
@@ -57,6 +61,7 @@
                 type: 'checkbox',
                 id: 'reverse_rhythm_0',
                 label: 'reverse durations',
+                labelLink: 'https://wikipedia.org/wiki/Retrograde_(music)',
                 value: false,
                 info: "Turn the melody's note durations backwards"
             }
@@ -66,6 +71,7 @@
                 type: 'number',
                 id: 'augment',
                 label: 'augment',
+                labelLink: 'https://wikipedia.org/wiki/Augmentation_(music)',
                 value: 0,
                 step: 2,
                 min: 0,
@@ -76,6 +82,7 @@
                 type: 'number',
                 id: 'diminish',
                 label: 'diminish',
+                labelLink: 'https://wikipedia.org/wiki/Diminution',
                 value: 0,
                 step: 2,
                 min: 0,
@@ -86,6 +93,7 @@
                 type: 'number',
                 id: 'stagger',
                 label: 'stagger',
+                labelLink: 'https://wikipedia.org/wiki/Canon_(music)',
                 value: 0,
                 step: 1,
                 min: 0,

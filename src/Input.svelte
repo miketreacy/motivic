@@ -1,5 +1,6 @@
 <script>
-    import { createEventDispatcher } from 'svelte'
+    import { createEventDispatcher, tick } from 'svelte'
+    import { onMount, afterUpdate, onDestroy } from 'svelte'
     import NumberInput from './NumberInput.svelte'
     const dispatch = createEventDispatcher()
     export let type = ''
@@ -15,16 +16,36 @@
     export let form = ''
     export let displayClass = 'display-block'
     export let roughIncrement = 0
+    export let presetState = false
 
-    function dispatchValueChange(val) {
-        if (apiField) {
-            dispatch('inputValueChange', { value: val, field: id, form })
-        }
-    }
+    let dispatchValueChange = Function.prototype
 
+    // TODO: this is being called needlessly when the component re-renders  (based on a preset's formState)
+    // this should only be called when the value changes because of user interaction
     $: {
         dispatchValueChange(value)
     }
+
+    onMount(async () => {
+        console.info(`Input#${id} onMount() props`)
+        console.dir($$props)
+        console.info(`presetState = ${presetState}`)
+    })
+    afterUpdate(async () => {
+        dispatchValueChange = val => {
+            console.log(
+                `Input#${id}.dispatchValueChange(): \t\tpresetState ${presetState} \tapiField: ${apiField}`
+            )
+            if (apiField) {
+                dispatch('inputValueChange', {
+                    value: val,
+                    field: id,
+                    form,
+                    presetStateChange: presetState
+                })
+            }
+        }
+    })
 </script>
 
 <style>
@@ -97,6 +118,7 @@
         {step}
         {apiField}
         {roughIncrement}
+        {presetState}
         on:inputValueChange
         on:displayAlert />
 {:else if type == 'text'}

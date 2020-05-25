@@ -7,6 +7,7 @@
     import MotifFormHeader from './MotifFormHeader.svelte'
     import MotifFormControls from './MotifFormControls.svelte'
     import MotifAudition from './MotifAudition.svelte'
+    import ItemSelector from './ItemSelector.svelte'
     export let formId
     export let formTitle
     export let formInfo
@@ -24,14 +25,17 @@
     export let motifs = []
     export let scrollDown = false
     export let stickyControls = false
+    export let selectedPresetId = ''
 
-    let scrollPos
+    const dispatch = createEventDispatcher()
+    const presets = Config.formPresets[formId] || []
     const apiUrl = submitOptions ? `/api/${submitOptions.path}` : ''
+    let scrollPos
     let formStateDefault = {}
     let formInDefaultState = true
     let formCanSubmit = true
     let loading = false
-    const dispatch = createEventDispatcher()
+    let presetStateChange = false
 
     function dispatchFormToggle(open) {
         dispatch('displayToggle', { section: formId, open: open })
@@ -41,18 +45,18 @@
         dispatchFormToggle(!formOpen)
     }
 
-    function logAll() {
-        console.log('formState')
-        console.dir(formState)
-        console.log('formStateDefault')
-        console.dir(formStateDefault)
-    }
-
-    function getNewState(field, value) {
-        console.log(`getNewState() field: ${field} : ${value}`)
+    function handleFieldChange(field, value) {
         let oldState = Utils.general.clone(formState)
         let newState = { [field]: value }
-        newState = stateFilterFn(field, newState, oldState)
+    }
+
+    function getNewState(diffState, field = '') {
+        console.log(`getNewState() ${field}`)
+        let oldState = Utils.general.clone(formState)
+        let newState = field
+            ? stateFilterFn(field, diffState, oldState)
+            : diffState
+
         newState = Object.entries(newState).reduce((obj, [k, v]) => {
             obj[k] = v
             return obj
@@ -73,8 +77,10 @@
         }
     }
 
-    function getUpdatedFieldRows(state) {
-        console.log(`getUpdatedFieldRows() called with`, state)
+    function getUpdatedFieldRows(state, presetStateChange = false) {
+        console.log(
+            `MotifForm.getUpdatedFieldRows() presetStateChange: ${presetStateChange}`
+        )
         return fieldRows.map(row => {
             return row.map(field => {
                 if (field.id in state) {
@@ -82,21 +88,34 @@
                 } else {
                     field.value = getResetValue(field.type)
                 }
+                field.presetState = presetStateChange
                 return field
             })
         })
     }
 
     function formChange(event) {
+        console.info(`inputValueChange event`)
+        console.log(
+            `MotifForm.formChange() presetStateChange: ${presetStateChange}`
+        )
+
         const fieldForm = event.detail.form
         const fieldId = event.detail.field
         const fieldValue = event.detail.value
-        console.log(`formChange()`)
-        console.dir(event.detail)
+        const presetChange = event.detail.presetStateChange
         if (fieldForm === formId) {
-            let newState = getNewState(fieldId, fieldValue)
+            presetStateChange = presetChange || false
+            if (!presetStateChange) {
+                selectedPresetId = 'preset-none'
+            }
+            let diffState = { [fieldId]: fieldValue }
+            let newState = getNewState(diffState, fieldId)
             formState = newState
         }
+        console.log(
+            `MotifForm.formChange() presetStateChange: ${presetStateChange}`
+        )
     }
 
     function isInDefaultState(state, stateDefault) {
@@ -105,7 +124,6 @@
         if (!(state && stateDefault)) {
             return result
         }
-        // logAll();
         Object.entries(formState).forEach(([k, v]) => {
             if (stateDefault[k] !== v) {
                 let diffKey = [k, stateDefault[k], v]
@@ -151,10 +169,6 @@
         loading = true
         scrollPos = 0
         const reqBody = getRequestBodyFn(formState)
-        console.info(
-            `${submitOptions.method} ${submitOptions.path} request body:`
-        )
-        console.dir(reqBody)
         // rollDice();
         // toggleLoader(doc.querySelector("#randomize .dice"), true);
         let [data, error] = await Utils.http.awaitFetchTimeout(
@@ -194,16 +208,39 @@
         }
     }
 
+    function getPresetState(presetId) {
+        if (presetId) {
+            console.info(`${formId} preset ${presetId} selected`)
+            let preset = Config.formPresets[formId].find(p => p.id === presetId)
+            if (preset) {
+                return preset.formState
+            }
+        }
+        return null
+    }
+
+    function handlePresetSelection(event) {
+        selectedPresetId = event.detail.itemId
+        console.info(`handlePresetSelection() called`)
+        console.dir(event)
+        let presetState = getPresetState(selectedPresetId)
+        if (!presetState) {
+            return
+        }
+        let newState = getNewState(presetState)
+        presetStateChange = true
+        formState = newState
+    }
+
     onMount(() => {
         // store initial values as defaults
         formStateDefault = Utils.general.clone(formState)
-        // logAll();
     })
 
     $: {
         formInDefaultState = isInDefaultState(formState, formStateDefault)
         formCanSubmit = canFormSubmit(formInDefaultState, loading)
-        fieldRows = getUpdatedFieldRows(formState)
+        fieldRows = getUpdatedFieldRows(formState, presetStateChange)
     }
     $: newMotif = getNewMotif(newMotif, motifs)
 </script>
@@ -281,6 +318,20 @@
         {#if fieldRows.length}
             <fieldset class="user-input" in:fade>
                 <legend>settings</legend>
+                {#if presets.length}
+                    <div class="form-row" class:horizontal={true}>
+                        <ItemSelector
+                            {formId}
+                            items={presets}
+                            itemType="settings"
+                            label="preset"
+                            selectedItemId={selectedPresetId}
+                            formFieldLayout={true}
+                            defaultSelection={{ id: 'preset-none', name: '--none--' }}
+                            on:itemSelection={handlePresetSelection}
+                            on:displayAlert />
+                    </div>
+                {/if}
                 <!--<button class="save-setting">save setting</button>-->
                 {#each fieldRows as fields}
                     <div

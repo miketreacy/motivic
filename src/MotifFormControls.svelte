@@ -61,6 +61,10 @@
     .form-controls.open button {
         max-width: 100px;
     }
+
+    .loading button {
+        cursor: wait;
+    }
     /*Desktop*/
     @media (min-width: 1025px) {
         .form-controls.open.sticky.scrolldown {
@@ -72,6 +76,7 @@
 <div
     class="form-controls"
     class:open={formOpen}
+    class:loading
     class:scrolldown={scrollDown && formOpen}
     class:sticky={formOpen && sticky}
     data-closed={!formOpen}

@@ -6,6 +6,7 @@
     export let apiField = true
     export let id = ''
     export let label = ''
+    export let labelLink = ''
     export let centerLabel = false
     export let required = true
     export let options = []
@@ -19,6 +20,7 @@
     export let roughIncrement = 0
     export let info = ''
     export let rowLayout = 'vertical'
+    export let presetState = false
 </script>
 
 <style>
@@ -53,19 +55,10 @@
         text-align: center;
     }
 
-    .input-wrap.overlay {
-        position: absolute;
-        left: 170px;
-        width: 80px;
-    }
-
-    .input-wrap.name {
-        flex-direction: column;
-    }
-
-    .input-wrap.name input {
-        width: auto;
-        text-align: center;
+    a,
+    a:visited {
+        text-decoration: underline;
+        cursor: help;
     }
 </style>
 
@@ -76,7 +69,9 @@
         class:vertical={rowLayout === 'horizontal'}>
         {#if label}
             <label class:center={centerLabel} for={id} title={info}>
-                {label}
+                {#if labelLink}
+                    <a href={labelLink} target="_blank">{label}</a>
+                {:else}{label}{/if}
             </label>
         {/if}
         <Input
@@ -92,12 +87,17 @@
             {value}
             {accept}
             {roughIncrement}
+            {presetState}
             on:inputValueChange
             on:displayAlert />
     </div>
 {:else}
     {#if label}
-        <label class:center={centerLabel} for={id} title={info}>{label}</label>
+        <label class:center={centerLabel} for={id} title={info}>
+            {#if labelLink}
+                <a href={labelLink} target="_blank">{label}</a>
+            {:else}{label}{/if}
+        </label>
     {/if}
     <Input
         {form}
@@ -112,6 +112,7 @@
         {value}
         {accept}
         {roughIncrement}
+        {presetState}
         on:inputValueChange
         on:displayAlert />
 {/if}

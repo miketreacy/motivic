@@ -107,9 +107,6 @@
         let threshold = 30
         scrollDown = scrollPos >= threshold
         scrollUp = scrollPos < threshold
-        console.info(`scrollPos = ${scrollPos}`)
-        console.info(`scrollDown = ${scrollDown}`)
-        console.info(`scrollUp = ${scrollUp}`)
     }
 
     function handleEmptyMotifList(motifs) {
@@ -131,7 +128,6 @@
 <svelte:window bind:scrollY={scrollPos} />
 
 <Header
-    {view}
     {motifs}
     {openSection}
     {scrollDown}
@@ -146,7 +142,6 @@
     {openItemId}
     {allSelected}
     {selectedMotifIds}
-    {settings}
     {displayAlert}
     {alertProps}
     {scrollDown}
