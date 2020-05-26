@@ -3,7 +3,7 @@ module miketreacy/motivic_convertor
 go 1.13
 
 require (
-	github.com/aws/aws-lambda-go v1.16.0 // indirect
+	github.com/aws/aws-lambda-go v1.17.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/ernesto-jimenez/gogen v0.0.0-20180125220232-d7d4131e6607 // indirect
 	github.com/go-audio/aiff v1.0.0
