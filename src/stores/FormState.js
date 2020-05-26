@@ -34,6 +34,12 @@ function formStateUpdateFn(
     }
 }
 
+/**
+ * Factory function to initialize a form state store
+ * @param {Object} initialState A map of the default form state
+ * @param {Function} [stateFilterFn=Function.prototype] A function that filters the state relative to the trigger key
+ * @returns {Object} A form state store instance
+ */
 function formStateStoreFactory(
     initialState = {},
     stateFilterFn = Function.prototype
