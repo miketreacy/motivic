@@ -1,7 +1,7 @@
 <script>
     import { onMount } from 'svelte'
     import { createEventDispatcher } from 'svelte'
-    import Utils from './Utils'
+    import MotivicUtils from '../MotivicUtils'
     export let item = null
     export let itemChildren = []
     export let itemType = ''
@@ -27,7 +27,7 @@
 
     function saveItem() {
         item.name = renameItemValue
-        let [success, msg] = Utils.userData.persist(item, itemType, true)
+        let [success, msg] = MotivicUtils.userData.persist(item, itemType, true)
         actionSuccessful = success
         resultMessage = msg
         // TODO: figure out why the call to displayAlert isn't working
@@ -49,14 +49,17 @@
                 return item
             })
             .forEach(item => {
-                let [success, msg] = Utils.userData.persist(item, itemType)
+                let [success, msg] = MotivicUtils.userData.persist(
+                    item,
+                    itemType
+                )
                 successes.push(success)
                 msgs.push(msg)
             })
     }
 
     function deleteItem() {
-        let [success, msg] = Utils.userData.remove(item, itemType)
+        let [success, msg] = MotivicUtils.userData.remove(item, itemType)
         updateChildren()
         actionSuccessful = success
         resultMessage = msg
@@ -162,7 +165,7 @@
 
 {#if formType === 'save'}
     <div class="form-wrap">
-        <h2>Save {Utils.general.singularize(itemType)}</h2>
+        <h2>Save {MotivicUtils.general.singularize(itemType)}</h2>
         <fieldset>
             <div class="input-wrap name">
                 <label for="item-name">name</label>
@@ -173,7 +176,7 @@
                     class="name"
                     id="item-name"
                     bind:value={renameItemValue}
-                    placeholder={`${Utils.general.singularize(itemType)} name`}
+                    placeholder={`${MotivicUtils.general.singularize(itemType)} name`}
                     autofocus
                     on:click={e => e.target.select()} />
             </div>
@@ -193,7 +196,7 @@
 {/if}
 {#if formType === 'rename'}
     <div class="form-wrap">
-        <h2>Rename {Utils.general.singularize(itemType)}</h2>
+        <h2>Rename {MotivicUtils.general.singularize(itemType)}</h2>
         <fieldset>
             <div class="input-wrap name">
                 <label for="item-name">name</label>
@@ -204,7 +207,7 @@
                     class="name"
                     id="item-name"
                     bind:value={renameItemValue}
-                    placeholder={`rename ${Utils.general.singularize(itemType)}`}
+                    placeholder={`rename ${MotivicUtils.general.singularize(itemType)}`}
                     autofocus
                     on:click={e => e.target.select()} />
             </div>
@@ -224,11 +227,11 @@
 {/if}
 {#if formType === 'delete'}
     <div class="form-wrap" data-form-type={formType}>
-        <h2>Delete {Utils.general.singularize(itemType)}</h2>
+        <h2>Delete {MotivicUtils.general.singularize(itemType)}</h2>
         <fieldset>
             <div class="input-wrap msg">
                 <p class="confirmation">
-                    {`Do you really want to delete this ${Utils.general.singularize(itemType)}?`}
+                    {`Do you really want to delete this ${MotivicUtils.general.singularize(itemType)}?`}
                 </p>
                 <div class="item">
                     <ul class="item-confirmation">
@@ -243,7 +246,7 @@
                         <li>
                             <span class="key">created:</span>
                             <span class="value">
-                                {Utils.general.dateDisplay(new Date(item.created))}
+                                {MotivicUtils.general.dateDisplay(new Date(item.created))}
                             </span>
                         </li>
                     </ul>

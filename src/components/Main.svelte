@@ -40,9 +40,6 @@
     }
 
     function updateDisplayState(openSection, openItemId) {
-        console.log(
-            `updateDisplayState() called with ${openSection}:${openItemId}`
-        )
         if (openSection) {
             showSectionMap = Object.keys(showSectionMap).reduce((obj, key) => {
                 obj[key] = key === openSection
@@ -51,7 +48,6 @@
         } else {
             showSectionMap = Object.assign({}, defaultShowSectionMap)
         }
-        console.dir(showSectionMap)
     }
     function handleDisplayAlert(event) {
         alertProps = event.detail

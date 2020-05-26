@@ -1,11 +1,14 @@
 <script>
     import { createEventDispatcher } from 'svelte'
+    import { randomizer } from '../stores/FormState'
     import MotifForm from './MotifForm.svelte'
-    import Config from './Config'
-    import Utils from './Utils'
+    import Config from '../Config'
+    import MotivicUtils from '../MotivicUtils'
+
     export let formOpen = false
     export let motifs = []
     export let scrollDown = false
+
     const {
         notes,
         modes,
@@ -25,33 +28,14 @@
         max: { min: 2, max: 48 }
     }
     // some state is local to this form and updated in stateFilterFn()
-    let lowOctave = Config.default.octave.low
-    let highOctave = Config.default.octave.high
-    let leapRange = getLeapRange(lowOctave, highOctave)
-    let formState = {
-        key: 'c',
-        mode: 'chromatic',
-        octave_low: 3,
-        octave_high: 5,
-        leap_min: 1,
-        leap_max: 24,
-        duration_min: 4,
-        duration_max: 16,
-        timeSignature_beat_0: 4,
-        timeSignature_unit_1: 4,
-        tempo_type: 'bpm',
-        tempo_units: 120,
-        length_type: 'measures',
-        length_units: 2
-    }
     const submitOptions = Config.api.operations.randomizer
     const dispatch = createEventDispatcher()
 
     let rowLayout = ''
 
     function getLeapRange(lowOctave, highOctave) {
-        let minNoteVal = Utils.melody.getNoteValue('c', lowOctave)
-        let maxNoteVal = Utils.melody.getNoteValue('b', highOctave)
+        let minNoteVal = MotivicUtils.melody.getNoteValue('c', lowOctave)
+        let maxNoteVal = MotivicUtils.melody.getNoteValue('b', highOctave)
         let noteValRange = maxNoteVal - minNoteVal + 1
         let maxMax = Math.min(leapRangeConfig.max.max, noteValRange - 1)
         let minMax = Math.min(leapRangeConfig.min.max, maxMax - 6)
@@ -61,14 +45,16 @@
         }
         return range
     }
-    function getFieldRows(leapRange) {
+
+    function getFieldRows(state) {
+        let leapRange = getLeapRange(state.octave_low, state.octave_high)
         return [
             [
                 {
                     type: 'select',
                     id: 'key',
                     label: 'key',
-                    value: 'c',
+                    value: state.key,
                     options: notes,
                     info: 'The tonic of the melody'
                 },
@@ -76,7 +62,7 @@
                     type: 'select',
                     id: 'mode',
                     label: 'mode',
-                    value: 'chromatic',
+                    value: state.mode,
                     options: Object.keys(modes),
                     info: 'The sequence of intervals that comprise the scale'
                 }
@@ -86,7 +72,7 @@
                     type: 'number',
                     id: 'octave_low',
                     label: 'low octave',
-                    value: 3,
+                    value: state.octave_low,
                     step: 1,
                     min: 0,
                     max: 8,
@@ -97,7 +83,7 @@
                     type: 'number',
                     id: 'octave_high',
                     label: 'high octave',
-                    value: 5,
+                    value: state.octave_high,
                     step: 1,
                     min: 0,
                     max: 8,
@@ -110,7 +96,7 @@
                     type: 'number',
                     id: 'leap_min',
                     label: 'min leap',
-                    value: 1,
+                    value: state.leap_min,
                     step: 1,
                     min: leapRange.min.min,
                     max: leapRange.min.max,
@@ -136,7 +122,7 @@
                     type: 'select',
                     id: 'duration_min',
                     label: 'min note duration',
-                    value: 4,
+                    value: state.duration_min,
                     options: noteDurations,
                     info: 'Minimum note length',
                     rowLayout
@@ -145,7 +131,7 @@
                     type: 'select',
                     id: 'duration_max',
                     label: 'max note duration',
-                    value: 16,
+                    value: state.duration_max,
                     options: noteDurations,
                     info: 'Maximum note length',
                     rowLayout
@@ -156,7 +142,7 @@
                     type: 'select',
                     id: 'timeSignature_beat_0',
                     label: 'time signature beat',
-                    value: 4,
+                    value: state.timeSignature_beat_0,
                     options: timeSignatureBeats,
                     info: 'Beats per measure',
                     rowLayout
@@ -165,7 +151,7 @@
                     type: 'select',
                     id: 'timeSignature_unit_1',
                     label: 'time signature unit',
-                    value: 4,
+                    value: state.timeSignature_unit_1,
                     options: timeSignatureUnits,
                     info:
                         'Which note duration gets one beat (4 = quarter note, etc)',
@@ -182,7 +168,7 @@
                     type: 'number',
                     id: 'tempo_units',
                     label: 'tempo(bpm)',
-                    value: 120,
+                    value: state.tempo_units,
                     step: 1,
                     min: 60,
                     max: 240,
@@ -199,92 +185,13 @@
                     type: 'number',
                     id: 'length_units',
                     label: 'measures',
-                    value: 2,
+                    value: state.length_units,
                     step: 1,
                     min: 1,
                     max: 8
                 }
             ]
         ]
-    }
-
-    function validateMinMaxFields(
-        field,
-        minField,
-        maxField,
-        newState,
-        oldState
-    ) {
-        let minVal = oldState[minField]
-        let maxVal = oldState[maxField]
-        if (field === minField) {
-            minVal = newState[field]
-            maxVal = Math.max(minVal, maxVal)
-        }
-        if (field === maxField) {
-            maxVal = newState[field]
-            minVal = Math.min(maxVal, minVal)
-        }
-        newState[minField] = minVal
-        newState[maxField] = maxVal
-        return newState
-    }
-
-    /**
-     * Makes sure that the possible min/max leap values are updated
-     * to reflect reality when the low/high octave selections change.
-     * example: a one octave range can not accomadate leaps of an octave or more.
-     *
-     */
-    function adjustLeapsByOctaves(newState, oldState) {
-        let lowOct = newState['octave_low'] || oldState['octaveLow']
-        let highOct = newState['octave_high'] || oldState['octave_high']
-        // updating these closure variables for component state management
-        lowOctave = lowOct
-        highOctave = highOct
-        let minNoteVal = Utils.melody.getNoteValue('c', lowOct)
-        let maxNoteVal = Utils.melody.getNoteValue('b', highOct)
-        let noteValRange = maxNoteVal - minNoteVal + 1
-        let leapMax = Math.min(oldState['leap_max'], noteValRange - 1)
-        let leapMin = Math.min(oldState['leap_min'], leapMax - 6)
-        newState['leap_max'] = leapMax
-        newState['leap_min'] = leapMin
-        console.log(
-            `adjustLeapsByOctaves(): minNoteVal=${minNoteVal}, maxNoteVal=${maxNoteVal} noteValRange=${noteValRange}`
-        )
-        return newState
-    }
-
-    function stateFilterFn(field, newState, oldState) {
-        if (field.includes('octave_')) {
-            newState = validateMinMaxFields(
-                field,
-                'octave_low',
-                'octave_high',
-                newState,
-                oldState
-            )
-            newState = adjustLeapsByOctaves(newState, oldState)
-        }
-        if (field.includes('leap_')) {
-            newState = validateMinMaxFields(
-                field,
-                'leap_min',
-                'leap_max',
-                newState,
-                oldState
-            )
-        }
-        if (field.includes('duration_')) {
-            newState = validateMinMaxFields(
-                field,
-                'duration_min',
-                'duration_max',
-                newState,
-                oldState
-            )
-        }
-        return newState
     }
 
     function getRequestBodyFn(state) {
@@ -315,7 +222,7 @@
         const motif = data && data.response ? data.response : null
         console.info(`SUCCESS response from ${formId.toUpperCase()} API`)
         console.dir(motif)
-        let [success, msg, createdMotif] = Utils.userData.processNewItem(
+        let [success, msg, createdMotif] = MotivicUtils.userData.processNewItem(
             motif,
             'motifs',
             'my motif'
@@ -338,11 +245,10 @@
         responseCallbackFn,
         submitOptions,
         getRequestBodyFn,
-        stateFilterFn,
         formCanSubmitDefault
     }
-    $: leapRange = getLeapRange(lowOctave, highOctave)
-    $: fieldRows = getFieldRows(leapRange)
+    $: fieldRows = getFieldRows($randomizer)
+    $: selectedPresetId = $randomizer.preset_id
 </script>
 
 <style>
@@ -351,8 +257,10 @@
 
 <MotifForm
     {...staticProps}
+    stateUpdaterFn={randomizer.updateForm}
+    state={$randomizer}
+    {selectedPresetId}
     {fieldRows}
-    {formState}
     {formOpen}
     {newMotif}
     {motifs}

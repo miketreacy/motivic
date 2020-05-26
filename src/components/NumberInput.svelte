@@ -1,5 +1,4 @@
 <script>
-    import { onMount } from 'svelte'
     import { createEventDispatcher } from 'svelte'
     export let id = ''
     export let required = true
@@ -7,13 +6,22 @@
     export let max = 0
     export let step = 1
     export let value
-    export let form = ''
-    export let apiField
     export let displayClass = 'display-block'
     export let roughIncrement = 0
-    export let presetState = false
+    export let updaterFn = Function.prototype
 
     const dispatch = createEventDispatcher()
+
+    function updateValueState(value) {
+        let stateDiffMap = { [id]: value }
+        updaterFn(stateDiffMap, id)
+    }
+
+    function valueChangeHandler(e) {
+        let newValue = e.target.value
+        updateValueState(newValue)
+    }
+
     /**
      * Keeps text input on number inputs within defined HTML attributes (step, min, max)
      * @param {number} [stepChange] Optional change to input value from another event (in step units).
@@ -31,14 +39,14 @@
         let targEl = e.target
         let change = targEl.getAttribute('data-num-change')
         let int = parseInt(change, 10)
-        value = getUpdatedValue(int)
+        let newValue = getUpdatedValue(int)
+        updateValueState(newValue)
     }
 
     function validateInput(el) {
         let valid = el.checkValidity()
         console.info(`${el.id} valid: ${valid}`)
         if (!valid) {
-            value = validateValue(el.value)
             let label = document.querySelector(`label[for="${el.id}"]`)
                 .textContent
             dispatch('displayAlert', {
@@ -50,6 +58,9 @@
                 top: el.getBoundingClientRect().top - 70,
                 displayLabel: false
             })
+
+            let newValue = validateValue(el.value)
+            updateValueState(newValue)
         }
     }
 
@@ -71,17 +82,7 @@
     function changeHandler(e) {
         let el = e.target
         validateInput(el)
-    }
-
-    function dispatchValueChange(val) {
-        if (apiField) {
-            dispatch('inputValueChange', {
-                value: val,
-                field: id,
-                form,
-                presetStateChange: presetState
-            })
-        }
+        valueChangeHandler(e)
     }
 
     function validateValue(val) {
@@ -89,12 +90,6 @@
         console.info(`validateValue() called ${val} => ${result}`)
         return result
     }
-
-    onMount(() => {
-        value = validateValue(value)
-    })
-
-    $: dispatchValueChange(value)
 </script>
 
 <style>
@@ -171,11 +166,11 @@
         name={id}
         {id}
         class={displayClass}
-        bind:value
         {required}
         {min}
         {max}
         {step}
+        {value}
         inputmode="numeric"
         pattern="[0-9]*"
         on:click={e => e.target.select()}

@@ -2,8 +2,8 @@
     import { onMount } from 'svelte'
     import { createEventDispatcher } from 'svelte'
     import { fade } from 'svelte/transition'
-    import Config from './Config.js'
-    import Utils from './Utils.js'
+    import Config from '../Config'
+    import MotivicUtils from '../MotivicUtils'
     import AudioControls from './AudioControls.svelte'
     import CrudControls from './CrudControls.svelte'
     import DownloadControls from './DownloadControls.svelte'
@@ -76,7 +76,10 @@
 
     function updateSelectedMotifIds(motifIds, add = true) {
         if (add) {
-            return Utils.general.unique([...selectedMotifIds, ...motifIds])
+            return MotivicUtils.general.unique([
+                ...selectedMotifIds,
+                ...motifIds
+            ])
         } else {
             return selectedMotifIds.filter(id => !motifIds.includes(id))
         }
@@ -129,12 +132,12 @@
     function motifSorter(key, order) {
         console.info(`motifSorter(${key}, ${order})`)
         if (key === 'created') {
-            return Utils.general.objectKeySorterNum(key, order, ts =>
+            return MotivicUtils.general.objectKeySorterNum(key, order, ts =>
                 new Date(ts).getTime()
             )
         } else {
             // assume key value is string
-            return Utils.general.objectKeySorterAlpha(key, order)
+            return MotivicUtils.general.objectKeySorterAlpha(key, order)
         }
     }
 
@@ -582,7 +585,7 @@
                         &#9747;
                     </button>
                     <div class="motif-created">
-                        {Utils.general.dateDisplay(new Date(created))}
+                        {MotivicUtils.general.dateDisplay(new Date(created))}
                     </div>
                     {#if expandedMotifId === motifId}
                         <!-- TODO: assign uploaded motifs tempo, length, timeSignature, etc so I can expect all these props to exist -->

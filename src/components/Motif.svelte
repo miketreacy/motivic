@@ -1,8 +1,8 @@
 <script>
     import { onMount } from 'svelte'
     import { createEventDispatcher } from 'svelte'
-    import Config from './Config.js'
-    import Utils from './Utils.js'
+    import Config from '../Config'
+    import MotivicUtils from '../MotivicUtils'
     import AudioControls from './AudioControls.svelte'
     import CrudControls from './CrudControls.svelte'
     import DownloadControls from './DownloadControls.svelte'
@@ -31,8 +31,6 @@
     }
 
     onMount(() => {
-        console.info(`Motif.onMount() props:`)
-        console.dir($$props)
         gridWidth = getGridWidth(innerWidth)
     })
     $: gridWidth = getGridWidth(innerWidth)

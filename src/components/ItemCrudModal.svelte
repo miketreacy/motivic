@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher } from 'svelte'
-    import Config from './Config.js'
+    import Config from '../Config'
     import Modal from './Modal.svelte'
     import ItemCrudForm from './ItemCrudForm.svelte'
     export let show = false

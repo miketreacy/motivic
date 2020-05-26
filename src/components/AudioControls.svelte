@@ -1,14 +1,14 @@
 <script>
     import { createEventDispatcher } from 'svelte'
     import { onMount, onDestroy } from 'svelte'
-    import Config from './Config.js'
-    import Utils from './Utils.js'
+    import Config from '../Config'
+    import MotivicUtils from '../MotivicUtils'
     import {
         newAudioContext,
         playMelody,
         loopMelody,
         stopLoop
-    } from './Audio.js'
+    } from '../Audio.js'
     import DropDown from './DropDown.svelte'
     export let selectedVoice = 'sine'
     export let selectedMotifs = []
@@ -29,7 +29,7 @@
     function getVoiceOptionDisplay(voice, shortName, isCompact = false) {
         let padTotal = isCompact ? 5 : 10
         let str = isCompact ? shortName : voice
-        return Utils.general.leftPad(str, padTotal)
+        returnMotivicUtils.general.leftPad(str, padTotal)
     }
 
     function stopMotifLoop() {

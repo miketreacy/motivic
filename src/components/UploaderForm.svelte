@@ -2,7 +2,7 @@
     import { createEventDispatcher } from 'svelte'
     import Field from './Field.svelte'
     import MotifForm from './MotifForm.svelte'
-    import Utils from './Utils'
+    import MotivicUtils from '../MotivicUtils'
     export let formOpen = false
     const formId = 'uploader'
     const formTitle = 'Uploader'
@@ -52,13 +52,19 @@
         if (fileType === 'json') {
             reader.addEventListener(
                 'load',
-                Utils.file.json.uploadHandler(fileName, handleUploadedMotifs)
+                MotivicUtils.file.json.uploadHandler(
+                    fileName,
+                    handleUploadedMotifs
+                )
             )
             reader.readAsText(file)
         } else if (fileType === 'midi' || fileType === 'mid') {
             reader.addEventListener(
                 'load',
-                Utils.file.midi.uploadHandler(fileName, handleUploadedMotifs)
+                MotivicUtils.file.midi.uploadHandler(
+                    fileName,
+                    handleUploadedMotifs
+                )
             )
             reader.readAsDataURL(file)
         }

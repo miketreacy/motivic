@@ -1,5 +1,5 @@
 <script>
-    import Utils from './Utils.js'
+    import MotivicUtils from '../MotivicUtils'
     import GridRow from './GridRow.svelte'
     export let id = ''
     export let width
@@ -60,7 +60,7 @@
         <rect id={defId} x="0" y="0" width={cellWidth} height={cellHeight} />
     </defs>
     <g {id}>
-        {#each Utils.general.range(rows, 1) as row, idx}
+        {#each MotivicUtils.general.range(rows, 1) as row, idx}
             <GridRow
                 {defId}
                 {row}

@@ -1,9 +1,6 @@
 <script>
-    import { createEventDispatcher } from 'svelte'
     import Input from './Input.svelte'
-    const dispatch = createEventDispatcher()
     export let type = ''
-    export let apiField = true
     export let id = ''
     export let label = ''
     export let labelLink = ''
@@ -16,11 +13,10 @@
     export let value = null
     export let accept = ''
     export let wrap = true
-    export let form = ''
     export let roughIncrement = 0
     export let info = ''
     export let rowLayout = 'vertical'
-    export let presetState = false
+    export let updaterFn = Function.prototype
 </script>
 
 <style>
@@ -75,9 +71,7 @@
             </label>
         {/if}
         <Input
-            {form}
             {type}
-            {apiField}
             {id}
             {required}
             {options}
@@ -87,7 +81,7 @@
             {value}
             {accept}
             {roughIncrement}
-            {presetState}
+            {updaterFn}
             on:inputValueChange
             on:displayAlert />
     </div>
@@ -100,9 +94,7 @@
         </label>
     {/if}
     <Input
-        {form}
         {type}
-        {apiField}
         {id}
         {required}
         {options}
@@ -112,7 +104,7 @@
         {value}
         {accept}
         {roughIncrement}
-        {presetState}
+        {updaterFn}
         on:inputValueChange
         on:displayAlert />
 {/if}

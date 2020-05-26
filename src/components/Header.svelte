@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher } from 'svelte'
-    import Utils from './Utils'
+    import MotivicUtils from '../MotivicUtils'
     import Nav from './Nav.svelte'
     import Field from './Field.svelte'
     export let showNav = false
@@ -64,13 +64,19 @@
         if (fileType === 'json') {
             reader.addEventListener(
                 'load',
-                Utils.file.json.uploadHandler(fileName, handleUploadedMotifs)
+                MotivicUtils.file.json.uploadHandler(
+                    fileName,
+                    handleUploadedMotifs
+                )
             )
             reader.readAsText(file)
         } else if (fileType === 'midi' || fileType === 'mid') {
             reader.addEventListener(
                 'load',
-                Utils.file.midi.uploadHandler(fileName, handleUploadedMotifs)
+                MotivicUtils.file.midi.uploadHandler(
+                    fileName,
+                    handleUploadedMotifs
+                )
             )
             reader.readAsDataURL(file)
         }

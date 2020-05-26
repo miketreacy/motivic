@@ -1,8 +1,8 @@
 <script>
     import { createEventDispatcher } from 'svelte'
-    import { motifStore, settingStore } from './Stores.js'
-    import Config from './Config.js'
-    import Utils from './Utils.js'
+    import { motifStore, settingStore } from '../stores/Item'
+    import Config from '../Config'
+    import MotivicUtils from '../MotivicUtils'
     import Header from './Header.svelte'
     import Main from './Main.svelte'
     import Footer from './Footer.svelte'
@@ -40,7 +40,7 @@
     function updateGlobalUserData(items, type) {
         let initGlobal = window[Config.nameSpace] || {
             user: { motifs: [], settings: [] },
-            lib: { utils: Utils }
+            lib: { utils: MotivicUtils }
         }
         initGlobal.user[type] = items
         window[Config.nameSpace] = initGlobal
@@ -68,7 +68,10 @@
         let { existingIds, newIds, add } = event.detail
 
         if (add) {
-            selectedMotifIds = Utils.general.unique([...existingIds, ...newIds])
+            selectedMotifIds = MotivicUtils.general.unique([
+                ...existingIds,
+                ...newIds
+            ])
         } else {
             selectedMotifIds = existingIds.filter(id => !newIds.includes(id))
         }
@@ -97,7 +100,9 @@
         console.info(`fileDownload event fired: ${type} ${progress}%`)
         if (progress < 100) {
             fileDownloading = true
-            Utils.file[type].download.bind(Utils.file[type])(items)
+            MotivicUtils.file[type].download.bind(MotivicUtils.file[type])(
+                items
+            )
         } else {
             fileDownloading = false
         }

@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher } from 'svelte'
-    import Utils from './Utils.js'
+    import MotivicUtils from '../MotivicUtils'
     export let item = null
     export let itemType = ''
     const dispatch = createEventDispatcher()

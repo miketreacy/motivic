@@ -1,7 +1,7 @@
 <script>
     import { onMount, onDestroy } from 'svelte'
-    import Utils from './Utils.js'
-    import { newAudioContext, playTone } from './Audio.js'
+    import MotivicUtils from '../MotivicUtils'
+    import { newAudioContext, playTone } from '../Audio.js'
     export let defId
     export let width = 0
     export let height = 0
@@ -41,7 +41,7 @@
 
     function tieCells(els, play) {
         console.dir(els)
-        let randomId = Utils.general.randomString(8)
+        let randomId = MotivicUtils.general.randomString(8)
         els.forEach((el, i) => {
             play = play && i === els.length - 1
             selectCell(el, play)

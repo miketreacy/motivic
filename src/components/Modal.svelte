@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher } from 'svelte'
-    import Config from './Config.js'
+    import Config from '../Config'
     export let show = false
     let modal
     let dismissModalProps = Object.assign({}, Config.itemCrudModalDefaultProps)

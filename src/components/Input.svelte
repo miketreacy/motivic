@@ -1,10 +1,7 @@
 <script>
-    import { createEventDispatcher, tick } from 'svelte'
-    import { onMount, afterUpdate, onDestroy } from 'svelte'
+    import { createEventDispatcher } from 'svelte'
     import NumberInput from './NumberInput.svelte'
-    const dispatch = createEventDispatcher()
     export let type = ''
-    export let apiField = true
     export let id = ''
     export let required = true
     export let options = []
@@ -13,39 +10,34 @@
     export let step = 1
     export let value = null
     export let accept = ''
-    export let form = ''
     export let displayClass = 'display-block'
     export let roughIncrement = 0
-    export let presetState = false
+    export let updaterFn = Function.prototype
 
-    let dispatchValueChange = Function.prototype
+    const dispatch = createEventDispatcher()
+    const checkboxValueMap = { on: true, off: false }
 
-    // TODO: this is being called needlessly when the component re-renders  (based on a preset's formState)
-    // this should only be called when the value changes because of user interaction
-    $: {
-        dispatchValueChange(value)
+    function fileChangeHandler(e) {
+        let el = e.target
+        dispatch('inputValueChange', {
+            value: el.files,
+            field: id,
+            form: 'uploader'
+        })
     }
 
-    onMount(async () => {
-        console.info(`Input#${id} onMount() props`)
-        console.dir($$props)
-        console.info(`presetState = ${presetState}`)
-    })
-    afterUpdate(async () => {
-        dispatchValueChange = val => {
-            console.log(
-                `Input#${id}.dispatchValueChange(): \t\tpresetState ${presetState} \tapiField: ${apiField}`
-            )
-            if (apiField) {
-                dispatch('inputValueChange', {
-                    value: val,
-                    field: id,
-                    form,
-                    presetStateChange: presetState
-                })
-            }
+    function updateValueState(value) {
+        let stateDiffMap = { [id]: value }
+        updaterFn(stateDiffMap, id)
+    }
+
+    function valueChangeHandler(e) {
+        let newValue = e.target.value
+        if (type === 'checkbox') {
+            newValue = checkboxValueMap[newValue]
         }
-    })
+        updateValueState(newValue)
+    }
 </script>
 
 <style>
@@ -97,7 +89,12 @@
 </style>
 
 {#if type == 'select'}
-    <select class={displayClass} {id} bind:value {required}>
+    <select
+        class={displayClass}
+        {id}
+        bind:value
+        {required}
+        on:change={valueChangeHandler}>
         {#each options as opt}
             {#if Array.isArray(opt)}
                 <option value={opt[0]}>{opt[1]}</option>
@@ -109,16 +106,14 @@
 {:else if type == 'number'}
     <NumberInput
         {id}
-        {form}
         {displayClass}
         {value}
         {required}
         {min}
         {max}
         {step}
-        {apiField}
         {roughIncrement}
-        {presetState}
+        {updaterFn}
         on:inputValueChange
         on:displayAlert />
 {:else if type == 'text'}
@@ -126,21 +121,29 @@
         type="text"
         {id}
         class={displayClass}
-        bind:value
+        {value}
         placeholder={value}
         {max}
-        {required} />
+        {required}
+        on:change={valueChangeHandler} />
 {:else if type == 'checkbox'}
     <div class="checkbox-wrap">
         <input
             type="checkbox"
             {id}
             class={displayClass}
-            bind:checked={value}
-            {required} />
+            checked={value}
+            {required}
+            on:change={valueChangeHandler} />
     </div>
 {:else if type == 'file'}
-    <input type="file" {id} class={displayClass} {accept} bind:files={value} />
+    <input
+        type="file"
+        {id}
+        class={displayClass}
+        {accept}
+        bind:files={value}
+        on:change={fileChangeHandler} />
 {:else if type == 'hidden'}
     <input type="hidden" {id} class={displayClass} bind:value />
 {/if}

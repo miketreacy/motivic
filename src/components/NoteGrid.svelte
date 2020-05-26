@@ -1,9 +1,9 @@
 <script>
     import { onMount, onDestroy } from 'svelte'
-    import { newAudioContext } from './Audio.js'
+    import { newAudioContext } from '../Audio.js'
     import { createEventDispatcher } from 'svelte'
-    import Config from './Config.js'
-    import Utils from './Utils.js'
+    import Config from '../Config'
+    import MotivicUtils from '../MotivicUtils'
     import Grid from './Grid.svelte'
     import Field from './Field.svelte'
     export let width = Config.gridDisplayWidth
@@ -200,7 +200,7 @@
     }
 
     function mapMelody(melody) {
-        let initPitch = Utils.melody.getInitialPitch(melody).name
+        let initPitch = MotivicUtils.melody.getInitialPitch(melody).name
         let newMelody = {
             key: initPitch.slice(0, initPitch.length - 1),
             mode: 'chromatic',
@@ -218,7 +218,7 @@
             bpm: parseInt(doc.querySelector('#input-controls .tempo').value)
         }
         melody.forEach((note, i) => {
-            let newNote = Utils.melody.getNote(
+            let newNote = MotivicUtils.melody.getNote(
                 note.value,
                 note.duration,
                 newMelody,
@@ -303,7 +303,7 @@
     function getNoteValueRowMap(rows, pitchSet) {
         let pitches = pitchSet.slice().reverse()
         // match note.value to row
-        let noteValueRowMap = Utils.general
+        let noteValueRowMap = MotivicUtils.general
             .range(rows, 1)
             .reduce((map, row, idx) => {
                 let note = pitches[idx]
@@ -383,7 +383,7 @@
 
     function getDisplayOctaveOptions(octaveMap) {
         let size = octaveMap.high - octaveMap.low + 1
-        return Utils.general.range(size, octaveMap.low)
+        return MotivicUtils.general.range(size, octaveMap.low)
     }
 
     function getDisplayColumnOptions(columns, motif = null) {
@@ -412,7 +412,7 @@
     $: horizontalGrids = getMotifGrids(motif, viewColumns)
     $: totalColumns = getTotalColumns(viewColumns, horizontalGrids)
     $: rows = getRows(gridOctaveMap, numberOfPitches)
-    $: pitchSet = Utils.melody.getPitchSet(
+    $: pitchSet = MotivicUtils.melody.getPitchSet(
         gridOctaveMap.low,
         gridOctaveMap.high
     )

@@ -1,5 +1,32 @@
 import { writable } from 'svelte/store'
 
+function createUserItemArrayStore() {
+    const { subscribe, unsubscribe, set, update } = writable([])
+    return {
+        subscribe,
+        unsubscribe,
+        add: (item) =>
+            update((items) => {
+                let newItems = []
+
+                if (items.map((m) => m.id).includes(item.id)) {
+                    // item already exists, so update it
+                    console.info(`item ${item.id} updated in store`)
+                    let idx = items.findIndex((m) => m.id === item.id)
+                    newItems = items.map((m, i) => (i === idx ? item : m))
+                } else {
+                    // store brand new item
+                    newItems = [...items, item]
+                }
+
+                return newItems
+            }),
+        remove: (item) =>
+            update((items) => items.filter((m) => m.id !== item.id)),
+        clear: () => set([]),
+    }
+}
+
 function createMotifStore() {
     const { subscribe, set, update } = writable([])
     return {
@@ -25,6 +52,7 @@ function createMotifStore() {
         clear: () => set([]),
     }
 }
+
 function createSettingsStore() {
     const { subscribe, set, update } = writable([])
     return {
@@ -33,7 +61,7 @@ function createSettingsStore() {
             update((settings) => {
                 let newSettings = []
 
-                if (settings.map((s) => s.id).includes(sotif.id)) {
+                if (settings.map((s) => s.id).includes(setting.id)) {
                     // setting already exists, so update it
                     console.info(`setting ${setting.id} updated in store`)
                     let idx = settings.findIndex((s) => s.id === setting.id)
@@ -52,6 +80,5 @@ function createSettingsStore() {
         clear: () => set([]),
     }
 }
-
 export const motifStore = createMotifStore()
 export const settingStore = createSettingsStore()

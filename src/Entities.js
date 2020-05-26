@@ -1,12 +1,12 @@
 // NOTE: Experimental OOP approach to modelling user-generated data entities
-import Utils from './Utils.js'
+import MotivicUtils from './MotivicUtils'
 /**
  * Represents the persistence of a piece of user-generated data
  */
 class Item {
     constructor(type = '', id = '', name = '') {
         this.type = type
-        this.id = id || Utils.general.randomString(16)
+        this.id = id || MotivicUtils.general.randomString(16)
         this.name = name
         this.saved = { local: false, cloud: false }
     }

@@ -1,6 +1,6 @@
-import App from './App.svelte'
-import Utils from './Utils'
-import { motifStore, settingStore } from './Stores.js'
+import MotivicUtils from './MotivicUtils.js'
+import App from './components/App.svelte'
+import { motifStore, settingStore } from './stores/Item'
 const views = ['about', 'home', 'motifs', 'feedback']
 let view = 'home'
 
@@ -9,7 +9,7 @@ let view = 'home'
  * Allows for sharable links.
  */
 function parseURL() {
-    let url = Utils.url.get(window)
+    let url = MotivicUtils.url.get(window)
     let hash = url.hash.split('#')[1] || ''
     let [view, query = ''] = hash.split('?')
     view = view || views[1]
@@ -40,10 +40,10 @@ function popState(e) {
 }
 // TODO: move this to App.svelte to update URL when view changes?
 function updateURL(view = '', query = '', stateMap = {}, pagination = null) {
-    let newURL = Utils.url.get(window)
+    let newURL = MotivicUtils.url.get(window)
     newURL.hash = query ? `${view}?${query}` : `${view}`
     stateMap.view = view
-    Utils.url.create(window, {
+    MotivicUtils.url.create(window, {
         state: stateMap,
         title: document.querySelector('title').textContent,
         url: newURL,
@@ -52,11 +52,11 @@ function updateURL(view = '', query = '', stateMap = {}, pagination = null) {
 
 function init() {
     try {
-        Utils.storage.init.bind(Utils.storage)()
+        MotivicUtils.storage.init.bind(MotivicUtils.storage)()
     } catch (e) {
         console.error(e)
     }
-    let localData = Utils.userData.init.bind(Utils.userData)()
+    let localData = MotivicUtils.userData.init.bind(MotivicUtils.userData)()
     localData.motifs.forEach((m) => motifStore.add(m))
     localData.settings.forEach((s) => settingStore.add(s))
     // Commenting out for now since I'm not doing any url-based routing

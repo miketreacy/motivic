@@ -2,11 +2,11 @@ import Midi from 'jsmidgen'
 import MIDIParser from 'midi-parser-js'
 import { createEventDispatcher } from 'svelte'
 import Config from './Config.js'
-import { motifStore, settingStore } from './Stores.js'
+import { motifStore, settingStore } from './stores/Item'
 
 let win = window
 let doc = document
-const Utils = {
+const MotivicUtils = {
     general: {
         clone: function (val) {
             return JSON.parse(JSON.stringify(val))
@@ -254,7 +254,12 @@ const Utils = {
          * @param {number} ms Milliseconds to wait before timing out
          */
         awaitFetchTimeout: async function (url, params, ms, file = false) {
-            return this.awaitFetch(url, params, Utils.general.timeout(ms), file)
+            return this.awaitFetch(
+                url,
+                params,
+                MotivicUtils.general.timeout(ms),
+                file
+            )
         },
     },
     melody: {
@@ -548,12 +553,9 @@ const Utils = {
                                 // this accounts for any rests preceding the noteOn event
                                 value = null
                                 duration = event.deltaTime / 8
-                                note = Utils.melody.getNote.bind(Utils.melody)(
-                                    value,
-                                    duration,
-                                    motif,
-                                    idx
-                                )
+                                note = MotivicUtils.melody.getNote.bind(
+                                    MotivicUtils.melody
+                                )(value, duration, motif, idx)
                                 notes.push(note)
                             }
                             // this is the note itself, getting duration from the next noteOff deltaTime
@@ -561,12 +563,9 @@ const Utils = {
                             let nextNote = this.getNextNoteOffEvent(arr, idx)
                             duration = nextNote.deltaTime / 8
 
-                            note = Utils.melody.getNote.bind(Utils.melody)(
-                                value,
-                                duration,
-                                motif,
-                                idx
-                            )
+                            note = MotivicUtils.melody.getNote.bind(
+                                MotivicUtils.melody
+                            )(value, duration, motif, idx)
                             notes.push(note)
                         }
                         return notes
@@ -578,10 +577,10 @@ const Utils = {
 
             uploadHandler: function (fileName, callBack) {
                 return function (e) {
-                    let motifs = Utils.file.midi.parseFile.bind(
-                        Utils.file.midi
+                    let motifs = MotivicUtils.file.midi.parseFile.bind(
+                        MotivicUtils.file.midi
                     )(e.target.result, fileName)
-                    Utils.file.parseCallback(motifs, callBack)
+                    MotivicUtils.file.parseCallback(motifs, callBack)
                 }
             },
 
@@ -644,7 +643,7 @@ const Utils = {
 
                 motifs.forEach((m) => file.addTrack(this.getTrack(m)))
                 let name = motifs[0].name
-                Utils.file.processDownload('midi', name, file, false)
+                MotivicUtils.file.processDownload('midi', name, file, false)
             },
         },
 
@@ -654,7 +653,7 @@ const Utils = {
                 let data = JSON.stringify(motifs, undefined, 4)
                 let blob = new Blob([data], { type: 'text/json' })
                 let name = motifs[0].name
-                Utils.file.processDownload('json', name, blob, true)
+                MotivicUtils.file.processDownload('json', name, blob, true)
             },
 
             uploadHandler: function (fileName, callBack) {
@@ -665,7 +664,7 @@ const Utils = {
                         m.name = `${m.name || fileName}_json-import`
                         return m
                     })
-                    Utils.file.parseCallback(motifs, callBack)
+                    MotivicUtils.file.parseCallback(motifs, callBack)
                 }
             },
         },
@@ -697,7 +696,7 @@ const Utils = {
                 // 1. Make request to JSON => WAV convertor endpoint
                 console.info('JSON payload...', motifs[0])
                 console.info('making JSON => WAV call to convertor...')
-                let [data, error] = await Utils.http.awaitFetchTimeout(
+                let [data, error] = await MotivicUtils.http.awaitFetchTimeout(
                     apiConfig.url,
                     getApiParams({ voice: 'saw', motif }),
                     apiConfig.timeoutMilliseconds,
@@ -709,7 +708,7 @@ const Utils = {
                     console.log('API response from /api/convertor...')
                     console.dir(data)
                     console.info(`starting download via anchor href hack`)
-                    Utils.file.processDownload(
+                    MotivicUtils.file.processDownload(
                         'wav',
                         motif.name,
                         data,
@@ -753,7 +752,7 @@ const Utils = {
         parseCallback: function (motifs, callBack = Function.prototype) {
             let responses = motifs
                 .map((m) => [m, 'motifs', m.name, new Date().toISOString()])
-                .map((args) => Utils.userData.processNewItem(...args))
+                .map((args) => MotivicUtils.userData.processNewItem(...args))
             callBack(responses)
         },
     },
@@ -797,7 +796,8 @@ const Utils = {
         init: function () {
             const schema = Config.userData.schema
             return Object.keys(schema).reduce((map, k) => {
-                map[k] = Utils.storage.get.bind(Utils.storage)(k) || []
+                map[k] =
+                    MotivicUtils.storage.get.bind(MotivicUtils.storage)(k) || []
                 return map
             }, {})
         },
@@ -819,7 +819,7 @@ const Utils = {
             parentId = '',
             transformations = []
         ) {
-            console.log(`Utils.processNewItem()`)
+            console.log(`MotivicUtils.processNewItem()`)
             console.dir({
                 item,
                 type,
@@ -852,11 +852,11 @@ const Utils = {
             parentId = '',
             transformations = []
         ) {
-            let savedItem = Utils.general.clone(item)
+            let savedItem = MotivicUtils.general.clone(item)
             let initMap = {
                 name,
                 transformations,
-                id: id || Utils.general.randomString(16),
+                id: id || MotivicUtils.general.randomString(16),
                 parentId,
                 saved: { local: false, cloud: false },
             }
@@ -889,11 +889,12 @@ const Utils = {
          * @param {boolean} add Should this item be added? (if false, then delete)
          */
         store: function (item, type, add = true) {
-            let storedItems = Utils.storage.get.bind(Utils.storage)(type) || []
+            let storedItems =
+                MotivicUtils.storage.get.bind(MotivicUtils.storage)(type) || []
             const limit = Config.userData.savedItemLimit[type]
             const action = add ? 'saved' : 'deleted'
             if (add && storedItems.length >= limit) {
-                const limitErrMsg = `Saved ${Utils.general.singularize(
+                const limitErrMsg = `Saved ${MotivicUtils.general.singularize(
                     type
                 )} limit met! You already have ${limit} saved ${type}. \nYou must delete existing ${type} before you can save new ones.`
                 return [false, limitErrMsg, item]
@@ -905,10 +906,13 @@ const Utils = {
                 !add
             )
             try {
-                Utils.storage.set.bind(Utils.storage)(type, newItemList)
+                MotivicUtils.storage.set.bind(MotivicUtils.storage)(
+                    type,
+                    newItemList
+                )
                 return [
                     true,
-                    `${Utils.general.singularize(type)} ${
+                    `${MotivicUtils.general.singularize(type)} ${
                         item.name
                     } ${action} successfully!`,
                     item,
@@ -916,7 +920,7 @@ const Utils = {
             } catch (e) {
                 return [
                     false,
-                    `${Utils.general.singularize(type)} "${
+                    `${MotivicUtils.general.singularize(type)} "${
                         item.name
                     }" could not be ${action} due to the following error:\n\n${
                         e.message
@@ -993,7 +997,7 @@ const Utils = {
                 ? this.store.bind(this)(item, type)
                 : [
                       true,
-                      `${Utils.general.singularize(type)} ${
+                      `${MotivicUtils.general.singularize(type)} ${
                           item.name
                       } saved to memory successfully!`,
                       item,
@@ -1045,7 +1049,7 @@ const Utils = {
                 storage = value
             }
             try {
-                this.update.bind(Utils.storage)(storage)
+                this.update.bind(MotivicUtils.storage)(storage)
             } catch (e) {
                 throw e
             }
@@ -1078,4 +1082,4 @@ const Utils = {
     },
 }
 
-export default Utils
+export default MotivicUtils

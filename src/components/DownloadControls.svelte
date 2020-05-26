@@ -1,8 +1,8 @@
 <script>
     import { createEventDispatcher } from 'svelte'
     import { fade } from 'svelte/transition'
-    import Utils from './Utils.js'
-    import Config from './Config.js'
+    import MotivicUtils from '../MotivicUtils'
+    import Config from '../Config'
     import Input from './Input.svelte'
     export let selectedMotifs = []
     export let loading

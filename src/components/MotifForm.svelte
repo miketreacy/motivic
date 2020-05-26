@@ -1,8 +1,8 @@
 <script>
-    import { onMount, createEventDispatcher } from 'svelte'
+    import { createEventDispatcher } from 'svelte'
     import { fade } from 'svelte/transition'
-    import Config from './Config.js'
-    import Utils from './Utils'
+    import Config from '../Config'
+    import MotivicUtils from '../MotivicUtils'
     import Field from './Field.svelte'
     import MotifFormHeader from './MotifFormHeader.svelte'
     import MotifFormControls from './MotifFormControls.svelte'
@@ -11,10 +11,10 @@
     export let formId
     export let formTitle
     export let formInfo
-    export let formState = {}
+    export let state = {}
+    export let stateUpdaterFn = Function.prototype
     export let fieldRows = []
     export let submitOptions = null
-    export let stateFilterFn = (field, newState, oldState) => newState
     export let responseCallbackFn = Function.prototype
     export let getRequestBodyFn = Function.prototype
     export let formCanSubmitDefault = false
@@ -31,7 +31,10 @@
     const presets = Config.formPresets[formId] || []
     const apiUrl = submitOptions ? `/api/${submitOptions.path}` : ''
     let scrollPos
-    let formStateDefault = {}
+    // store initial values as defaults
+    let defaultState = MotivicUtils.general.clone(
+        Config.formDefaults.randomizer
+    )
     let formInDefaultState = true
     let formCanSubmit = true
     let loading = false
@@ -45,89 +48,18 @@
         dispatchFormToggle(!formOpen)
     }
 
-    function handleFieldChange(field, value) {
-        let oldState = Utils.general.clone(formState)
-        let newState = { [field]: value }
-    }
-
-    function getNewState(diffState, field = '') {
-        console.log(`getNewState() ${field}`)
-        let oldState = Utils.general.clone(formState)
-        let newState = field
-            ? stateFilterFn(field, diffState, oldState)
-            : diffState
-
-        newState = Object.entries(newState).reduce((obj, [k, v]) => {
-            obj[k] = v
-            return obj
-        }, oldState)
-        return newState
-    }
-
-    function getResetValue(fieldType) {
-        switch (fieldType) {
-            case 'text':
-                return ''
-            case 'number':
-                return 0
-            case 'checkbox':
-                return false
-            default:
-                return ''
-        }
-    }
-
-    function getUpdatedFieldRows(state, presetStateChange = false) {
-        console.log(
-            `MotifForm.getUpdatedFieldRows() presetStateChange: ${presetStateChange}`
-        )
-        return fieldRows.map(row => {
-            return row.map(field => {
-                if (field.id in state) {
-                    field.value = state[field.id]
-                } else {
-                    field.value = getResetValue(field.type)
-                }
-                field.presetState = presetStateChange
-                return field
-            })
-        })
-    }
-
-    function formChange(event) {
-        console.info(`inputValueChange event`)
-        console.log(
-            `MotifForm.formChange() presetStateChange: ${presetStateChange}`
-        )
-
-        const fieldForm = event.detail.form
-        const fieldId = event.detail.field
-        const fieldValue = event.detail.value
-        const presetChange = event.detail.presetStateChange
-        if (fieldForm === formId) {
-            presetStateChange = presetChange || false
-            if (!presetStateChange) {
-                selectedPresetId = 'preset-none'
-            }
-            let diffState = { [fieldId]: fieldValue }
-            let newState = getNewState(diffState, fieldId)
-            formState = newState
-        }
-        console.log(
-            `MotifForm.formChange() presetStateChange: ${presetStateChange}`
-        )
-    }
-
     function isInDefaultState(state, stateDefault) {
         let diffKeys = []
         let result = true
         if (!(state && stateDefault)) {
             return result
         }
-        Object.entries(formState).forEach(([k, v]) => {
-            if (stateDefault[k] !== v) {
-                let diffKey = [k, stateDefault[k], v]
-                diffKeys.push(diffKey)
+        Object.entries(state).forEach(([k, v]) => {
+            if (k !== 'preset_id') {
+                if (stateDefault[k] !== v) {
+                    let diffKey = [k, stateDefault[k], v]
+                    diffKeys.push(diffKey)
+                }
             }
         })
         if (diffKeys.length) {
@@ -151,7 +83,7 @@
     }
 
     function resetFormFn() {
-        formState = formStateDefault
+        stateUpdaterFn(defaultState)
     }
 
     function getApiParams(payload) {
@@ -168,10 +100,10 @@
         newMotif = null
         loading = true
         scrollPos = 0
-        const reqBody = getRequestBodyFn(formState)
+        const reqBody = getRequestBodyFn(state)
         // rollDice();
         // toggleLoader(doc.querySelector("#randomize .dice"), true);
-        let [data, error] = await Utils.http.awaitFetchTimeout(
+        let [data, error] = await MotivicUtils.http.awaitFetchTimeout(
             apiUrl,
             getApiParams(reqBody),
             submitOptions.timeoutMilliseconds
@@ -210,8 +142,7 @@
 
     function getPresetState(presetId) {
         if (presetId) {
-            console.info(`${formId} preset ${presetId} selected`)
-            let preset = Config.formPresets[formId].find(p => p.id === presetId)
+            let preset = presets.find(p => p.id === presetId)
             if (preset) {
                 return preset.formState
             }
@@ -221,26 +152,16 @@
 
     function handlePresetSelection(event) {
         selectedPresetId = event.detail.itemId
-        console.info(`handlePresetSelection() called`)
-        console.dir(event)
         let presetState = getPresetState(selectedPresetId)
         if (!presetState) {
             return
         }
-        let newState = getNewState(presetState)
-        presetStateChange = true
-        formState = newState
+        stateUpdaterFn(presetState)
     }
 
-    onMount(() => {
-        // store initial values as defaults
-        formStateDefault = Utils.general.clone(formState)
-    })
-
     $: {
-        formInDefaultState = isInDefaultState(formState, formStateDefault)
+        formInDefaultState = isInDefaultState(state, defaultState)
         formCanSubmit = canFormSubmit(formInDefaultState, loading)
-        fieldRows = getUpdatedFieldRows(formState, presetStateChange)
     }
     $: newMotif = getNewMotif(newMotif, motifs)
 </script>
@@ -340,8 +261,8 @@
                         {#each fields as field}
                             <Field
                                 {...field}
-                                form={formId}
-                                on:inputValueChange={formChange}
+                                updaterFn={stateUpdaterFn}
+                                on:inputValueChange
                                 on:displayAlert />
                         {/each}
                     </div>

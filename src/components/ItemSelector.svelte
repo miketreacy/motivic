@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher } from 'svelte'
-    import Utils from './Utils'
+    import MotivicUtils from '../MotivicUtils'
     export let itemSelected = false
     export let items = []
     export let itemType = ''
@@ -11,7 +11,6 @@
     export let formFieldLayout = false
 
     const dispatch = createEventDispatcher()
-    $: console.log(`selected item id = ${selectedItemId}`)
     $: dispatchItemSelection(selectedItemId)
 
     function dispatchItemSelection(itemId) {
@@ -45,7 +44,7 @@
         <label for="select-item">
             {#if label}
                 {label}
-            {:else}selected {Utils.general.singularize(itemType)}:{/if}
+            {:else}selected {MotivicUtils.general.singularize(itemType)}:{/if}
         </label>
         <select
             id="select-item"

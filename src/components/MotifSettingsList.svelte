@@ -1,5 +1,5 @@
 <script>
-    import Config from './Config'
+    import Config from '../Config'
     import { slide } from 'svelte/transition'
     export let settings = {}
     export let title = ''

@@ -1,6 +1,6 @@
 <script>
-    import Config from './Config.js'
-    import Utils from './Utils.js'
+    import Config from '../Config'
+    import MotivicUtils from '../MotivicUtils'
     import GridCell from './GridCell.svelte'
     export let id = ''
     export let columns
@@ -36,7 +36,7 @@
     data-row={row}
     data-note-name={`${note.name}${note.octave}`}
     data-note-value={note.value}>
-    {#each Utils.general.range(columns, 1) as col}
+    {#each MotivicUtils.general.range(columns, 1) as col}
         <GridCell
             {defId}
             {row}
