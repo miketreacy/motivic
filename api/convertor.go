@@ -1,4 +1,4 @@
-package midifileuploadhandler
+package handler
 
 import (
 	"archive/zip"

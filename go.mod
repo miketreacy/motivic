@@ -14,6 +14,6 @@ require (
 	github.com/go-audio/wav v1.0.0
 	github.com/gordonklaus/portaudio v0.0.0-20180817120803-00e7307ccd93 // indirect
 	github.com/stretchr/testify v1.5.1 // indirect
-	github.com/zeit/now-go-bridge v0.0.0-20200328215438-f73fe308c79c
+	github.com/zeit/now-go-bridge v0.0.0-20200328215438-f73fe308c79c // indirect
 
 )
