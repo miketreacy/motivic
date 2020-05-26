@@ -435,7 +435,7 @@ function getRandomMelody({
     }
 }
 
-export default (req, res) => {
+module.exports = (req, res) => {
     try {
         const motif = getRandomMelody(req.body)
         //TODO: return all extraneous payload properties to client for convenience? 🤔

@@ -273,7 +273,7 @@ function getTransformedMelody(melody = {}, transformations = []) {
 //
 // }
 
-export default (req, res) => {
+module.exports = (req, res) => {
     try {
         const motif = getTransformedMelody(
             req.body.melody,
