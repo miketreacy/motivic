@@ -673,7 +673,7 @@ const MotivicUtils = {
             // WARNING: for multipart form uploads, LET THE BROWSER SET
             // 'Content-Type': 'multipart/form-data; boundary=???' for you,
             // OR IT WILL FAIL
-            download: async function (motifs = []) {
+            download: async function (motifs = [], voice = 'sine') {
                 const apiConfig = {
                     url: '/api/convertor',
                     method: 'POST',
@@ -698,7 +698,7 @@ const MotivicUtils = {
                 console.info('making JSON => WAV call to convertor...')
                 let [data, error] = await MotivicUtils.http.awaitFetchTimeout(
                     apiConfig.url,
-                    getApiParams({ voice: 'saw', motif }),
+                    getApiParams({ voice, motif }),
                     apiConfig.timeoutMilliseconds,
                     true
                 )
@@ -710,7 +710,7 @@ const MotivicUtils = {
                     console.info(`starting download via anchor href hack`)
                     MotivicUtils.file.processDownload(
                         'wav',
-                        motif.name,
+                        `${motif.name}_${voice}`,
                         data,
                         true,
                         true

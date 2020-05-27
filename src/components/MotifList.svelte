@@ -357,7 +357,7 @@
     }
 
     .download {
-        grid-column: 6 / span 2;
+        grid-column: 5 / span 3;
         grid-row: 2 / span 1;
         width: 95%;
         justify-self: center;

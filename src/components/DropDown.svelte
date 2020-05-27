@@ -1,30 +1,35 @@
 <script>
     import { createEventDispatcher } from 'svelte'
+    import { fade } from 'svelte/transition'
     export let id = ''
     export let options = []
     export let displayCompact = false
+    export let displayVeryCompact = false
     export let disabled = true
     export let optionIconMap = null
+    export let multiDim = true
 
     const dispatch = createEventDispatcher()
 
     let iconContent = ''
-    let selection = options[0][0]
+    let selection = multiDim ? options[0][0] : options[0]
 
     function resetSelection(disabled) {
         return disabled ? options[0][0] : selection
     }
 
     function getOptionDisplay(name, isCompact = false) {
-        let shortName = options.find(([full, _]) => full === name)[1]
-        return isCompact ? shortName : name
+        let shortName = multiDim
+            ? options.find(([full, _]) => full === name)[1]
+            : null
+        return isCompact && multiDim ? shortName : name
     }
 
     function updateSelection(option) {
         dispatch('updateSelection', { selection: option })
     }
 
-    $: iconContent = optionIconMap[selection]
+    $: iconContent = optionIconMap ? optionIconMap[selection] : null
     $: selection = resetSelection(disabled)
     $: updateSelection(selection)
 </script>
@@ -41,6 +46,11 @@
     }
     .wrap.compact {
         max-width: 60px;
+        min-width: var(--touch);
+        margin: 0px;
+    }
+    .wrap.very-compact {
+        max-width: 45px;
         min-width: var(--touch);
         margin: 0px;
     }
@@ -85,18 +95,30 @@
     }
 </style>
 
-<div class="wrap" {disabled} class:compact={displayCompact}>
-    {#if !displayCompact}
+<div
+    class="wrap"
+    {disabled}
+    class:compact={displayCompact}
+    class:very-compact={displayVeryCompact}>
+    {#if optionIconMap && !displayCompact}
         <span class="icon">
             {@html iconContent}
         </span>
     {/if}
     <span class="value">{getOptionDisplay(selection, displayCompact)}</span>
     <select bind:value={selection} {disabled} {id}>
-        {#each options as [fullName, shortName]}
-            <option value={fullName}>
-                <span>{fullName}</span>
-            </option>
-        {/each}
+        {#if multiDim}
+            {#each options as [fullName, shortName]}
+                <option value={fullName}>
+                    <span>{fullName}</span>
+                </option>
+            {/each}
+        {:else}
+            {#each options as name}
+                <option value={name}>
+                    <span>{name}</span>
+                </option>
+            {/each}
+        {/if}
     </select>
 </div>

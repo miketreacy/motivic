@@ -53,7 +53,7 @@ var waveForm = map[string]generator.WaveType{
 	"sine":     generator.WaveSine,
 	"triangle": generator.WaveTriangle,
 	"square":   generator.WaveSqr,
-	"saw":      generator.WaveSaw,
+	"sawtooth": generator.WaveSaw,
 }
 var outputDirs = []string{"input", "output"}
 

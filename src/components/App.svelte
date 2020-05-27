@@ -96,12 +96,13 @@
         displayAlert = alertProps.visible
     }
     function handleDownloadFile(event) {
-        let { type, progress, items } = event.detail
+        let { type, progress, items, voice } = event.detail
         console.info(`fileDownload event fired: ${type} ${progress}%`)
         if (progress < 100) {
             fileDownloading = true
             MotivicUtils.file[type].download.bind(MotivicUtils.file[type])(
-                items
+                items,
+                voice
             )
         } else {
             fileDownloading = false
