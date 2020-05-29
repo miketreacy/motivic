@@ -127,7 +127,7 @@ function randomizerStateFilterFn(field, newState, oldState) {
             oldState
         )
     }
-    newState.preset_id = 'preset-none'
+    newState.setting_id = 'preset-none'
     return newState
 }
 
@@ -135,7 +135,7 @@ function transformerStateFilterFn(field, newState, oldState) {
     if (!field) {
         return newState
     }
-    newState.preset_id = 'preset-none'
+    newState.setting_id = 'preset-none'
     return newState
 }
 

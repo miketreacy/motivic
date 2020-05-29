@@ -23,9 +23,10 @@
     export let formControls = ['reset', 'submit']
     export let formOpen = false
     export let motifs = []
+    export let settings = []
     export let scrollDown = false
     export let stickyControls = false
-    export let selectedPresetId = ''
+    export let selectedSettingId = ''
 
     const dispatch = createEventDispatcher()
     const presets = Config.formPresets[formId] || []
@@ -36,9 +37,15 @@
         Config.formDefaults.randomizer
     )
     let formInDefaultState = true
+    let formInPresetState = false
     let formCanSubmit = true
     let loading = false
-    let presetStateChange = false
+    const settingsSelectorTypes = [
+        { type: 'preset', label: 'preset', items: presets },
+        { type: 'user', label: 'my settings', items: settings }
+    ]
+    let settingsSelectorType = settingsSelectorTypes[0]
+    let presetSelected = false
 
     function dispatchFormToggle(open) {
         dispatch('displayToggle', { section: formId, open: open })
@@ -55,7 +62,7 @@
             return result
         }
         Object.entries(state).forEach(([k, v]) => {
-            if (k !== 'preset_id') {
+            if (k !== 'setting_id') {
                 if (stateDefault[k] !== v) {
                     let diffKey = [k, stateDefault[k], v]
                     diffKeys.push(diffKey)
@@ -69,6 +76,12 @@
             result = false
         }
         return result
+    }
+
+    function isInPresetState(state, presetStates) {
+        return presetStates.some(presetState =>
+            isInDefaultState(state, presetState)
+        )
     }
 
     function canFormSubmit(inDefaultState, isSubmitting) {
@@ -150,20 +163,79 @@
         return null
     }
 
+    function getSettingState(settingId) {
+        if (settingId) {
+            let setting = settings.find(s => s.id === settingId)
+            if (setting) {
+                return setting.formState
+            }
+        }
+        return null
+    }
+
     function handlePresetSelection(event) {
-        selectedPresetId = event.detail.itemId
-        let presetState = getPresetState(selectedPresetId)
+        selectedSettingId = event.detail.itemId
+        let presetState = getPresetState(selectedSettingId)
         if (!presetState) {
             return
         }
         stateUpdaterFn(presetState)
     }
 
+    function handleSettingSelection(event) {
+        selectedSettingId = event.detail.itemId
+        let isPreset = selectedSettingId.startsWith(Config.presetIdPrefix)
+        let settingState = isPreset
+            ? getPresetState(selectedSettingId)
+            : getSettingState(selectedSettingId)
+        if (!settingState) {
+            return
+        }
+        stateUpdaterFn(settingState)
+    }
+
+    function toggleSettingsSelector() {
+        settingsSelectorType =
+            settingsSelectorType.type === 'preset'
+                ? settingsSelectorTypes.find(t => t.type === 'user')
+                : settingsSelectorTypes.find(t => t.type === 'preset')
+    }
+
+    function saveSetting(event) {
+        console.info(`dispatchDisplayModal() called`)
+        let setting = Object.assign(
+            {
+                id: MotivicUtils.general.randomString(),
+                saved: { local: false, cloud: false },
+                form: formId
+            },
+            state
+        )
+        let payload = {
+            modalProps: {
+                show: true,
+                itemType: 'settings',
+                item: setting,
+                formType: event.target.dataset.action,
+                actionComplete: false
+            }
+        }
+        console.dir(payload)
+        dispatch('displayCrudModal', payload)
+    }
+
     $: {
         formInDefaultState = isInDefaultState(state, defaultState)
+        formInPresetState = isInPresetState(
+            state,
+            presets.map(p => p.formState)
+        )
         formCanSubmit = canFormSubmit(formInDefaultState, loading)
     }
     $: newMotif = getNewMotif(newMotif, motifs)
+    $: presetSelected =
+        settingsSelectorType.type === 'preset' &&
+        selectedSettingId.startsWith(Config.presetIdPrefix)
 </script>
 
 <style>
@@ -239,21 +311,33 @@
         {#if fieldRows.length}
             <fieldset class="user-input" in:fade>
                 <legend>settings</legend>
+                {#if !formInDefaultState && !formInPresetState}
+                    <button
+                        class="save-setting"
+                        data-action="save"
+                        on:click={saveSetting}>
+                        save setting
+                    </button>
+                {/if}
                 {#if presets.length}
                     <div class="form-row" class:horizontal={true}>
+                        {#if settings.length}
+                            <button on:click={toggleSettingsSelector}>
+                                {settingsSelectorTypes.find(t => t.type !== settingsSelectorType.type).label}
+                            </button>
+                        {/if}
                         <ItemSelector
                             {formId}
-                            items={presets}
+                            items={settingsSelectorType.items}
                             itemType="settings"
-                            label="preset"
-                            selectedItemId={selectedPresetId}
+                            label={settingsSelectorType.label}
+                            selectedItemId={selectedSettingId}
                             formFieldLayout={true}
                             defaultSelection={{ id: 'preset-none', name: '--none--' }}
-                            on:itemSelection={handlePresetSelection}
+                            on:itemSelection={handleSettingSelection}
                             on:displayAlert />
                     </div>
                 {/if}
-                <!--<button class="save-setting">save setting</button>-->
                 {#each fieldRows as fields}
                     <div
                         class="form-row"

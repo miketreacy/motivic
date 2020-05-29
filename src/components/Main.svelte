@@ -13,6 +13,7 @@
     export let openSection = ''
     export let openItemId = ''
     export let motifs = []
+    export let settings = []
     export let scrollDown = false
     export let fileDownloading = false
     let viewType = 'flat'
@@ -144,6 +145,7 @@
                 <RandomizerForm
                     formOpen={openSection === 'randomizer'}
                     {motifs}
+                    {settings}
                     {scrollDown}
                     on:displayToggle
                     on:displayAlert={handleDisplayAlert}
@@ -160,6 +162,7 @@
                 <TransformerForm
                     formOpen={openSection === 'transformer'}
                     {motifs}
+                    {settings}
                     {scrollDown}
                     selectedMotifId={motifs.length ? motifs[0].id : ''}
                     on:displayToggle

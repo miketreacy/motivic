@@ -7,6 +7,7 @@
 
     export let formOpen = false
     export let motifs = []
+    export let settings = []
     export let scrollDown = false
 
     const {
@@ -248,7 +249,7 @@
         formCanSubmitDefault
     }
     $: fieldRows = getFieldRows($randomizer)
-    $: selectedPresetId = $randomizer.preset_id
+    $: selectedSettingId = $randomizer.setting_id
 </script>
 
 <style>
@@ -259,11 +260,12 @@
     {...staticProps}
     stateUpdaterFn={randomizer.updateForm}
     state={$randomizer}
-    {selectedPresetId}
+    {selectedSettingId}
     {fieldRows}
     {formOpen}
     {newMotif}
     {motifs}
+    settings={settings.filter(s => s.form === formId)}
     {scrollDown}
     stickyControls={true}
     on:displayToggle

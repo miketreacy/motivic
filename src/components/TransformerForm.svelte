@@ -9,6 +9,7 @@
     export let formOpen = false
     export let motif = null
     export let motifs = []
+    export let settings = []
     export let selectedMotifId = ''
     export let scrollDown = false
 
@@ -201,7 +202,7 @@
 
     $: motif = selectMotif(selectedMotifId)
     $: fieldRows = getFieldRows($transformer)
-    $: selectedPresetId = $transformer.preset_id
+    $: selectedSettingId = $transformer.setting_id
 </script>
 
 <style>
@@ -212,11 +213,12 @@
     {...staticProps}
     state={$transformer}
     stateUpdaterFn={transformer.updateForm}
-    {selectedPresetId}
+    {selectedSettingId}
     {fieldRows}
     {formOpen}
     {newMotif}
     {motifs}
+    settings={settings.filter(s => s.form === formId)}
     {scrollDown}
     on:displayToggle
     on:displayCrudModal>

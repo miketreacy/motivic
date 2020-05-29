@@ -144,6 +144,7 @@
 <Main
     {view}
     {motifs}
+    {settings}
     {openSection}
     {openItemId}
     {allSelected}

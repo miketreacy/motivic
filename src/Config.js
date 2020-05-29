@@ -1,4 +1,5 @@
 const nameSpace = 'MOTIVIC'
+const presetIdPrefix = 'preset-'
 const Config = {
     audio: {
         playSettings: {
@@ -377,11 +378,12 @@ const Config = {
     motifSorts: ['created', 'name'],
     motifGenerationDisplayCount: 2,
     feedbackFormURL: 'https://bit.ly/3575Ab7',
+    presetIdPrefix: presetIdPrefix,
     formPresets: {
         randomizer: [
             {
                 name: 'robotic serenade',
-                id: 'preset-robotic-serenade',
+                id: `${presetIdPrefix}robotic-serenade`,
                 formState: {
                     key: 'f#',
                     mode: 'chromatic',
@@ -397,7 +399,7 @@ const Config = {
                     tempo_units: 140,
                     length_type: 'measures',
                     length_units: 2,
-                    preset_id: 'preset-robotic-serenade',
+                    setting_id: 'preset-robotic-serenade',
                 },
             },
             {
@@ -418,7 +420,7 @@ const Config = {
                     tempo_units: 105,
                     length_type: 'measures',
                     length_units: 2,
-                    preset_id: 'preset-arpeggiator',
+                    setting_id: 'preset-arpeggiator',
                 },
             },
         ],
@@ -435,7 +437,7 @@ const Config = {
                     augment: 0,
                     diminish: 0,
                     stagger: 16,
-                    preset_id: 'preset-screwed-syzurp',
+                    setting_id: 'preset-screwed-syzurp',
                 },
             },
             {
@@ -450,7 +452,7 @@ const Config = {
                     augment: 0,
                     diminish: 2,
                     stagger: 0,
-                    preset_id: 'preset-vile-hippo',
+                    setting_id: 'preset-vile-hippo',
                 },
             },
         ],
@@ -471,7 +473,7 @@ const Config = {
             tempo_units: 120,
             length_type: 'measures',
             length_units: 2,
-            preset_id: 'preset-default',
+            setting_id: 'preset-default',
         },
         transformer: {
             motif: null,
@@ -482,7 +484,7 @@ const Config = {
             augment: 0,
             diminish: 0,
             stagger: 0,
-            preset_id: 'preset-default',
+            setting_id: 'preset-default',
         },
     },
 }
