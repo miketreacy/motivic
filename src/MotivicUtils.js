@@ -39,7 +39,7 @@ const MotivicUtils = {
          * @param {string} [type] Optional type of string (alpha or num).
          * @returns {string} A random alphanumeric string.
          */
-        randomString: function (length, type = 'alphaNum') {
+        randomString: function (length = 16, type = 'alphaNum') {
             let alpha = 'abcdefghijklmnopqrstuvwxyz'
             let num = '0123456789'
             let charMap = {
@@ -751,7 +751,12 @@ const MotivicUtils = {
 
         parseCallback: function (motifs, callBack = Function.prototype) {
             let responses = motifs
-                .map((m) => [m, 'motifs', m.name, new Date().toISOString()])
+                .map((m) => [
+                    m,
+                    Config.userData.motifType,
+                    m.name,
+                    new Date().toISOString(),
+                ])
                 .map((args) => MotivicUtils.userData.processNewItem(...args))
             callBack(responses)
         },
@@ -827,15 +832,16 @@ const MotivicUtils = {
                 parentId,
                 transformations,
             })
-            let newItem = this._initSavedItem(
+            let newItem = this.initNewItem(
                 item,
-                name,
+                type,
                 id,
+                name,
                 parentId,
                 transformations
             )
             console.dir(newItem)
-            if (type === 'motifs' && !newItem.notes.length) {
+            if (type === Config.userData.motifType && !newItem.notes.length) {
                 return [
                     false,
                     'Unable to parse midi notes from this file.',
@@ -845,20 +851,28 @@ const MotivicUtils = {
             return this.persist(newItem, type, false)
         },
 
-        _initSavedItem: function (
+        initNewItem: function (
             item,
-            name,
-            id,
+            type,
+            id = '',
+            name = '',
             parentId = '',
-            transformations = []
+            transformations = [],
+            formId = ''
         ) {
             let savedItem = MotivicUtils.general.clone(item)
             let initMap = {
                 name,
-                transformations,
                 id: id || MotivicUtils.general.randomString(16),
-                parentId,
                 saved: { local: false, cloud: false },
+            }
+            if (type === Config.userData.motifType) {
+                initMap.parentId = parentId
+                initMap.transformations = transformations
+            }
+            if (type === Config.userData.settingType) {
+                initMap.form = formId
+                savedItem.formState.setting_id = initMap.id
             }
             // add created timestamp if there is none
             savedItem.created = savedItem.created || new Date().toISOString()

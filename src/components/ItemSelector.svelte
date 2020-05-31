@@ -9,12 +9,17 @@
     export let formId = ''
     export let defaultSelection = null
     export let formFieldLayout = false
+    export let modeToggleLabel = ''
 
     const dispatch = createEventDispatcher()
     $: dispatchItemSelection(selectedItemId)
 
     function dispatchItemSelection(itemId) {
         dispatch('itemSelection', { itemId, itemType, formId })
+    }
+
+    function dispatchModeToggle(open) {
+        dispatch('itemSelectionModeToggle', { mode: modeToggleLabel })
     }
 </script>
 
@@ -46,6 +51,9 @@
                 {label}
             {:else}selected {MotivicUtils.general.singularize(itemType)}:{/if}
         </label>
+        {#if modeToggleLabel}
+            <button on:click={dispatchModeToggle}>{modeToggleLabel}</button>
+        {/if}
         <select
             id="select-item"
             name="selected-item"

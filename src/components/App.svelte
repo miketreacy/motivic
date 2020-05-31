@@ -44,10 +44,10 @@
         }
         initGlobal.user[type] = items
         window[Config.nameSpace] = initGlobal
-        if (type === 'motifs') {
+        if (type === Config.userData.motifType) {
             motifs = items
         }
-        if (type === 'settings') {
+        if (type === Config.userData.settingType) {
             settings = items
         }
     }
@@ -121,8 +121,8 @@
         }
     }
 
-    $: updateGlobalUserData($motifStore, 'motifs')
-    $: updateGlobalUserData($settingStore, 'settings')
+    $: updateGlobalUserData($motifStore, Config.userData.motifType)
+    $: updateGlobalUserData($settingStore, Config.userData.settingType)
     $: scrollHandler(scrollPos)
     $: handleEmptyMotifList(motifs)
 </script>

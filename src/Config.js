@@ -361,6 +361,8 @@ const Config = {
         },
     },
     userData: {
+        motifType: 'motifs',
+        settingType: 'settings',
         schema: {
             motifs: [],
             settings: [],

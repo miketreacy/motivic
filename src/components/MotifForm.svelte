@@ -8,10 +8,11 @@
     import MotifFormControls from './MotifFormControls.svelte'
     import MotifAudition from './MotifAudition.svelte'
     import ItemSelector from './ItemSelector.svelte'
-    export let formId
-    export let formTitle
-    export let formInfo
+    export let formId = ''
+    export let formTitle = ''
+    export let formInfo = ''
     export let state = {}
+    export let defaultState = {}
     export let stateUpdaterFn = Function.prototype
     export let fieldRows = []
     export let submitOptions = null
@@ -20,7 +21,7 @@
     export let formCanSubmitDefault = false
     export let newMotif = null
     export let topControls = true
-    export let formControls = ['reset', 'submit']
+    export let formControls = ['reset', 'save-settings', 'submit']
     export let formOpen = false
     export let motifs = []
     export let settings = []
@@ -32,20 +33,16 @@
     const presets = Config.formPresets[formId] || []
     const apiUrl = submitOptions ? `/api/${submitOptions.path}` : ''
     let scrollPos
-    // store initial values as defaults
-    let defaultState = MotivicUtils.general.clone(
-        Config.formDefaults.randomizer
-    )
     let formInDefaultState = true
     let formInPresetState = false
     let formCanSubmit = true
     let loading = false
+    const settingsSelectorDefault = { id: 'none', name: '--none--' }
     const settingsSelectorTypes = [
-        { type: 'preset', label: 'preset', items: presets },
+        { type: 'preset', label: 'presets', items: presets },
         { type: 'user', label: 'my settings', items: settings }
     ]
     let settingsSelectorType = settingsSelectorTypes[0]
-    let presetSelected = false
 
     function dispatchFormToggle(open) {
         dispatch('displayToggle', { section: formId, open: open })
@@ -96,6 +93,8 @@
     }
 
     function resetFormFn() {
+        settingsSelectorType = settingsSelectorTypes[0]
+        selectedSettingId = 'none'
         stateUpdaterFn(defaultState)
     }
 
@@ -153,17 +152,7 @@
         }
     }
 
-    function getPresetState(presetId) {
-        if (presetId) {
-            let preset = presets.find(p => p.id === presetId)
-            if (preset) {
-                return preset.formState
-            }
-        }
-        return null
-    }
-
-    function getSettingState(settingId) {
+    function getSettingState(settingId, settings) {
         if (settingId) {
             let setting = settings.find(s => s.id === settingId)
             if (setting) {
@@ -173,50 +162,41 @@
         return null
     }
 
-    function handlePresetSelection(event) {
-        selectedSettingId = event.detail.itemId
-        let presetState = getPresetState(selectedSettingId)
-        if (!presetState) {
-            return
-        }
-        stateUpdaterFn(presetState)
-    }
-
     function handleSettingSelection(event) {
         selectedSettingId = event.detail.itemId
         let isPreset = selectedSettingId.startsWith(Config.presetIdPrefix)
-        let settingState = isPreset
-            ? getPresetState(selectedSettingId)
-            : getSettingState(selectedSettingId)
+        let settingsList = isPreset ? presets : settings
+        let settingState = getSettingState(selectedSettingId, settingsList)
         if (!settingState) {
             return
         }
         stateUpdaterFn(settingState)
     }
 
-    function toggleSettingsSelector() {
-        settingsSelectorType =
-            settingsSelectorType.type === 'preset'
-                ? settingsSelectorTypes.find(t => t.type === 'user')
-                : settingsSelectorTypes.find(t => t.type === 'preset')
+    function toggleSettingsSelector(event) {
+        let modeLabel = event.detail.mode
+        settingsSelectorType = settingsSelectorTypes.find(
+            t => t.label === modeLabel
+        )
     }
 
-    function saveSetting(event) {
+    function saveSettingsFn() {
         console.info(`dispatchDisplayModal() called`)
-        let setting = Object.assign(
-            {
-                id: MotivicUtils.general.randomString(),
-                saved: { local: false, cloud: false },
-                form: formId
-            },
-            state
+        let setting = MotivicUtils.userData.initNewItem(
+            { formState: state },
+            Config.userData.settingType,
+            '',
+            '',
+            '',
+            null,
+            formId
         )
         let payload = {
             modalProps: {
                 show: true,
-                itemType: 'settings',
+                itemType: Config.userData.settingType,
                 item: setting,
-                formType: event.target.dataset.action,
+                formType: 'save',
                 actionComplete: false
             }
         }
@@ -224,18 +204,17 @@
         dispatch('displayCrudModal', payload)
     }
 
+    function selectorModeToggleFn() {}
+
     $: {
         formInDefaultState = isInDefaultState(state, defaultState)
         formInPresetState = isInPresetState(
             state,
-            presets.map(p => p.formState)
+            presets.concat(settings).map(setting => setting.formState)
         )
         formCanSubmit = canFormSubmit(formInDefaultState, loading)
     }
     $: newMotif = getNewMotif(newMotif, motifs)
-    $: presetSelected =
-        settingsSelectorType.type === 'preset' &&
-        selectedSettingId.startsWith(Config.presetIdPrefix)
 </script>
 
 <style>
@@ -291,8 +270,10 @@
             <MotifFormControls
                 {formOpen}
                 {formInDefaultState}
+                {formInPresetState}
                 {toggleFormFn}
                 {resetFormFn}
+                {saveSettingsFn}
                 {submitFormFn}
                 {formCanSubmit}
                 {scrollDown}
@@ -311,21 +292,8 @@
         {#if fieldRows.length}
             <fieldset class="user-input" in:fade>
                 <legend>settings</legend>
-                {#if !formInDefaultState && !formInPresetState}
-                    <button
-                        class="save-setting"
-                        data-action="save"
-                        on:click={saveSetting}>
-                        save setting
-                    </button>
-                {/if}
                 {#if presets.length}
                     <div class="form-row" class:horizontal={true}>
-                        {#if settings.length}
-                            <button on:click={toggleSettingsSelector}>
-                                {settingsSelectorTypes.find(t => t.type !== settingsSelectorType.type).label}
-                            </button>
-                        {/if}
                         <ItemSelector
                             {formId}
                             items={settingsSelectorType.items}
@@ -333,8 +301,10 @@
                             label={settingsSelectorType.label}
                             selectedItemId={selectedSettingId}
                             formFieldLayout={true}
-                            defaultSelection={{ id: 'preset-none', name: '--none--' }}
+                            defaultSelection={settingsSelectorDefault}
+                            modeToggleLabel={settings.length ? settingsSelectorTypes.find(t => t.type !== settingsSelectorType.type).label : ''}
                             on:itemSelection={handleSettingSelection}
+                            on:itemSelectionModeToggle={toggleSettingsSelector}
                             on:displayAlert />
                     </div>
                 {/if}
@@ -354,20 +324,10 @@
             </fieldset>
         {/if}
     {/if}
-    <!-- <section class="show selected-setting">
-    <div class="input-wrap">
-      <label for="select-setting">Selected Setting</label>
-      <button id="select-setting-reset">clear</button>
-      <select
-        id="select-setting"
-        name="selected-setting"
-        data-default="new unnamed"
-        data-action="single" />
-    </div>
-  </section> -->
     <MotifFormControls
         {formOpen}
         {formInDefaultState}
+        {formInPresetState}
         {toggleFormFn}
         {resetFormFn}
         {submitFormFn}

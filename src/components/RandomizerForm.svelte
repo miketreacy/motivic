@@ -225,7 +225,7 @@
         console.dir(motif)
         let [success, msg, createdMotif] = MotivicUtils.userData.processNewItem(
             motif,
-            'motifs',
+            Config.userData.motifType,
             'my motif'
         )
         dispatch('displayAlert', {
@@ -260,6 +260,7 @@
     {...staticProps}
     stateUpdaterFn={randomizer.updateForm}
     state={$randomizer}
+    defaultState={MotivicUtils.general.clone(Config.formDefaults.randomizer)}
     {selectedSettingId}
     {fieldRows}
     {formOpen}

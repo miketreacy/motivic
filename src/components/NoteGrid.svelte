@@ -274,7 +274,7 @@
             doc.querySelector('#input-controls .name').value || 'My Grid Motif'
         processNewItem(
             gridMelody,
-            'motifs',
+            Config.userData.motifType,
             name,
             'theme',
             '',

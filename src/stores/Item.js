@@ -66,7 +66,7 @@ function createSettingsStore() {
                     console.info(`setting ${setting.id} updated in store`)
                     let idx = settings.findIndex((s) => s.id === setting.id)
                     newSettings = settings.map((s, i) =>
-                        i === idx ? setting : m
+                        i === idx ? setting : s
                     )
                 } else {
                     // store brand new setting

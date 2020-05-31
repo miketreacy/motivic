@@ -128,7 +128,7 @@
             savedVariationMotif
         ] = MotivicUtils.userData.processNewItem(
             motif,
-            'motifs',
+            Config.userData.motifType,
             (nameEl && nameEl.value) || `${motif.name}_var_1`,
             '',
             parentMotif.id,
@@ -212,6 +212,7 @@
 <MotifForm
     {...staticProps}
     state={$transformer}
+    defaultState={MotivicUtils.general.clone(Config.formDefaults.transformer)}
     stateUpdaterFn={transformer.updateForm}
     {selectedSettingId}
     {fieldRows}

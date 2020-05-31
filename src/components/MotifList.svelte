@@ -147,7 +147,7 @@
         dispatch('displayCrudModal', {
             modalProps: {
                 show: true,
-                itemType: 'motifs',
+                itemType: Config.userData.motifType,
                 item: motif,
                 itemChildren: motifChildren,
                 formType: event.target.dataset.action,
@@ -573,7 +573,7 @@
                             data-action="save"
                             data-motif-id={motifId}
                             on:click|self={dispatchDisplayModal}
-                            disabled={motifs.filter(m => m.saved.local).length >= Config.userData.savedItemLimit['motifs']}>
+                            disabled={motifs.filter(m => m.saved.local).length >= Config.userData.savedItemLimit[Config.userData.motifType]}>
                             save
                         </button>
                     {/if}

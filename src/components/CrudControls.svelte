@@ -37,8 +37,6 @@
 </style>
 
 <button
-    id="save-motif"
-    class="save"
     class:compact={displayCompact}
     data-action="save"
     data-save-mode={saveMode}
@@ -52,8 +50,6 @@
     <span>save</span>
 </button>
 <button
-    id="delete-motif"
-    class="delete"
     class:compact={displayCompact}
     data-action="delete"
     disabled={selectedItems.length !== 1}

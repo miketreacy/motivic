@@ -5,6 +5,7 @@
     import RandomizerForm from './RandomizerForm.svelte'
     import TransformerForm from './TransformerForm.svelte'
     import MotifList from './MotifList.svelte'
+    import SettingsList from './SettingsList.svelte'
     import Motif from './Motif.svelte'
 
     export let selectedMotifIds = []
@@ -128,6 +129,27 @@
                     {selectedMotifIds}
                     {allSelected}
                     parentId=""
+                    {viewType}
+                    {sortType}
+                    {sortOrder}
+                    {expandedMotifId}
+                    {scrollDown}
+                    {fileDownloading}
+                    on:listViewChange={handleListViewChange}
+                    on:displayToggle
+                    on:displayCrudModal
+                    on:motifSelection
+                    on:displayAlert={handleDisplayAlert}
+                    on:downloadFile />
+            {/if}
+            {#if showSectionMap.settings}
+                <SettingsList
+                    id="settings"
+                    title="My Settings"
+                    listOpen={openSection === 'settings'}
+                    {motifs}
+                    {selectedMotifIds}
+                    {allSelected}
                     {viewType}
                     {sortType}
                     {sortOrder}

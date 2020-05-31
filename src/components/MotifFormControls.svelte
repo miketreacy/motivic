@@ -2,10 +2,12 @@
     import { fade } from 'svelte/transition'
     export let formOpen = false
     export let formInDefaultState = true
+    export let formInPresetState = false
     export let formCanSubmit = false
     export let toggleFormFn = () => null
     export let resetFormFn = () => null
     export let submitFormFn = () => null
+    export let saveSettingsFn = () => null
     export let controls = []
     export let scrollDown = false
     export let sticky = false
@@ -51,7 +53,7 @@
         flex-direction: row;
         flex: 1 1 0;
         border-style: none;
-        padding: 4px 12px 6px;
+        padding: 0 12px;
         margin: 5px;
         max-width: 50px;
         min-width: 50px;
@@ -92,6 +94,14 @@
             on:click={resetFormFn}
             disabled={formInDefaultState}>
             reset
+        </button>
+    {/if}
+    {#if formOpen && controls.includes('save-settings')}
+        <button
+            class="save-settings"
+            on:click={saveSettingsFn}
+            disabled={formInDefaultState || formInPresetState}>
+            save setting
         </button>
     {/if}
     {#if controls.includes('submit')}
