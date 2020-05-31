@@ -38,10 +38,7 @@
     let formCanSubmit = true
     let loading = false
     const settingsSelectorDefault = { id: 'none', name: '--none--' }
-    const settingsSelectorTypes = [
-        { type: 'preset', label: 'presets', items: presets },
-        { type: 'user', label: 'my settings', items: settings }
-    ]
+    let settingsSelectorTypes = getSettingsSelectorTypes(settings, presets)
     let settingsSelectorType = settingsSelectorTypes[0]
 
     function dispatchFormToggle(open) {
@@ -206,6 +203,13 @@
 
     function selectorModeToggleFn() {}
 
+    function getSettingsSelectorTypes(settings, presets) {
+        return [
+            { type: 'preset', label: 'presets', items: presets },
+            { type: 'user', label: 'my settings', items: settings }
+        ]
+    }
+
     $: {
         formInDefaultState = isInDefaultState(state, defaultState)
         formInPresetState = isInPresetState(
@@ -215,6 +219,7 @@
         formCanSubmit = canFormSubmit(formInDefaultState, loading)
     }
     $: newMotif = getNewMotif(newMotif, motifs)
+    $: settingsSelectorTypes = getSettingsSelectorTypes(settings, presets)
 </script>
 
 <style>
