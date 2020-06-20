@@ -96,6 +96,7 @@ function adjustLeapsByOctaves(newState, oldState) {
 }
 
 function randomizerStateFilterFn(field, newState, oldState) {
+    let { setting_id } = Config.formDefaults.randomizer
     if (!field) {
         return newState
     }
@@ -127,15 +128,16 @@ function randomizerStateFilterFn(field, newState, oldState) {
             oldState
         )
     }
-    newState.setting_id = 'none'
+    newState.setting_id = setting_id
     return newState
 }
 
 function transformerStateFilterFn(field, newState, oldState) {
+    let { setting_id } = Config.formDefaults.transformer
     if (!field) {
         return newState
     }
-    newState.setting_id = 'none'
+    newState.setting_id = setting_id
     return newState
 }
 

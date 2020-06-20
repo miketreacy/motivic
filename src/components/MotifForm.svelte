@@ -37,7 +37,13 @@
     let formInPresetState = false
     let formCanSubmit = true
     let loading = false
-    const settingsSelectorDefault = { id: 'none', name: '--none--' }
+    let hasSettings = presets.length || settings.length
+    const settingsSelectorDefault = hasSettings
+        ? {
+              id: Config.formDefaults[formId].setting_id,
+              name: '--none--'
+          }
+        : null
     let settingsSelectorTypes = getSettingsSelectorTypes(settings, presets)
     let settingsSelectorType = settingsSelectorTypes[0]
 
@@ -91,7 +97,7 @@
 
     function resetFormFn() {
         settingsSelectorType = settingsSelectorTypes[0]
-        selectedSettingId = 'none'
+        selectedSettingId = settingsSelectorDefault.id
         stateUpdaterFn(defaultState)
     }
 
@@ -170,13 +176,6 @@
         stateUpdaterFn(settingState)
     }
 
-    function toggleSettingsSelector(event) {
-        let modeLabel = event.detail.mode
-        settingsSelectorType = settingsSelectorTypes.find(
-            t => t.label === modeLabel
-        )
-    }
-
     function saveSettingsFn() {
         console.info(`dispatchDisplayModal() called`)
         let setting = MotivicUtils.userData.initNewItem(
@@ -205,8 +204,8 @@
 
     function getSettingsSelectorTypes(settings, presets) {
         return [
-            { type: 'preset', label: 'presets', items: presets },
-            { type: 'user', label: 'my settings', items: settings }
+            { type: 'user', label: 'my settings', items: settings },
+            { type: 'preset', label: 'presets', items: presets }
         ]
     }
 
@@ -297,19 +296,17 @@
         {#if fieldRows.length}
             <fieldset class="user-input" in:fade>
                 <legend>settings</legend>
-                {#if presets.length}
+                {#if hasSettings}
                     <div class="form-row" class:horizontal={true}>
                         <ItemSelector
                             {formId}
-                            items={settingsSelectorType.items}
                             itemType="settings"
+                            itemGroups={settingsSelectorTypes}
                             label={settingsSelectorType.label}
                             selectedItemId={selectedSettingId}
                             formFieldLayout={true}
                             defaultSelection={settingsSelectorDefault}
-                            modeToggleLabel={settings.length ? settingsSelectorTypes.find(t => t.type !== settingsSelectorType.type).label : ''}
                             on:itemSelection={handleSettingSelection}
-                            on:itemSelectionModeToggle={toggleSettingsSelector}
                             on:displayAlert />
                     </div>
                 {/if}

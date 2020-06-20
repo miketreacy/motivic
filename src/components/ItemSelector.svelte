@@ -2,24 +2,25 @@
     import { createEventDispatcher } from 'svelte'
     import MotivicUtils from '../MotivicUtils'
     export let itemSelected = false
-    export let items = []
+    export let itemGroups = []
     export let itemType = ''
     export let label = ''
     export let selectedItemId = ''
     export let formId = ''
     export let defaultSelection = null
     export let formFieldLayout = false
-    export let modeToggleLabel = ''
 
     const dispatch = createEventDispatcher()
     $: dispatchItemSelection(selectedItemId)
 
     function dispatchItemSelection(itemId) {
-        dispatch('itemSelection', { itemId, itemType, formId })
-    }
-
-    function dispatchModeToggle(open) {
-        dispatch('itemSelectionModeToggle', { mode: modeToggleLabel })
+        if (itemId === defaultSelection.id) {
+            return
+        }
+        let selectedItemType = itemGroups.find(group =>
+            group.items.some(item => item.id === itemId)
+        ).type
+        dispatch('itemSelection', { itemId, selectedItemType, formId })
     }
 </script>
 
@@ -51,9 +52,6 @@
                 {label}
             {:else}selected {MotivicUtils.general.singularize(itemType)}:{/if}
         </label>
-        {#if modeToggleLabel}
-            <button on:click={dispatchModeToggle}>{modeToggleLabel}</button>
-        {/if}
         <select
             id="select-item"
             name="selected-item"
@@ -63,9 +61,23 @@
                     {defaultSelection.name}
                 </option>
             {/if}
-            {#each items as item}
-                <option value={item.id}>{item.name}</option>
-            {/each}
+            {#if itemGroups.length === 1}
+                {#each itemGroups[0] as item}
+                    <option value={item.id} data-type={itemGroups[0].type}>
+                        {item.name}
+                    </option>
+                {/each}
+            {:else}
+                {#each itemGroups as itemGroup}
+                    <optgroup label={itemGroup.label}>
+                        {#each itemGroup.items as item}
+                            <option value={item.id} data-type={itemGroup.type}>
+                                {item.name}
+                            </option>
+                        {/each}
+                    </optgroup>
+                {/each}
+            {/if}
         </select>
         {#if itemSelected}
             <button id="select-item-reset">clear</button>
