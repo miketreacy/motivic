@@ -302,7 +302,6 @@
                             {formId}
                             itemType="settings"
                             itemGroups={settingsSelectorTypes}
-                            label={settingsSelectorType.label}
                             selectedItemId={selectedSettingId}
                             formFieldLayout={true}
                             defaultSelection={settingsSelectorDefault}

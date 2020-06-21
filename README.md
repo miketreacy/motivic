@@ -37,10 +37,10 @@ npm run build
 npm run start
 
 # BACK END API
-# runs serverless apis locally at localhost:3000
-now dev
+# runs serverless apis with file-watchers listening locally at localhost:3000
+vercel dev --debug
 
 # FULL STACK
 # rebuild full app
-npm run build && now dev
+npm run build && vercel dev --debug
 ```

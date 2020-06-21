@@ -106,7 +106,6 @@
                     id: 'name',
                     label: 'name',
                     max: 16,
-                    apiField: false,
                     info: 'The name of the new transformed motif'
                 }
             ]
@@ -226,9 +225,10 @@
     {#if motifs.length}
         <ItemSelector
             {formId}
-            items={motifs}
+            itemGroups={[{ type: 'motif', label: 'motifs', items: motifs }]}
             itemType="motifs"
             selectedItemId={selectedMotifId}
+            defaultSelection={null}
             on:itemSelection={handleItemSelection}
             on:displayAlert />
     {/if}

@@ -13,9 +13,11 @@ public/build
 
 # CI/CD
 now.json
+vercel.json
 rules.json
 DEPLOY.md
 .now
+.vercel
 
 # binaries
 # audio files

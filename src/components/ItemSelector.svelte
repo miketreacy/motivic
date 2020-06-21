@@ -1,7 +1,6 @@
 <script>
     import { createEventDispatcher } from 'svelte'
     import MotivicUtils from '../MotivicUtils'
-    export let itemSelected = false
     export let itemGroups = []
     export let itemType = ''
     export let label = ''
@@ -14,7 +13,11 @@
     $: dispatchItemSelection(selectedItemId)
 
     function dispatchItemSelection(itemId) {
-        if (itemId === defaultSelection.id) {
+        if (
+            defaultSelection &&
+            defaultSelection.id &&
+            defaultSelection.id === itemId
+        ) {
             return
         }
         let selectedItemType = itemGroups.find(group =>
@@ -62,13 +65,13 @@
                 </option>
             {/if}
             {#if itemGroups.length === 1}
-                {#each itemGroups[0] as item}
+                {#each itemGroups[0].items as item}
                     <option value={item.id} data-type={itemGroups[0].type}>
                         {item.name}
                     </option>
                 {/each}
             {:else}
-                {#each itemGroups as itemGroup}
+                {#each itemGroups.filter(itemGroup => itemGroup.items.length) as itemGroup}
                     <optgroup label={itemGroup.label}>
                         {#each itemGroup.items as item}
                             <option value={item.id} data-type={itemGroup.type}>
@@ -79,8 +82,5 @@
                 {/each}
             {/if}
         </select>
-        {#if itemSelected}
-            <button id="select-item-reset">clear</button>
-        {/if}
     </div>
 </section>
