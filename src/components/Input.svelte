@@ -13,6 +13,7 @@
     export let displayClass = 'display-block'
     export let roughIncrement = 0
     export let updaterFn = Function.prototype
+    export let audioCapture = false
 
     const dispatch = createEventDispatcher()
     const checkboxValueMap = { on: true, off: false }
@@ -143,6 +144,7 @@
         class={displayClass}
         {accept}
         bind:files={value}
+        capture={audioCapture}
         on:change={fileChangeHandler} />
 {:else if type == 'hidden'}
     <input type="hidden" {id} class={displayClass} bind:value />

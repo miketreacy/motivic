@@ -1,8 +1,9 @@
 <script>
-    import { createEventDispatcher } from 'svelte'
+    import { onMount, createEventDispatcher } from 'svelte'
     import Field from './Field.svelte'
     import MotifForm from './MotifForm.svelte'
     import MotivicUtils from '../MotivicUtils'
+    import AudioInput from './AudioInput.svelte'
     export let formOpen = false
     const formId = 'uploader'
     const formTitle = 'Uploader'
@@ -25,6 +26,21 @@
         wrap: false,
         centerLabel: true
     }
+    const audioInputField = {
+        type: 'file',
+        id: 'audio',
+        label: 'Upload WAV file or sing or play into microphone',
+        accept: 'audio/*',
+        wrap: false,
+        centerLabel: true,
+        audioCapture: true
+    }
+
+    let audioSource = ''
+    let shouldStop = false
+    let stopped = false
+    const recordedChunks = []
+    let mediaRecorder = null
 
     function handleUploadedMotifs(results) {
         results.forEach(result => {
@@ -72,7 +88,7 @@
 </script>
 
 <style>
-    .upload-controls {
+    .controls {
         padding-top: 20px;
     }
 </style>
@@ -84,7 +100,9 @@
     on:displayToggle
     on:displayCrudModal
     on:displayAlert>
-    <div class="upload-controls">
+    <div class="upload-controls controls">
         <Field {...fileUploadField} on:inputValueChange={uploadFile} />
     </div>
+    <AudioInput />
+
 </MotifForm>

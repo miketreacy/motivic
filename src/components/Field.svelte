@@ -17,6 +17,7 @@
     export let info = ''
     export let rowLayout = 'vertical'
     export let updaterFn = Function.prototype
+    export let audioCapture = false
 </script>
 
 <style>
@@ -82,6 +83,7 @@
             {accept}
             {roughIncrement}
             {updaterFn}
+            {audioCapture}
             on:inputValueChange
             on:displayAlert />
     </div>
@@ -105,6 +107,7 @@
         {accept}
         {roughIncrement}
         {updaterFn}
+        {audioCapture}
         on:inputValueChange
         on:displayAlert />
 {/if}

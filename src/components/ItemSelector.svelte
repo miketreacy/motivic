@@ -53,7 +53,7 @@
         <label for="select-item">
             {#if label}
                 {label}
-            {:else}selected {MotivicUtils.general.singularize(itemType)}:{/if}
+            {:else}selected {MotivicUtils.general.singularize(itemType)}{/if}
         </label>
         <select
             id="select-item"
