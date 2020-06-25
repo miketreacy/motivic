@@ -7,6 +7,7 @@
     import MotifList from './MotifList.svelte'
     import SettingsList from './SettingsList.svelte'
     import Motif from './Motif.svelte'
+    import AudioInput from './AudioInput.svelte'
 
     export let selectedMotifIds = []
     export let allSelected = false
@@ -108,6 +109,12 @@
         <Alert {...alertProps} on:displayAlert={handleDisplayAlert} />
     {/if}
 
+    <!-- audio is an experimental route TODO: put this somewhere else in the future -->
+    {#if view === 'audio'}
+        <div id="tools-wrap" class:closed={openSection === ''}>
+            <AudioInput />
+        </div>
+    {/if}
     {#if view === 'about'}
         <About />
     {/if}

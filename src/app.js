@@ -1,7 +1,7 @@
 import MotivicUtils from './MotivicUtils.js'
 import App from './components/App.svelte'
 import { motifStore, settingStore } from './stores/Item'
-const views = ['about', 'home', 'motifs', 'feedback']
+const views = ['about', 'home', 'motifs', 'feedback', 'audio']
 let view = 'home'
 
 /**
@@ -60,8 +60,8 @@ function init() {
     localData.motifs.forEach((m) => motifStore.add(m))
     localData.settings.forEach((s) => settingStore.add(s))
     // Commenting out for now since I'm not doing any url-based routing
-    // let [urlView, query, queryMap, pagination] = parseURL()
-    // view = urlView
+    let [urlView, query, queryMap, pagination] = parseURL()
+    view = urlView
     window.addEventListener('popstate', popState, false)
 }
 

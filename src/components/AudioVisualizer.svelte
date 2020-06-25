@@ -1,40 +1,43 @@
 <script>
     import { onMount } from 'svelte'
-    export let canvasCtx
-    export let audioCtx
-    export let audioStream
+    export let audioCtx = null
+    export let audioStream = null
 
+    let rafID = null
     let canvas
+    let canvasCtx
     let wrapper
+
+    function stopLoop() {
+        window.cancelAnimationFrame(rafID)
+    }
 
     function canvasResize() {
         canvas.width = wrapper.offsetWidth
     }
 
     function visualize(stream) {
-        if (!audioStream) {
+        if (!stream) {
             return
         }
         if (!audioCtx) {
-            audioCtx = new AudioContext()
+            console.info(`no audioCtx!!!`)
+            return false
         }
 
         const source = audioCtx.createMediaStreamSource(stream)
-        analyser = audioCtx.createAnalyser()
+        let analyser = audioCtx.createAnalyser()
         analyser.fftSize = 2048
         const bufferLength = analyser.frequencyBinCount
         const dataArray = new Uint8Array(bufferLength)
-
         source.connect(analyser)
-        //analyser.connect(audioCtx.destination);
-
         draw()
 
         function draw() {
             const WIDTH = canvas.width
             const HEIGHT = canvas.height
 
-            requestAnimationFrame(draw)
+            rafID = window.requestAnimationFrame(draw)
 
             analyser.getByteTimeDomainData(dataArray)
 
@@ -67,14 +70,24 @@
         }
     }
 
+    function initStream(audioCtx, stream) {
+        // Create an AudioNode from the stream.
+        let mediaStreamSource = audioCtx.createMediaStreamSource(stream)
+
+        // Connect it to the destination.
+        analyser = audioCtx.createAnalyser()
+        analyser.fftSize = 2048
+        mediaStreamSource.connect(analyser)
+    }
+
     onMount(() => {
         canvasCtx = canvas.getContext('2d')
         canvasResize()
-        let frame
-
-        return () => {
-            cancelAnimationFrame(frame)
+        if (audioCtx) {
+            // initStream(audioCtx, audioStream)
+            visualize(audioStream)
         }
+        return stopLoop
     })
 
     $: visualize(audioStream)
