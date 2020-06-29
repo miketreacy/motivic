@@ -1,9 +1,9 @@
 <script>
     import { onMount } from 'svelte'
-    export let audioCtx
-    export let audioStream
+    export let AudioSession = { ctx: null, stream: null }
 
     let rafID = null
+    let analyser = null
 
     let detectedPitch = ''
     let pitchConfidence = 'vague'
@@ -114,12 +114,23 @@
         //	var best_frequency = sampleRate/best_offset;
     }
 
-    function detectPitch(time) {
-        var cycles = new Array()
-        // TODO: pass analyzer node in? from Audio lib?
-        analyser.getFloatTimeDomainData(buf)
-        var ac = autoCorrelate(buf, audioCtx.sampleRate)
+    function handleStream(stream) {
+        // Create an AudioNode from the stream.
+        let mediaStreamSource = AudioSession.ctx.createMediaStreamSource(stream)
 
+        // Connect it to the destination.
+        // TODO: pass analyser node in? from Audio lib?
+        analyser = AudioSession.ctx.createAnalyser()
+        analyser.fftSize = 2048
+        mediaStreamSource.connect(analyser)
+        detectPitch()
+    }
+
+    function detectPitch() {
+        var cycles = new Array()
+
+        analyser.getFloatTimeDomainData(buf)
+        var ac = autoCorrelate(buf, AudioSession.ctx.sampleRate)
         if (ac == -1) {
             pitchConfidence = `vague`
         } else {
@@ -147,19 +158,19 @@
         // TODO:
     }
     onMount(() => {
-        if (audioCtx && audioStream) {
-            detectPitch(audioStream)
+        if (AudioSession.ctx && AudioSession.stream) {
+            handleStream(AudioSession.stream)
         }
         return stopLoop
     })
 
-    $: detectPitch(audioStream)
+    $: handleStream(AudioSession.stream)
 </script>
 
 <style>
     section {
         padding: 10px;
-        margin: 10px;
+        margin: 5px;
     }
 
     .pitch-detection {
@@ -191,5 +202,5 @@
         <pre>confidence: {pitchConfidence}</pre>
         <pre>{pitchAccuracy} by {pitchCentsOff} cents</pre>
     </output>
-    <button on:click={stopLoop}>stop pitch detection</button>
+    <!-- <button on:click={stopLoop}>stop pitch detection</button> -->
 </section>

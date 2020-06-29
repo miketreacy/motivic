@@ -75,7 +75,7 @@
 
     function onMediaSuccess(stream) {
         gotStream(stream)
-        mediaRecorder = new MediaRecorder(stream)
+        mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' })
     }
 
     function onMediaError(err) {
