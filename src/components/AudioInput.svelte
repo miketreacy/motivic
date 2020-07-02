@@ -4,8 +4,8 @@
     import Field from './Field.svelte'
     import MotivicUtils from '../MotivicUtils'
     import AudioVisualizer from './AudioVisualizer.svelte'
-    import AudioRecorder from './AudioRecorder.svelte'
     import AudioPitchDetector from './AudioPitchDetector.svelte'
+    import AudioRecorder from './AudioRecorder.svelte'
 
     const dispatch = createEventDispatcher()
     const audioInputField = {
@@ -100,11 +100,6 @@
 </script>
 
 <style>
-    section {
-        /* padding: 10px;
-        margin: 10px; */
-    }
-
     button {
         margin: 10px 0;
     }
@@ -118,4 +113,5 @@
 {#if isStreaming && AudioSession.ctx && AudioSession.stream}
     <AudioVisualizer {AudioSession} />
     <AudioPitchDetector {AudioSession} />
+    <AudioRecorder {AudioSession} />
 {/if}

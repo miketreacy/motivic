@@ -1,39 +1,25 @@
 <script>
     import AudioClip from './AudioClip.svelte'
+    import { onMount } from 'svelte'
+    export let AudioSession = { ctx: null, stream: null }
 
-    const record = document.querySelector('.record')
-    const stop = document.querySelector('.stop')
-    const soundClips = document.querySelector('.sound-clips')
-    const canvas = document.querySelector('.visualizer')
-    const mainSection = document.querySelector('.main-controls')
-
+    let isRecording = false
+    let mediaRecorder = getMediaRecorder(AudioSession.stream)
+    let audioChunks = []
     let clipSource = ''
     let clipName = ''
 
-    // disable stop button while not recording
-
-    stop.disabled = true
-
     function startClipRecording(e) {
-        let record = e.target
-        mediaRecorder.start()
+        toggleRecordingState()
         console.log(mediaRecorder.state)
         console.log('recorder started')
-        record.style.background = 'red'
-        stop.disabled = false
-        record.disabled = true
     }
 
     function stopClipRecording() {
-        mediaRecorder.stop()
+        toggleRecordingState()
         console.log(mediaRecorder.state)
         console.log('recorder stopped')
-        record.style.background = ''
-        record.style.color = ''
         // mediaRecorder.requestData();
-
-        stop.disabled = true
-        record.disabled = false
     }
 
     function getClipName() {
@@ -58,29 +44,42 @@
     }
 
     function mediaRecorderOnDataAvailable(e) {
-        chunks.push(e.data)
+        audioChunks.push(e.data)
     }
 
     function mediaRecorderOnStop(e) {
         console.log('data available after MediaRecorder.stop() called.')
-
         clipName = getClipName()
         audio.controls = true
-        const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' })
-        chunks = []
+        const blob = new Blob(audioChunks, { type: 'audio/ogg; codecs=opus' })
+        audioChunks = []
         const audioURL = window.URL.createObjectURL(blob)
         clipSource = audioURL
         console.log('recorder stopped')
     }
 
-    function onMediaSuccess(stream) {
-        gotStream(stream)
-        mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' })
+    function getMediaRecorder(stream) {
+        return stream
+            ? new MediaRecorder(stream, {
+                  mimeType: 'audio/webm'
+              })
+            : null
     }
 
-    function onMediaError(err) {
-        console.log('The following error occured: ' + err)
+    function toggleRecordingState() {
+        isRecording = !isRecording
     }
+
+    function toggleRecorder(recording = false) {
+        if (recording) {
+            mediaRecorder.start()
+        } else {
+            mediaRecorder.stop()
+        }
+    }
+
+    $: toggleRecorder(isRecording)
+    $: mediaRecorder = getMediaRecorder(AudioSession.stream)
 </script>
 
 <style>
@@ -105,22 +104,42 @@
         padding: 10px;
         margin: 10px;
     }
-    #buttons {
+    .buttons {
         margin: 10px;
     }
-    #buttons button {
+    button {
         background-color: white;
         margin: 0 10px;
         font-size: var(--theme_font_size_4);
     }
+    button.stop {
+    }
+    button.record {
+        background-color: red;
+    }
+    button:disabled {
+        background-color: grey;
+    }
 </style>
 
-<section class="audio-recorder">
-    <div id="buttons">
-        <button class="record" on:click={startClipRecording}>&#9210;</button>
-        <button class="stop" on:click={stopClipRecording}>&#9209;</button>
-    </div>
-</section>
+{#if mediaRecorder}
+    <section class="audio-recorder">
+        <div class="buttons">
+            <button
+                class="record"
+                on:click={startClipRecording}
+                disabled={isRecording}>
+                &#9210;
+            </button>
+            <button
+                class="stop"
+                on:click={stopClipRecording}
+                disabled={!isRecording}>
+                &#9209;
+            </button>
+        </div>
+    </section>
+{/if}
 <section class="audio-clips">
     {#if clipSource}
         <AudioClip
