@@ -8,7 +8,7 @@
 <style>
     article {
         padding: 10px;
-        margin: 10px;
+        margin: 5px;
     }
     button {
         background-color: white;

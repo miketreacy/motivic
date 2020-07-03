@@ -48,22 +48,24 @@
     }
 
     function mediaRecorderOnStop(e) {
-        console.log('data available after MediaRecorder.stop() called.')
         clipName = getClipName()
-        audio.controls = true
         const blob = new Blob(audioChunks, { type: 'audio/ogg; codecs=opus' })
         audioChunks = []
-        const audioURL = window.URL.createObjectURL(blob)
-        clipSource = audioURL
-        console.log('recorder stopped')
+        clipSource = window.URL.createObjectURL(blob)
     }
 
     function getMediaRecorder(stream) {
-        return stream
+        let recorder = stream
             ? new MediaRecorder(stream, {
                   mimeType: 'audio/webm'
               })
             : null
+
+        if (recorder) {
+            recorder.ondataavailable = mediaRecorderOnDataAvailable
+            recorder.onstop = mediaRecorderOnStop
+        }
+        return recorder
     }
 
     function toggleRecordingState() {
@@ -74,7 +76,9 @@
         if (recording) {
             mediaRecorder.start()
         } else {
-            mediaRecorder.stop()
+            if (mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop()
+            }
         }
     }
 
@@ -102,23 +106,19 @@
     }
     section {
         padding: 10px;
-        margin: 10px;
+        margin: 5px;
     }
     .buttons {
-        margin: 10px;
+        width: 100%;
+        justify-content: space-evenly;
     }
+
     button {
-        background-color: white;
-        margin: 0 10px;
-        font-size: var(--theme_font_size_4);
-    }
-    button.stop {
-    }
-    button.record {
-        background-color: red;
-    }
-    button:disabled {
-        background-color: grey;
+        padding: 0;
+        font-size: var(--theme_font_size_4b);
+        flex: 1 1 0;
+        background: none;
+        max-width: 50px;
     }
 </style>
 

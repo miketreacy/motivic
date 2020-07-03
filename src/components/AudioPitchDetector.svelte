@@ -140,10 +140,8 @@
             var note = noteFromPitch(pitch)
             let pitchName = noteStrings[note % 12]
             detectedPitch = pitchName
-            console.info(`pitchName: ${pitchName}`)
             let detune = centsOffFromPitch(pitch, note)
             pitchCentsOff = detune
-            console.info(`cents off pitch: ${detune}`)
             if (detune == 0) {
                 console.info(`pitch is perfect`)
                 pitchAccuracy = 'perfect'
@@ -151,7 +149,6 @@
                 if (detune < 0) pitchAccuracy = 'flat'
                 else pitchAccuracy = 'sharp'
                 let detuneAmount = Math.abs(detune)
-                console.log(`detuneAmount = ${detuneAmount}`)
             }
         }
         rafID = window.requestAnimationFrame(detectPitch)
