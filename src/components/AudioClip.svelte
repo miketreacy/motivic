@@ -7,18 +7,23 @@
 
 <style>
     article {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         padding: 10px;
-        margin: 5px;
+        margin: 0;
+        border: 1px dashed;
     }
     button {
-        background-color: white;
-        margin: 0 10px;
-        font-size: var(--theme_font_size_4);
+        max-width: 50px;
+    }
+    audio {
+        margin: 10px 0;
     }
 </style>
 
 <article class="clip">
-    <audio controls="true" src={source} />
     <div class="clip-label" on:click={renameFn}>{name}</div>
-    <button class="delete" on:click={deleteFn}>delete clip</button>
+    <audio controls="true" src={source} />
+    <button class="delete" on:click={deleteFn}>delete</button>
 </article>

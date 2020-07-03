@@ -157,7 +157,7 @@
     on:displayCrudModal={handleModalDisplay}
     on:motifSelection={handleMotifSelection}
     on:downloadFile={handleDownloadFile} />
-{#if openSection === ''}
+{#if openSection === '' && view !== 'audio'}
     <Footer />
 {/if}
 {#if modalProps.show}

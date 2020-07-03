@@ -77,11 +77,7 @@
 
         try {
             stream = await getUserAudioStream()
-            console.info(`stream generated:`)
-            console.dir(stream)
-            /* use the stream */
             AudioSession.stream = stream
-            // document.querySelector('#player').srcObject = stream
         } catch (err) {
             /* handle the error */
             console.error(err)
@@ -106,8 +102,6 @@
 </style>
 
 <section class="audio-input">
-    <!-- <audio id="player" src={audioSource} srcObject={audioSource} controls /> -->
-    <!-- <Field {...audioInputField} on:inputValueChange={audioInput} /> -->
     <button on:click={toggleAudioStream}>&#127908;</button>
 </section>
 {#if isStreaming && AudioSession.ctx && AudioSession.stream}
