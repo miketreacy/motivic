@@ -988,7 +988,7 @@ func jsonDataConversionHandler(w http.ResponseWriter, r *http.Request) {
 	// 1. CONVERT JSON REQUEST BODY TO MOTIF STRUCT
 
 	// Use http.MaxBytesReader to enforce a maximum read of 1MB from the
-	// resquest body. A request body larger than that will now result in
+	// request body. A request body larger than that will now result in
 	// Decode() returning a "http: request body too large" error.
 	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 	dec := json.NewDecoder(r.Body)

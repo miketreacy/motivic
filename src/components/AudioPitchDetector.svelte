@@ -4,20 +4,15 @@
 
     let rafID = null
     let analyser = null
-
     let detectedPitch = ''
     let pitchConfidence = 'vague'
     let pitchCentsOff = 0
     let pitchAccuracy = ''
-
-    var MIN_SAMPLES = 0 // will be initialized when AudioContext is created.
-    var GOOD_ENOUGH_CORRELATION = 0.9 // this is the "bar" for how close a correlation needs to be
-
-    var tracks = null
-    var buflen = 1024
-    var buf = new Float32Array(buflen)
-
-    var noteStrings = [
+    let MIN_SAMPLES = 0 // will be initialized when AudioContext is created.
+    let GOOD_ENOUGH_CORRELATION = 0.9 // this is the "bar" for how close a correlation needs to be
+    let buflen = 1024
+    let buf = new Float32Array(buflen)
+    const noteStrings = [
         'C',
         'C#',
         'D',
@@ -37,7 +32,7 @@
     }
 
     function noteFromPitch(frequency) {
-        var noteNum = 12 * (Math.log(frequency / 440) / Math.log(2))
+        let noteNum = 12 * (Math.log(frequency / 440) / Math.log(2))
         return Math.round(noteNum) + 69
     }
 
@@ -53,16 +48,16 @@
     }
 
     function autoCorrelate(buf, sampleRate) {
-        var SIZE = buf.length
-        var MAX_SAMPLES = Math.floor(SIZE / 2)
-        var best_offset = -1
-        var best_correlation = 0
-        var rms = 0
-        var foundGoodCorrelation = false
-        var correlations = new Array(MAX_SAMPLES)
+        let SIZE = buf.length
+        let MAX_SAMPLES = Math.floor(SIZE / 2)
+        let best_offset = -1
+        let best_correlation = 0
+        let rms = 0
+        let foundGoodCorrelation = false
+        let correlations = new Array(MAX_SAMPLES)
 
-        for (var i = 0; i < SIZE; i++) {
-            var val = buf[i]
+        for (let i = 0; i < SIZE; i++) {
+            let val = buf[i]
             rms += val * val
         }
         rms = Math.sqrt(rms / SIZE)
@@ -70,11 +65,11 @@
             // not enough signal
             return -1
 
-        var lastCorrelation = 1
-        for (var offset = MIN_SAMPLES; offset < MAX_SAMPLES; offset++) {
-            var correlation = 0
+        let lastCorrelation = 1
+        for (let offset = MIN_SAMPLES; offset < MAX_SAMPLES; offset++) {
+            let correlation = 0
 
-            for (var i = 0; i < MAX_SAMPLES; i++) {
+            for (let i = 0; i < MAX_SAMPLES; i++) {
                 correlation += Math.abs(buf[i] - buf[i + offset])
             }
             correlation = 1 - correlation / MAX_SAMPLES
@@ -98,7 +93,7 @@
                 // we know best_offset >=1,
                 // since foundGoodCorrelation cannot go to true until the second pass (offset=1), and
                 // we can't drop into this clause until the following pass (else if).
-                var shift =
+                let shift =
                     (correlations[best_offset + 1] -
                         correlations[best_offset - 1]) /
                     correlations[best_offset]
@@ -111,7 +106,7 @@
             return sampleRate / best_offset
         }
         return -1
-        //	var best_frequency = sampleRate/best_offset;
+        //	let best_frequency = sampleRate/best_offset;
     }
 
     function handleStream(stream) {
@@ -127,17 +122,16 @@
     }
 
     function detectPitch() {
-        var cycles = new Array()
+        let cycles = new Array()
 
         analyser.getFloatTimeDomainData(buf)
-        var ac = autoCorrelate(buf, AudioSession.ctx.sampleRate)
+        let ac = autoCorrelate(buf, AudioSession.ctx.sampleRate)
         if (ac == -1) {
             pitchConfidence = `vague`
         } else {
             pitchConfidence = `confident`
-
             let pitch = ac
-            var note = noteFromPitch(pitch)
+            let note = noteFromPitch(pitch)
             let pitchName = noteStrings[note % 12]
             detectedPitch = pitchName
             let detune = centsOffFromPitch(pitch, note)
@@ -152,7 +146,6 @@
             }
         }
         rafID = window.requestAnimationFrame(detectPitch)
-        // TODO:
     }
     onMount(() => {
         if (AudioSession.ctx && AudioSession.stream) {
