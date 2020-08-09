@@ -18,6 +18,8 @@
     "dependencies": {
         "jsmidgen": "0.1.5",
         "midi-parser-js": "4.0.4",
-        "sirv-cli": "^0.4.4"
+        "nexusui": "^2.1.5",
+        "sirv-cli": "^0.4.4",
+        "tone": "^14.7.39"
     }
 }
