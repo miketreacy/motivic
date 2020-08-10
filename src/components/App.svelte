@@ -11,6 +11,7 @@
 
     export let view = ''
     export let openSection = ''
+    export let urlQueryMap = {}
 
     const dispatch = createEventDispatcher()
     let motifs = []
@@ -32,7 +33,7 @@
     let scrollPos
     let scrollDown = false
     let scrollUp = true
-    let openItemId = ''
+    let openItemId = urlQueryMap['id'] || ''
 
     /**
      * Updates user data in memory in the global MOTIVIC namespace and in the component waterfall

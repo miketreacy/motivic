@@ -1,6 +1,5 @@
 <script>
-    import { createEventDispatcher } from 'svelte'
-    import { onMount, onDestroy } from 'svelte'
+    import { createEventDispatcher, onMount, onDestroy } from 'svelte'
     import Config from '../Config'
     import MotivicUtils from '../MotivicUtils'
     import {
@@ -126,7 +125,7 @@
         options={Config.audio.voices}
         {displayCompact}
         {disabled}
-        optionIconMap={waveFormIconMap}
+        optionIconMap={Config.waveformIconMap}
         on:updateSelection={selectVoice} />
 
     <button

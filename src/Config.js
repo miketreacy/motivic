@@ -267,7 +267,7 @@ const Config = {
     gridDimensionsMap: {
         small: 300,
         medium: 400,
-        large: 500,
+        large: 800,
     },
     gridLabelSizeMap: {
         small: { width: 20, fontSize: 12, yOffset: -9 },
@@ -488,6 +488,12 @@ const Config = {
             stagger: 0,
             setting_id: 'preset-default',
         },
+    },
+    wavformIconMap: {
+        sawtooth: '&#8961',
+        sine: '&#8767;',
+        square: '&#9633;',
+        triangle: '&#9651;',
     },
 }
 export default Config

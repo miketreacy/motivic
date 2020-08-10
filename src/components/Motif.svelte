@@ -1,6 +1,5 @@
 <script>
-    import { onMount } from 'svelte'
-    import { createEventDispatcher } from 'svelte'
+    import { onMount, createEventDispatcher } from 'svelte'
     import Config from '../Config'
     import MotivicUtils from '../MotivicUtils'
     import AudioControls from './AudioControls.svelte'
@@ -9,6 +8,7 @@
     import ItemName from './ItemName.svelte'
     import MotifSettingsList from './MotifSettingsList.svelte'
     import NoteGrid from './NoteGrid.svelte'
+    import Sequencer from './Sequencer.svelte'
 
     export let motif = null
     export let showNoteGrid = true
@@ -79,9 +79,14 @@
         {/if}
     </div>
     {#if showNoteGrid}
-        <NoteGrid
+        <!-- <NoteGrid
             width={gridWidth}
             height={gridWidth}
+            motifs={[motif]}
+            on:displayToggle
+            on:displayAlert
+            on:displayCrudModal /> -->
+        <Sequencer
             motifs={[motif]}
             on:displayToggle
             on:displayAlert

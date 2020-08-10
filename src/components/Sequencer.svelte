@@ -1,12 +1,21 @@
 <script>
+    import { onMount, createEventDispatcher } from 'svelte'
     import Config from '../Config'
     import Nexus from 'nexusui'
-    import Tone from 'tone'
-    export let columnCount = 32
-    export let rows = []
-    export let motif = null
+    // can't import it this way because of a nested dependency export/import issue
+    // import Tone from 'tone'
+    import DropDown from './DropDown.svelte'
+    export let motifs = []
 
     let sequencer
+    let synth
+    let synthPattern = []
+    let synthPart
+    let selectedVoice = 'square'
+    let selectedVolume = 0
+    let sequencerRows = []
+    let effectState = { reverb: false, delay: false }
+    let effectMap = { reverb: null, delay: null }
     let defaultRows = [
         'B4',
         'A#3',
@@ -21,13 +30,71 @@
         'C#3',
         'C3'
     ]
+    let innerWidth
+    let columnDuration = '16n'
 
-    function init(gridConfig) {
-        sequencer = new Nexus.Sequencer('#sequencer', {
-            columns: numCols,
-            rows: numRows,
-            size: [550, 200]
-        })
+    async function playSequence(e) {
+        let { column, row, state } = e
+        let time = { [columnDuration]: column }
+        let note = sequencerRows[row]
+        if (state) {
+            synthPart.add(time, note)
+        } else {
+            synthPart.remove(time, note)
+        }
+    }
+
+    function getNoteFromGrid(pitch, startBeat, length) {}
+
+    function getMotifFromGrid() {
+        let notes = []
+        let pattern = sequencer.matrix.pattern
+        for (let row = 0; row < pattern.length; row++) {
+            for (let col = 0; col < pattern[row].length; col++) {
+                let pitch = pattern[row][col] ? sequencerRows[row] : null
+                let note = getNoteFromGrid(pitch, col)
+                notes.push(note)
+            }
+        }
+    }
+
+    function init() {
+        effectMap = createEffects()
+        synth = createInstrument()
+        synthPart = createPart(synth)
+        sequencerRows = getRows()
+        let motif = motifs.length ? motifs[0] : null
+        let gridConfig = getGridConfig(motif)
+        sequencer = new Nexus.Sequencer('#sequencer', gridConfig)
+        new Tone.Loop(time => {
+            Tone.Draw.schedule(() => sequencer.next(), time)
+        }, columnDuration).start()
+        sequencer.on('change', playSequence)
+    }
+
+    function createInstrument() {
+        let instrument = new Tone.Synth({ oscillator: { type: selectedVoice } })
+        let filter = new Tone.Filter({ type: 'lowpass', frequency: 2000 })
+        instrument.connect(filter)
+        filter.toDestination()
+        return instrument
+    }
+
+    function createPart(instrument) {
+        let part = new Tone.Part((time, note) => {
+            instrument.triggerAttackRelease(note, '4n', time)
+        }, synthPattern).start()
+        part.loop = true
+        part.loopStart = 0
+        // setting up a 1 measure loop
+        part.loopEnd = '1m'
+        return part
+    }
+
+    function createEffects() {
+        effectMap.delay = new Tone.PingPongDelay('8n.', 0.3)
+        effectMap.reverb = new Tone.Reverb({ decay: 3, wet: 0.5 })
+        return effectMap
     }
 
     function getRows(motif) {
@@ -40,12 +107,26 @@
         // TODO: compute appropriate number of columns for a given motif
         // considering the default column duration (32nd note?),
         // the length of the motif
-        return Config.rhythmicUnit / 2
+        return Config.rhythmicUnit / 4
     }
 
     function getGridSize(motif) {
         // TODO: dynamically compute grid size based on 1) viewport width 2) motif
-        return [550, 200]
+        let gridDim = getGridDimensions()
+        return [gridDim.width, gridDim.height]
+    }
+
+    function getGridDimensions() {
+        let gridSize =
+            innerWidth > 1024 ? 'large' : innerWidth > 768 ? 'medium' : 'small'
+        // return {
+        //     width: Config.gridDimensionsMap[gridSize],
+        //     height: Config.gridDimensionsMap[gridSize] / 2
+        // }
+        return {
+            width: innerWidth - 200,
+            height: (innerWidth - 200) / 2
+        }
     }
 
     /**
@@ -56,7 +137,7 @@
     function getGridConfig(motif = null) {
         return {
             columns: getColumns(motif),
-            rows: getRows(motif),
+            rows: getRows(motif).length,
             size: getGridSize(motif),
             mode: 'toggle'
         }
@@ -70,38 +151,106 @@
         sequencer.on('change', playSequence)
     }
 
-    async function playSequence(e) {
-        console.table(e)
-        // let input = {
-        //     notes: [],
-        //     totalQuantizedSteps: 32,
-        //     quantizationInfo: { stepsPerQuarter: 4 }
-        // }
-        // let pattern = sequencer.matrix.pattern
-        // for (let row = 0; row < pattern.length; row++) {
-        //     for (let col = 0; col < pattern[row].length; col++) {
-        //         if (pattern[row][col]) {
-        //             input.notes.push({
-        //                 quantizedStartStep: col,
-        //                 quantizedEndStep: col + 2,
-        //                 pitch: Tone.Frequency(sequencerRows[row]).toMidi()
-        //             })
-        //         }
-        //     }
-        // }
-        // console.log(input)
+    function scriptLoaded(e) {
+        console.log(`Tone.js loaded!`)
+        console.dir(e)
     }
 
-    onMount(() => {
-        let gridConfig = getGridConfig(motif)
-        init(gridConfig)
-    })
+    function tempoInput(e) {
+        let newBpm = +e.target.value
+        Tone.Transport.bpm.value = newBpm
+    }
 
-    // $: visualize(AudioSession.ctx, AudioSession.stream, canvas)
+    async function startLoop() {
+        await Tone.start()
+        Tone.Transport.start()
+    }
+
+    async function stopLoop() {
+        Tone.Transport.stop()
+    }
+    function selectVoice(event) {
+        selectedVoice = event.detail.selection
+    }
+
+    function volumeInput() {
+        let newVolume = e.target.value
+        selectedVolume = newVolume
+    }
+
+    function toggleReverb() {
+        if (effectState.reverb) {
+            // TODO: figure out how to disconnect the effect
+        } else {
+            synth.connect(effectMap.reverb)
+            effectMap.reverb.toDestination()
+        }
+    }
+
+    function toggleDelay() {
+        if (effectState.delay) {
+            // TODO: figure out how to disconnect the effect
+        } else {
+            synth.connect(effectMap.delay)
+            effectMap.delay.toDestination()
+        }
+    }
 </script>
 
 <style>
+    .controls {
+        align-items: flex-start;
+    }
 
+    button {
+        flex: 1 1 0;
+        margin: 0 5px;
+    }
 </style>
 
+<svelte:head>
+    <!-- Have to import it this way due to a nested dependency mismatch  -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/tone@14.7.39/build/Tone.min.js"
+        on:load={init}>
+
+    </script>
+</svelte:head>
+<svelte:window bind:innerWidth />
+
+<div class="controls">
+    <DropDown
+        id="voice-control"
+        options={Config.audio.voices}
+        displayCompact={false}
+        disabled={false}
+        optionIconMap={Config.waveformIconMap}
+        on:updateSelection={selectVoice} />
+    <label>
+        volume
+        <input
+            id="volume"
+            type="range"
+            min="-50"
+            max="50"
+            value="0"
+            on:input={volumeInput} />
+    </label>
+
+    <label>
+        bpm
+        <input
+            id="bpm"
+            type="range"
+            min="30"
+            max="300"
+            value="120"
+            on:input={tempoInput} />
+    </label>
+    <button id="start" on:click={startLoop}>start</button>
+    <button id="stop" on:click={stopLoop}>stop</button>
+    <button id="reverb" on:click={toggleReverb}>reverb</button>
+    <button id="delay" on:click={toggleDelay}>delay</button>
+
+</div>
 <div id="sequencer" />

@@ -23,7 +23,7 @@
     let sortOrder = 'desc'
     let expandedMotifId = ''
     const defaultShowSectionMap = {
-        motif: '',
+        motif: view === 'motif',
         motifs: false,
         uploader: true,
         randomizer: true,

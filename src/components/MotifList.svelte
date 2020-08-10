@@ -1,6 +1,5 @@
 <script>
-    import { onMount } from 'svelte'
-    import { createEventDispatcher } from 'svelte'
+    import { onMount, createEventDispatcher } from 'svelte'
     import { fade } from 'svelte/transition'
     import Config from '../Config'
     import MotivicUtils from '../MotivicUtils'
@@ -343,8 +342,12 @@
     }
 
     .motif-display {
-        grid-column: 1 / span 5;
-        grid-row: 8 / span 1;
+        grid-column: 3 / span 1;
+        grid-row: 2 / span 1;
+    }
+
+    .motif-display button {
+        font-size: var(--theme_font_size_2);
     }
 
     .motif-created {
@@ -595,11 +598,11 @@
                                 settings={meta} />
                         </div>
 
-                        <!-- disabling motif view for now!!!
-            TODO: enable this later when grid view is ready!
-              <div class="motif-display">
-              <button on:click={e => openMotifView(motifId)}>open</button>
-            </div> -->
+                        <div class="motif-display">
+                            <button on:click={e => openMotifView(motifId)}>
+                                open
+                            </button>
+                        </div>
 
                         {#if !parentId}
                             <div class="download">
