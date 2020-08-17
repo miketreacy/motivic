@@ -48,7 +48,8 @@
         text-overflow: ellipsis;
         justify-content: flex-start;
         text-align: left;
-        max-width: 100%;
+        width: 100%;
+        max-width: calc(var(--max_main_width) - 140px);
     }
     .settings {
         flex-direction: column;

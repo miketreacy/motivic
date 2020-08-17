@@ -33,10 +33,37 @@
     let innerWidth
     let columnDuration = '16n'
 
+    /**
+    The NexusUI sequencer is polyphonic by default, so this hack will ensure that
+    the user can only select one note per column in keeping with the monophony that
+    Motivic currently supports
+    * @param {number} column The matrix index of the selected column
+    * @param {number} row The matrix index of the selected row
+    */
+    function validateMonophony(column, row) {
+        let matrix = sequencer.matrix
+        let pattern = matrix.pattern
+        let allColVals = pattern.map(matrixRow => matrixRow[column])
+        let allSelColVals = allColVals.filter(Boolean)
+        let multiSelected = allSelColVals.length > 1
+        if (multiSelected) {
+            allColVals.forEach((val, rowIdx) => {
+                if (val && rowIdx !== row) {
+                    matrix.toggle.cell(column, rowIdx)
+                }
+            })
+        }
+    }
+
     async function playSequence(e) {
         let { column, row, state } = e
         let time = { [columnDuration]: column }
         let note = sequencerRows[row]
+
+        if (state) {
+            validateMonophony(column, row)
+        }
+
         if (state) {
             synthPart.add(time, note)
         } else {
@@ -117,15 +144,11 @@
     }
 
     function getGridDimensions() {
-        let gridSize =
-            innerWidth > 1024 ? 'large' : innerWidth > 768 ? 'medium' : 'small'
-        // return {
-        //     width: Config.gridDimensionsMap[gridSize],
-        //     height: Config.gridDimensionsMap[gridSize] / 2
-        // }
+        let width = innerWidth * 0.9
+        let height = width / 2
         return {
-            width: innerWidth - 200,
-            height: (innerWidth - 200) / 2
+            width,
+            height
         }
     }
 
@@ -195,6 +218,11 @@
             effectMap.delay.toDestination()
         }
     }
+
+    function resizeSequencer(e) {
+        let { width, height } = getGridDimensions()
+        sequencer.resize(width, height)
+    }
 </script>
 
 <style>
@@ -206,6 +234,9 @@
         flex: 1 1 0;
         margin: 0 5px;
     }
+    #sequencer {
+        margin-top: 10px;
+    }
 </style>
 
 <svelte:head>
@@ -216,7 +247,7 @@
 
     </script>
 </svelte:head>
-<svelte:window bind:innerWidth />
+<svelte:window bind:innerWidth on:resize={resizeSequencer} />
 
 <div class="controls">
     <DropDown
