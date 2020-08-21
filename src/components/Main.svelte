@@ -27,7 +27,8 @@
         motifs: false,
         uploader: true,
         randomizer: true,
-        transformer: true
+        transformer: true,
+        audio: false
     }
     let showSectionMap = Object.assign({}, defaultShowSectionMap)
 
@@ -109,17 +110,13 @@
         <Alert {...alertProps} on:displayAlert={handleDisplayAlert} />
     {/if}
 
-    <!-- audio is an experimental route TODO: put this somewhere else in the future -->
-    {#if view === 'audio'}
-        <div id="tools-wrap" class:closed={openSection === ''}>
-            <AudioInput />
-        </div>
-    {/if}
     {#if view === 'about'}
         <About />
     {/if}
     {#if view === 'home'}
-        <div id="tools-wrap" class:closed={openSection === ''}>
+        <div
+            id="tools-wrap"
+            class:closed={openSection === '' || openSection === 'audio'}>
             {#if showSectionMap.motif && openItemId}
                 <Motif
                     motif={motifs.find(m => m.id === openItemId)}
@@ -197,6 +194,10 @@
                     on:displayToggle
                     on:displayAlert={handleDisplayAlert}
                     on:displayCrudModal />
+            {/if}
+            {#if showSectionMap.audio}
+                <!-- audio is an experimental route TODO: put this somewhere else in the future -->
+                <AudioInput />
             {/if}
         </div>
     {/if}
