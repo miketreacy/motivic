@@ -327,6 +327,11 @@ const MotivicUtils = {
             return result
         },
 
+        /**
+        Transforms the duration of notes to fit a pre-defined grid such as a sequencer        
+         */
+        snapToGrid: function (motif) {},
+
         getNoteInterval: function (note, keySet) {
             return note.name === 'rest'
                 ? null

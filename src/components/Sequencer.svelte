@@ -5,6 +5,7 @@
     // can't import it this way because of a nested dependency export/import issue
     // import Tone from 'tone'
     import DropDown from './DropDown.svelte'
+    import MotivicUtils from '../MotivicUtils'
     export let motifs = []
 
     let sequencer
@@ -56,6 +57,7 @@
     }
 
     async function playSequence(e) {
+        let motif = getMotifFromGrid()
         let { column, row, state } = e
         let time = { [columnDuration]: column }
         let note = sequencerRows[row]
@@ -71,19 +73,86 @@
         }
     }
 
-    function getNoteFromGrid(pitch, startBeat, length) {}
+    function getNoteFromGrid(pitch, colIdx) {
+        let value = null
+        let octave = null
+        let name = ''
+        let pitchName = ''
+        let startingBeat = colIdx * 16
+        // sequencer is set up for each column represents a 16th note.
+        let duration = 16
+        if (!pitch) {
+            // note is rest
+            return {
+                value,
+                duration,
+                name,
+                octave,
+                pitch: pitchName,
+                startingBeat
+            }
+        }
+
+        let pitchArr = pitch.split('')
+        let octaveSplitIdx = pitchArr.findIndex(char => !isNaN(parseInt(char)))
+        octave = parseInt(pitchArr.slice(octaveSplitIdx).join(''))
+        name = pitchArr
+            .slice(0, octaveSplitIdx)
+            .join('')
+            .toLowerCase()
+        pitchName = pitch.toLowerCase()
+        value = MotivicUtils.melody.getNoteValue(name, octave)
+        return {
+            value,
+            duration,
+            name,
+            startingBeat,
+            pitch: pitchName,
+            octave
+        }
+    }
+
+    /**
+    transforms the sequencer matrix pattern from an array of rows to and array of columns
+    */
+    function getColumnarPattern(pattern) {
+        let cols = pattern[0].length
+        let newPattern = new Array(cols)
+        for (let i = 0; i < cols; i++) {
+            newPattern[i] = []
+        }
+        return pattern.reduce((newPattern, row, rowIdx, oldPattern) => {
+            row.forEach((colVal, colIdx) => {
+                newPattern[colIdx][rowIdx] = colVal
+            })
+            return newPattern
+        }, newPattern)
+    }
 
     function getMotifFromGrid() {
         let notes = []
-        let pattern = sequencer.matrix.pattern
-        for (let row = 0; row < pattern.length; row++) {
-            for (let col = 0; col < pattern[row].length; col++) {
-                let pitch = pattern[row][col] ? sequencerRows[row] : null
-                let note = getNoteFromGrid(pitch, col)
+        let pattern = getColumnarPattern(sequencer.matrix.pattern)
+        // column-first iteration
+        for (let col = 0; col < pattern.length; col++) {
+            for (let row = 0; row < pattern[col].length; row++) {
+                let pitch = pattern[col][row] ? sequencerRows[row] : null
+                if (pitch) {
+                    let note = getNoteFromGrid(pitch, col)
+                    notes.push(note)
+                }
+            }
+            if (!pattern[col].some(cell => cell)) {
+                // if the entire column is empty, then add a rest note for that column
+                let note = getNoteFromGrid(null, col)
                 notes.push(note)
             }
         }
+        return notes
     }
+
+    /** parse a motif for display on the sequencer grid
+     */
+    function getGridPatternFromMotif(motif) {}
 
     function init() {
         effectMap = createEffects()
