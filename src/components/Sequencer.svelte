@@ -5,6 +5,7 @@
     // can't import it this way because of a nested dependency export/import issue
     // import Tone from 'tone'
     import DropDown from './DropDown.svelte'
+    import CrudControls from './CrudControls.svelte'
     import MotivicUtils from '../MotivicUtils'
     export let motifs = []
 
@@ -12,9 +13,10 @@
     let synth
     let synthPattern = []
     let synthPart
-    let selectedVoice = 'square'
+    let selectedVoice = 'sine'
     let selectedVolume = 0
     let sequencerRows = []
+    let isPlaying = false
     let effectState = { reverb: false, delay: false }
     let effectMap = { reverb: null, delay: null }
     let defaultRows = [
@@ -64,9 +66,6 @@
 
         if (state) {
             validateMonophony(column, row)
-        }
-
-        if (state) {
             synthPart.add(time, note)
         } else {
             synthPart.remove(time, note)
@@ -156,7 +155,7 @@
 
     function init() {
         effectMap = createEffects()
-        synth = createInstrument()
+        synth = createInstrument(selectedVoice)
         synthPart = createPart(synth)
         sequencerRows = getRows()
         let motif = motifs.length ? motifs[0] : null
@@ -168,8 +167,8 @@
         sequencer.on('change', playSequence)
     }
 
-    function createInstrument() {
-        let instrument = new Tone.Synth({ oscillator: { type: selectedVoice } })
+    function createInstrument(voice) {
+        let instrument = new Tone.Synth({ oscillator: { type: voice } })
         let filter = new Tone.Filter({ type: 'lowpass', frequency: 2000 })
         instrument.connect(filter)
         filter.toDestination()
@@ -261,6 +260,23 @@
     async function stopLoop() {
         Tone.Transport.stop()
     }
+
+    async function toggleLoop() {
+        if (isPlaying) {
+            isPlaying = false
+            stopLoop()
+        } else {
+            isPlaying = true
+            startLoop()
+        }
+    }
+
+    async function resetLoop() {
+        Tone.Transport.stop()
+        let matrix = sequencer.matrix
+        matrix.populate.all(0)
+    }
+
     function selectVoice(event) {
         selectedVoice = event.detail.selection
     }
@@ -272,19 +288,23 @@
 
     function toggleReverb() {
         if (effectState.reverb) {
-            // TODO: figure out how to disconnect the effect
+            synth.disconnect(effectMap.reverb)
+            effectState.reverb = false
         } else {
             synth.connect(effectMap.reverb)
             effectMap.reverb.toDestination()
+            effectState.reverb = true
         }
     }
 
     function toggleDelay() {
         if (effectState.delay) {
-            // TODO: figure out how to disconnect the effect
+            synth.disconnect(effectMap.delay)
+            effectState.delay = false
         } else {
             synth.connect(effectMap.delay)
             effectMap.delay.toDestination()
+            effectState.delay = true
         }
     }
 
@@ -292,11 +312,36 @@
         let { width, height } = getGridDimensions()
         sequencer.resize(width, height)
     }
+
+    $: synth = window.Tone ? createInstrument(selectedVoice) : synth
+    $: synthPart = window.Tone ? createPart(synth) : synthPart
 </script>
 
 <style>
     .controls {
         align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .row {
+        padding: 5px 0;
+    }
+    .transport {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .transport button {
+        width: 20%;
+    }
+    .toggle-field {
+        margin: 0 10px;
+    }
+    .toggle-field label {
+        margin-right: 5px;
+    }
+
+    input {
+        font-size: var(--theme_font_size_1);
     }
 
     button {
@@ -319,38 +364,59 @@
 <svelte:window bind:innerWidth on:resize={resizeSequencer} />
 
 <div class="controls">
-    <DropDown
-        id="voice-control"
-        options={Config.audio.voices}
-        displayCompact={false}
-        disabled={false}
-        optionIconMap={Config.waveformIconMap}
-        on:updateSelection={selectVoice} />
-    <label>
-        volume
-        <input
-            id="volume"
-            type="range"
-            min="-50"
-            max="50"
-            value="0"
-            on:input={volumeInput} />
-    </label>
+    <div class="row">
+        <DropDown
+            id="voice-control"
+            options={Config.audio.voices}
+            displayCompact={false}
+            disabled={false}
+            optionIconMap={Config.waveformIconMap}
+            on:updateSelection={selectVoice} />
+        <div class="toggle-field">
+            <label for="reverb">reverb</label>
+            <input id="reverb" type="checkbox" on:change={toggleReverb} />
+        </div>
+        <div class="toggle-field">
+            <label for="delay">delay</label>
+            <input id="delay" type="checkbox" on:change={toggleDelay} />
+        </div>
+    </div>
 
-    <label>
-        bpm
-        <input
-            id="bpm"
-            type="range"
-            min="30"
-            max="300"
-            value="120"
-            on:input={tempoInput} />
-    </label>
-    <button id="start" on:click={startLoop}>start</button>
-    <button id="stop" on:click={stopLoop}>stop</button>
-    <button id="reverb" on:click={toggleReverb}>reverb</button>
-    <button id="delay" on:click={toggleDelay}>delay</button>
+    <div class="row">
+        <label>
+            volume
+            <input
+                id="volume"
+                type="range"
+                min="-50"
+                max="50"
+                value="0"
+                on:input={volumeInput} />
+        </label>
+
+        <label>
+            bpm
+            <input
+                id="bpm"
+                type="range"
+                min="30"
+                max="300"
+                value="120"
+                on:input={tempoInput} />
+        </label>
+    </div>
+
+    <div class="row transport">
+        <button on:click={toggleLoop}>&#9658;&#10074;&#10074;</button>
+        <button id="clear" on:click={resetLoop}>reset</button>
+        <CrudControls
+            displayIcons={false}
+            displayCompact={true}
+            type="motifs"
+            saveMode="local"
+            selectedItems={[motifs[0]]}
+            on:displayCrudModal />
+    </div>
 
 </div>
 <div id="sequencer" />
