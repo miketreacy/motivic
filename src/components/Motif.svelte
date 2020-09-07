@@ -12,7 +12,8 @@
 
     export let motif = null
     export let showNoteGrid = true
-    let gridWidth
+    const numberOfPitches = 12
+    // let gridWidth
     let innerWidth = 375
 
     function getTransformations(motif) {
@@ -26,14 +27,75 @@
         showNoteGrid = !showNoteGrid
     }
 
-    function getGridWidth(innerWidth) {
-        return innerWidth - 20
+    // function getGridWidth(innerWidth) {
+    //     return innerWidth - 20
+    // }
+
+    function getGridColumnsForMotif() {}
+
+    function getGridRowsForMotif() {}
+
+    function getRows(octaveMap, numberOfPitches) {
+        return (octaveMap.high - octaveMap.low + 1) * numberOfPitches
     }
 
-    onMount(() => {
-        gridWidth = getGridWidth(innerWidth)
-    })
-    $: gridWidth = getGridWidth(innerWidth)
+    function getTotalColumns(viewColumns, horizontalGrids) {
+        return viewColumns * horizontalGrids
+    }
+
+    function getMotifGrids(motif, columns) {
+        let totalDuration = motif.notes.reduce((sum, n) => sum + n.duration, 0)
+        return totalDuration / columns
+    }
+
+    function getMotifColumns(motif) {
+        // TODO: enforce a minimum number of columns
+        // TODO: so motifs don't take too many horizontal grids to display
+        // TODO: enforce a max number of columns relative to viewport width
+        // TODO: so it's usable on small screens
+        // find the smallest possible number of columns to display the motif with
+        return Config.gridDisplayColumns.find(num =>
+            motif.notes.every(
+                n => n.duration % (Config.rhythmicUnit / num) === 0
+            )
+        )
+    }
+
+    function getViewColumns(motif) {
+        if (motif) {
+            return getMotifColumns(motif)
+        }
+        return Config.gridDisplayColumns
+    }
+    function getMotifOctaveMap(melody) {
+        let melodyOctaves = melody.notes
+            .filter(n => typeof n.octave === 'number')
+            .map(n => n.octave)
+        return {
+            low: Math.min(...melodyOctaves),
+            high: Math.max(...melodyOctaves)
+        }
+    }
+
+    function getGridOctaveMap(motif) {
+        if (motif) {
+            return getMotifOctaveMap(motif)
+        } else
+            return {
+                low: Config.gridDisplayOctaveLow,
+                high: Config.gridDisplayOctaveHigh
+            }
+    }
+
+    // onMount(() => {
+    //     gridWidth = getGridWidth(innerWidth)
+    // })
+    // $: gridWidth = getGridWidth(innerWidth)
+    $: gridOctaveMap = getGridOctaveMap(motif)
+    $: viewColumns = getViewColumns(motif)
+    $: horizontalGrids = getMotifGrids(motif, viewColumns)
+    $: totalColumns = getTotalColumns(viewColumns, horizontalGrids)
+    $: rows = getRows(gridOctaveMap, numberOfPitches)
 </script>
 
 <style>
@@ -89,8 +151,17 @@
             on:displayCrudModal /> -->
         <Sequencer
             motifs={[motif]}
+            columns={totalColumns}
+            {rows}
+            lowOctave={gridOctaveMap.low}
+            highOctave={gridOctaveMap.high}
             on:displayToggle
             on:displayAlert
             on:displayCrudModal />
+        <!-- <Sequencer
+            motifs={[]}
+            on:displayToggle
+            on:displayAlert
+            on:displayCrudModal /> -->
     {/if}
 </section>
