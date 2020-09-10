@@ -1,5 +1,5 @@
 <script>
-    import { onMount, createEventDispatcher } from 'svelte'
+    import { onDestroy, createEventDispatcher } from 'svelte'
     import Config from '../Config'
     import Nexus from 'nexusui'
     // can't import it this way because of a nested dependency export/import issue
@@ -7,6 +7,7 @@
     import DropDown from './DropDown.svelte'
     import CrudControls from './CrudControls.svelte'
     import MotivicUtils from '../MotivicUtils'
+    export let open = false
     export let motifs = []
     export let columns = 16
     export let rows = 12
@@ -43,6 +44,7 @@
     let columnDuration = 4
     let columnDurationString = '16n'
     let synthNoteDurationString = '4n'
+    let dependenciesLoaded = false
 
     /**
     Gets the synth note duration relative to the column duration
@@ -200,12 +202,15 @@
     }
 
     function init() {
+        if (!open) {
+            return
+        }
         effectMap = createEffects()
         synth = createInstrument(selectedVoice)
         synthPart = createPart(synth)
         sequencerRows = getPitchRows(motif)
         let gridConfig = getGridConfig(motif)
-        sequencer = new Nexus.Sequencer('#sequencer', gridConfig)
+        sequencer = new Nexus.Sequencer('#sequencer-grid', gridConfig)
         if (motif) {
             let pattern = getGridPatternFromMotif(motif)
             console.info(`motif pattern`)
@@ -439,6 +444,10 @@
     $: synthPart = window.Tone ? createPart(synth) : synthPart
     $: columnDurationString = getColumnDurationString(columnDuration)
     $: synthNoteDurationString = getSynthNoteDurationString(columnDuration)
+    $: console.log(`dependenciesLoaded = ${dependenciesLoaded}`)
+    onDestroy(() => {
+        sequencer.destroy()
+    })
 </script>
 
 <style>
@@ -472,7 +481,7 @@
         flex: 1 1 0;
         margin: 0 5px;
     }
-    #sequencer {
+    #sequencer-grid {
         margin-top: 10px;
     }
 </style>
@@ -487,62 +496,67 @@
 </svelte:head>
 <svelte:window bind:innerWidth on:resize={resizeSequencer} />
 
-<div class="wrap">
-    <div class="controls">
-        <div class="row">
-            <DropDown
-                id="voice-control"
-                options={Config.audio.voices}
-                displayCompact={false}
-                disabled={false}
-                optionIconMap={Config.waveformIconMap}
-                on:updateSelection={selectVoice} />
-            <div class="toggle-field">
-                <label for="reverb">reverb</label>
-                <input id="reverb" type="checkbox" on:change={toggleReverb} />
+{#if open}
+    <div class="wrap">
+        <div class="controls">
+            <div class="row">
+                <DropDown
+                    id="voice-control"
+                    options={Config.audio.voices}
+                    displayCompact={false}
+                    disabled={false}
+                    optionIconMap={Config.waveformIconMap}
+                    on:updateSelection={selectVoice} />
+                <div class="toggle-field">
+                    <label for="reverb">reverb</label>
+                    <input
+                        id="reverb"
+                        type="checkbox"
+                        on:change={toggleReverb} />
+                </div>
+                <div class="toggle-field">
+                    <label for="delay">delay</label>
+                    <input id="delay" type="checkbox" on:change={toggleDelay} />
+                </div>
             </div>
-            <div class="toggle-field">
-                <label for="delay">delay</label>
-                <input id="delay" type="checkbox" on:change={toggleDelay} />
+
+            <div class="row">
+                <label>
+                    volume
+                    <input
+                        id="volume"
+                        type="range"
+                        min="-50"
+                        max="50"
+                        value="0"
+                        on:input={volumeInput} />
+                </label>
+
+                <label>
+                    bpm
+                    <input
+                        id="bpm"
+                        type="range"
+                        min="30"
+                        max="300"
+                        value="120"
+                        on:input={tempoInput} />
+                </label>
             </div>
+
+            <div class="row transport">
+                <button on:click={toggleLoop}>&#9658;&#10074;&#10074;</button>
+                <button id="clear" on:click={resetLoop}>reset</button>
+                <CrudControls
+                    displayIcons={false}
+                    displayCompact={false}
+                    type="motifs"
+                    saveMode="local"
+                    selectedItems={[motifs[0]]}
+                    on:displayCrudModal />
+            </div>
+
         </div>
-
-        <div class="row">
-            <label>
-                volume
-                <input
-                    id="volume"
-                    type="range"
-                    min="-50"
-                    max="50"
-                    value="0"
-                    on:input={volumeInput} />
-            </label>
-
-            <label>
-                bpm
-                <input
-                    id="bpm"
-                    type="range"
-                    min="30"
-                    max="300"
-                    value="120"
-                    on:input={tempoInput} />
-            </label>
-        </div>
-
-        <div class="row transport">
-            <button on:click={toggleLoop}>&#9658;&#10074;&#10074;</button>
-            <button id="clear" on:click={resetLoop}>reset</button>
-            <CrudControls
-                displayIcons={false}
-                displayCompact={true}
-                type="motifs"
-                saveMode="local"
-                selectedItems={[motifs[0]]}
-                on:displayCrudModal />
-        </div>
-
+        <div id="sequencer-grid" />
     </div>
-    <div id="sequencer" />
-</div>
+{/if}

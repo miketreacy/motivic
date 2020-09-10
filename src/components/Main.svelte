@@ -8,6 +8,7 @@
     import SettingsList from './SettingsList.svelte'
     import Motif from './Motif.svelte'
     import AudioInput from './AudioInput.svelte'
+    import SequencerForm from './SequencerForm.svelte'
 
     export let selectedMotifIds = []
     export let allSelected = false
@@ -27,6 +28,7 @@
         motifs: false,
         uploader: true,
         randomizer: true,
+        sequencer: true,
         transformer: true,
         audio: false
     }
@@ -166,6 +168,14 @@
                     on:motifSelection
                     on:displayAlert={handleDisplayAlert}
                     on:downloadFile />
+            {/if}
+            {#if showSectionMap.sequencer}
+                <SequencerForm
+                    formOpen={openSection === 'sequencer'}
+                    motifs={[]}
+                    on:displayToggle
+                    on:displayAlert
+                    on:displayCrudModal />
             {/if}
             {#if showSectionMap.randomizer}
                 <RandomizerForm
