@@ -45,7 +45,7 @@
 
     function getMotifGrids(motif, columns) {
         let totalDuration = motif.notes.reduce((sum, n) => sum + n.duration, 0)
-        return totalDuration / columns
+        return Math.ceil(totalDuration / Config.rhythmicUnit)
     }
 
     function getMotifColumns(motif) {
@@ -150,6 +150,7 @@
             on:displayAlert
             on:displayCrudModal /> -->
         <Sequencer
+            open={showNoteGrid}
             motifs={[motif]}
             columns={totalColumns}
             {rows}

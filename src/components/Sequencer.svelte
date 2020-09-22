@@ -416,6 +416,7 @@
     /** parse a motif for display on the sequencer grid
      */
     function getGridPatternFromMotif(motif) {
+        // TODO: fix this! currently returns a polyphonic motif when passed 'FREAKUENCER'
         let newPattern = new Array(columns)
         for (let i = 0; i < columns; i++) {
             newPattern[i] = new Array(rows).fill(false)

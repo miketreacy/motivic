@@ -24,6 +24,8 @@
 
 <article class="clip">
     <div class="clip-label" on:click={renameFn}>{name}</div>
-    <audio controls="true" src={source} />
+    <audio controls="true" src={source}>
+        <track kind="captions" />
+    </audio>
     <button class="delete" on:click={deleteFn}>delete</button>
 </article>
