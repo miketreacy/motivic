@@ -10,7 +10,8 @@
     import MotifForm from './MotifForm.svelte'
     import Sequencer from './Sequencer.svelte'
     export let formOpen = false
-    export let motifs = []
+    // TODO: support displaying multiple motifs on the sequencer simultaneously
+    // export let motifs = []
 
     const formId = 'sequencer'
     const formTitle = 'Sequencer'

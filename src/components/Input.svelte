@@ -95,7 +95,8 @@
         {id}
         bind:value
         {required}
-        on:change={valueChangeHandler}>
+        on:change={valueChangeHandler}
+        on:blur={valueChangeHandler}>
         {#each options as opt}
             {#if Array.isArray(opt)}
                 <option value={opt[0]}>{opt[1]}</option>

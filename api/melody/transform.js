@@ -41,8 +41,8 @@ function transpose(melody, distance, mode, key) {
 }
 
 /**
- * Warps a melody's contour by multiplying the notes absolute distance from a given base note.
- * If no base note is given, the warp is applied relative to melody's mean or median pitch.
+ * Warps a melody's contour by multiplying the notes absolute distance from a given base pitch.
+ * If no base pitch is given, the warp is applied relative to melody's mean or median pitch.
  * @param {Motif} melody Melody object.
  * @param {number} factor (signed integer OR float)
  * @param {string} baseNote Name of base note
@@ -51,6 +51,14 @@ function transpose(melody, distance, mode, key) {
 //TODO: make sure this is working well with negative factors
 // there may be a weird duration bug happening?
 function warp(melody, factor = 1, baseNote = '', baseOctave = null) {
+    // Param default values will not change melody, so just return it now
+    console.log(
+        `warp called with factor ${factor} and anchorNote ${baseNote} and anchorOctave ${baseOctave}`
+    )
+    if (factor === 1) {
+        console.log(`warp exiting early because factor === 1`)
+        return melody
+    }
     let clone = generalUtils.clone(melody)
     let cloneNotes = clone.notes
     let baseNoteValue = null
@@ -59,12 +67,9 @@ function warp(melody, factor = 1, baseNote = '', baseOctave = null) {
             baseOctave || melodyUtils.getMeanNotePropertyValue(melody, 'octave')
         baseNoteValue = melodyUtils.getNoteValue(baseNote, baseOctave)
     } else {
-        // Param default values will not change melody, so just return it now
-        if (factor === 1) {
-            return melody
-        }
         baseNoteValue = melodyUtils.getMeanNotePropertyValue(melody, 'value')
     }
+    console.log(`baseNoteValue === ${baseNoteValue}`)
     clone.notes = []
     cloneNotes.forEach((note, i) => {
         let isNote = note.value !== null
@@ -231,6 +236,9 @@ function getTransformedMelody(melody = {}, transformations = []) {
     //TODO: only take array of melody.notes as input and disregard extraneous computed/meta properties?
     //TODO: reverse engineer all computed melody properties after melody.notes have been transformed?
     const badRequestError = new RequestError('Invalid request body')
+    console.log(`getTransformedMelody() called with:`)
+    console.info(`melody \n ${melody}`)
+    console.info(`transformations \n ${transformations}`)
     if (melody.notes && melody.notes.length && transformations.length) {
         try {
             return transformations

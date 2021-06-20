@@ -18,6 +18,7 @@
     const formInfo =
         'applies transformations to an existing monophonic melody to produce counterpoint'
     const formCanSubmitDefault = false
+    const compoundTransformationTypes = ['reverse', 'warp']
     let newMotif = null
 
     function getFieldRows(state) {
@@ -102,6 +103,27 @@
             ],
             [
                 {
+                    type: 'number',
+                    id: 'warp_factor_0',
+                    label: 'warp factor',
+                    value: state.warp_factor_0,
+                    step: 1,
+                    min: 1,
+                    max: 4,
+                    info:
+                        "Warp the melodic contour by multiplying each note's relative distance to an anchor pitch by this number"
+                }
+                // {
+                //     type: 'select',
+                //     id: 'warp_anchor_1',
+                //     label: 'warp anchor pitch',
+                //     value: state.warp_anchor_1,
+                //     options: Config.notes,
+                //     info: 'Warp the melodic contour relative to this pitch'
+                // }
+            ],
+            [
+                {
                     type: 'text',
                     id: 'name',
                     label: 'name',
@@ -145,7 +167,16 @@
         newMotif = savedVariationMotif
     }
 
-    function getTransformations(state) {
+    function getCompoundTransformation(transformationMap) {
+        let transformType = transformationMap.type.split('_')[0]
+        let thisMap = { type: transformType, params: [false, false] }
+
+    }
+    
+    
+    // returns a list of objects representing each transformation field key and value if
+    // the value is not the default value
+    function getTransformationParams(state) {
         let list = []
         for (let [key, value] of Object.entries(state)) {
             console.log(`${key}: ${value}`)
@@ -157,7 +188,22 @@
                 list.push(map)
             }
         }
+        return list
+    }
+    
+    function getTransformations(state) {
+        let params = getTransformationParams(state)
+        console.info(`getTransformationParams()`)
+        console.dir(params)
 
+        compoundTransformationTypes.forEach(transType => {
+            let transMaps = params.filter(map => map.type.split('_')[0] === transType)
+            if (transMaps.length) {
+                
+            }
+
+        })
+        
         //TODO: refactor this hot mess 😰
         let reverseMaps = list.filter(
             map => map.type.split('_')[0] === 'reverse'
