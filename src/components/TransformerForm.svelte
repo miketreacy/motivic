@@ -112,15 +112,15 @@
                     max: 4,
                     info:
                         "Warp the melodic contour by multiplying each note's relative distance to an anchor pitch by this number"
-                }
-                // {
-                //     type: 'select',
-                //     id: 'warp_anchor_1',
-                //     label: 'warp anchor pitch',
-                //     value: state.warp_anchor_1,
-                //     options: Config.notes,
-                //     info: 'Warp the melodic contour relative to this pitch'
-                // }
+                },
+                {
+                    type: 'select',
+                    id: 'warp_anchor_1',
+                    label: 'warp anchor pitch',
+                    value: state.warp_anchor_1,
+                    options: ['--none--'].concat(Config.notes),
+                    info: 'Warp the melodic contour relative to this pitch (defaults to the motif\'s average pitch)'
+                    }
             ],
             [
                 {
@@ -176,51 +176,31 @@
     
     // returns a list of objects representing each transformation field key and value if
     // the value is not the default value
-    function getTransformationParams(state) {
+    function getTransformations(state) {
         let list = []
-        for (let [key, value] of Object.entries(state)) {
-            console.log(`${key}: ${value}`)
+        for (let [key, value] of Object.entries(state)) {            
             if (value !== Config.formDefaults.transformer[key]) {
                 let map = { type: key, params: [value] }
+                let keyParts = key.split('_')
+                if (keyParts.length === 3) {
+                    let transKey = keyParts[0]
+                    let argIdx = parseInt(keyParts[2])
+                    let preExistingMaps = list.filter(m => m.type === transKey)
+                    if (preExistingMaps.length) {                        
+                        preExistingMaps[0].params[argIdx] = value
+                        continue
+                        } 
+                    map = { type: transKey, params: [] }                    
+                    map.params[argIdx] = value
+                }
                 if (typeof value === 'boolean') {
                     map.params = []
                 }
                 list.push(map)
             }
-        }
+        }        
         return list
-    }
-    
-    function getTransformations(state) {
-        let params = getTransformationParams(state)
-        console.info(`getTransformationParams()`)
-        console.dir(params)
-
-        compoundTransformationTypes.forEach(transType => {
-            let transMaps = params.filter(map => map.type.split('_')[0] === transType)
-            if (transMaps.length) {
-                
-            }
-
-        })
-        
-        //TODO: refactor this hot mess 😰
-        let reverseMaps = list.filter(
-            map => map.type.split('_')[0] === 'reverse'
-        )
-        if (reverseMaps.length) {
-            let thisMap = { type: 'reverse', params: [false, false] }
-            reverseMaps.forEach(map => {
-                let i = list.findIndex(el => el === map)
-                let [, , valIdx] = map.type.split('_')
-                list.splice(i, 1)
-                thisMap.params[parseInt(valIdx)] = true
-            })
-            list.push(thisMap)
-        }
-        console.log(list)
-        return list
-    }
+    }    
 
     function getRequestBodyFn(state) {
         return { melody: motif, transformations: getTransformations(state) }

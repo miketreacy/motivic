@@ -52,11 +52,7 @@ function transpose(melody, distance, mode, key) {
 // there may be a weird duration bug happening?
 function warp(melody, factor = 1, baseNote = '', baseOctave = null) {
     // Param default values will not change melody, so just return it now
-    console.log(
-        `warp called with factor ${factor} and anchorNote ${baseNote} and anchorOctave ${baseOctave}`
-    )
     if (factor === 1) {
-        console.log(`warp exiting early because factor === 1`)
         return melody
     }
     let clone = generalUtils.clone(melody)
@@ -69,7 +65,6 @@ function warp(melody, factor = 1, baseNote = '', baseOctave = null) {
     } else {
         baseNoteValue = melodyUtils.getMeanNotePropertyValue(melody, 'value')
     }
-    console.log(`baseNoteValue === ${baseNoteValue}`)
     clone.notes = []
     cloneNotes.forEach((note, i) => {
         let isNote = note.value !== null

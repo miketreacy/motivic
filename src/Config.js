@@ -491,7 +491,7 @@ const Config = {
             diminish: 0,
             stagger: 0,
             warp_factor_0: 1,
-            warp_anchor_1: 'c',
+            warp_anchor_1: null,
             setting_id: 'preset-default',
         },
     },
