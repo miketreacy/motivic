@@ -12,6 +12,7 @@
     import Lab from './Lab.svelte'
     export let formOpen = false
     export let motifs = []
+    export let selectedMotifId = ''
 
     const formId = 'lab'
     const formTitle = 'Lab'
@@ -38,6 +39,7 @@
 >
     {#if formOpen}
         <Lab
+            {selectedMotifId}
             open={formOpen}
             {motifs}
             on:displayToggle

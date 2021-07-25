@@ -155,7 +155,8 @@
                 <!-- audio is an experimental route TODO: put this somewhere else in the future -->
                 <LabForm
                     formOpen={openSection === 'lab'}
-                    motifs={[]}
+                    {motifs}
+                    selectedMotifId={motifs.length ? motifs[0].id : ''}
                     on:displayToggle
                     on:displayAlert
                     on:displayCrudModal
