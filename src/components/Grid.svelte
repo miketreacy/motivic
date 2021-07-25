@@ -67,6 +67,7 @@
                 {writable}
                 {audioSession}
                 {dragAndDrop}
+                on:cellDrop
             />
         {/each}
     </g>

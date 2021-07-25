@@ -1,7 +1,6 @@
 <script>
-    import LabBlock from './LabBlock.svelte'
-    import LabTrack from './LabTrack.svelte'
-    import LabLane from './LabLane.svelte'
+    import { labGrid } from '../stores/GridState.js'
+    import LabGrid from './LabGrid.svelte'
     import LabPalette from './LabPalette.svelte'
     import MotifList from './MotifList.svelte'
     import ItemSelector from './ItemSelector.svelte'
@@ -42,9 +41,7 @@
         /> -->
     {/if}
     <LabPalette />
-    <LabBlock />
-    <LabTrack />
-    <LabLane />
+    <LabGrid state={$labGrid} />
 {/if}
 
 <style></style>

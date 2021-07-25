@@ -25,6 +25,7 @@
     export let draggable = false
     const generationLevels = Config.motifGenerationDisplayCount
     const dispatch = createEventDispatcher()
+    const dragStartHandler = MotivicUtils.ui.getDragStartHandler('id')
 
     function toggleOpen(e) {
         console.log(`MotifList.toggleOpen() called listOpen=${listOpen}`)
@@ -260,9 +261,7 @@
                     data-id={motifId}
                     data-saved={saved.local}
                     {draggable}
-                    on:dragstart={draggable
-                        ? MotivicUtils.ui.dragstartHandler
-                        : (e) => false}
+                    on:dragstart={draggable ? dragStartHandler : (e) => false}
                     on:dragend={draggable
                         ? MotivicUtils.ui.dragendHandler
                         : (e) => false}
@@ -674,5 +673,8 @@
     .expanded {
         grid-template-rows: 50px 50px auto auto auto;
         border: 1px solid var(--theme_color_1);
+    }
+    .dragging {
+        border: dashed;
     }
 </style>

@@ -4,6 +4,7 @@
     import Grid from './Grid.svelte'
 
     export let horizontalGrids = 1
+    export let state = {}
     export let motifLengths = 4
     export let voiceLanes = []
 
@@ -19,6 +20,13 @@
         let viewBox = `${x} ${y} ${width} ${height}`
         console.info(`getGridViewBox() ${viewBox}`)
         return viewBox
+    }
+
+    function cellDropHander(event) {
+        const data = event.detail
+        console.info(
+            `cellDropHandler() called! on ${data.type} id: ${data.id} at row: ${data.row} column: ${data.column}`
+        )
     }
 
     onMount(() => {
@@ -42,20 +50,19 @@
     $: voiceLaneNames = voiceLanes.map((l) => l.label)
 </script>
 
-<!-- TODO: build this in SVG -->
-<div class="track">TRACK</div>
 <div id="grid-wrap" style={`width: ${width}px;`}>
     <Grid
         id="svg-grid"
         width={width * horizontalGrids}
         {height}
         {rows}
-        columns={motifLengths + 1}
+        columns={motifLengths}
         viewBox={gridViewBox}
         labelSet={voiceLaneNames}
         dragAndDrop={true}
         writable={true}
         {audioSession}
+        on:cellDrop={cellDropHander}
     />
 </div>
 

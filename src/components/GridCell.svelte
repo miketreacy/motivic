@@ -1,5 +1,5 @@
 <script>
-    import { onMount, onDestroy } from 'svelte'
+    import { onMount, onDestroy, createEventDispatcher } from 'svelte'
     import MotivicUtils from '../MotivicUtils'
     import { newAudioContext, playTone } from '../Audio.js'
     export let defId
@@ -14,6 +14,21 @@
     export let selected = false
     export let audioSession
     export let dragAndDrop = false
+    export let itemId = ''
+
+    const dispatch = createEventDispatcher()
+
+    function handleDrop(dropTargetEl, data) {
+        dispatch('cellDrop', {
+            type: 'motif',
+            id: data,
+            row: row,
+            column: column,
+        })
+    }
+
+    let dragStartHandler = MotivicUtils.ui.getDragStartHandler('id')
+    let dropHandler = MotivicUtils.ui.getDropHandler(handleDrop)
 
     function deSelectCell(el) {
         let tieId = el.dataset.tie_id
@@ -157,6 +172,32 @@
     >
         {content}
     </text>
+{:else if itemId}
+    <g>
+        <use
+            class="cell"
+            class:selected
+            href="#{defId}"
+            x={column * width}
+            y={row * height}
+            data-column={column}
+            draggable={dragAndDrop}
+            on:mousemove={mouseMoveHandler}
+            on:mouseup={mouseUpHandler}
+            on:mousedown={mouseDownHandler}
+            on:dragstart={dragAndDrop ? dragStartHandler : (e) => false}
+            on:dragend={dragAndDrop
+                ? MotivicUtils.ui.dragendHandler
+                : (e) => false}
+            on:dragover={dragAndDrop
+                ? MotivicUtils.ui.dragoverHandler
+                : (e) => false}
+            on:drop={dragAndDrop ? dropHandler : (e) => false}
+        />
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+            >itemId</text
+        >
+    </g>
 {:else}
     <use
         class="cell"
@@ -169,14 +210,12 @@
         on:mousemove={mouseMoveHandler}
         on:mouseup={mouseUpHandler}
         on:mousedown={mouseDownHandler}
-        on:dragstart={dragAndDrop
-            ? MotivicUtils.ui.dragstartHandler
-            : (e) => false}
+        on:dragstart={dragAndDrop ? dragStartHandler : (e) => false}
         on:dragend={dragAndDrop ? MotivicUtils.ui.dragendHandler : (e) => false}
         on:dragover={dragAndDrop
             ? MotivicUtils.ui.dragoverHandler
             : (e) => false}
-        on:drop={dragAndDrop ? MotivicUtils.ui.dropHandler : (e) => false}
+        on:drop={dragAndDrop ? dropHandler : (e) => false}
     />
 {/if}
 
@@ -216,5 +255,13 @@
     [data-key-color='white'] {
         fill: var(--theme_color_1);
         stroke: var(--theme_color_1);
+    }
+
+    .dragging {
+        fill: yellowgreen;
+    }
+
+    .dragOver {
+        stroke: yellow;
     }
 </style>

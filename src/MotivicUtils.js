@@ -1097,43 +1097,36 @@ const MotivicUtils = {
         },
     },
     ui: {
-        dragstartHandler: function (e) {
-            console.log('dragStart')
-            // Change the source element's background color to signify drag has started
-            e.currentTarget.style.border = 'dashed'
-            // Add the id of the drag source element to the drag data payload so
-            // it is available when the drop event is fired
-            e.dataTransfer.setData('text', e.target.id)
-            // Tell the browser both copy and move are possible
-            e.effectAllowed = 'copyMove'
+        getDragStartHandler: function (dataAttribute) {
+            return function dragstartHandler(e) {
+                console.log('dragStart...')
+                e.currentTarget.classList.add('dragging')
+                e.dataTransfer.setData('text', e.target.dataset[dataAttribute])
+                e.dataTransfer.dropEffect = 'link'
+            }
         },
+
         dragoverHandler: function (e) {
             console.log('dragOver')
-            // Change the target element's border to signify a drag over event
-            // has occurred
-            e.currentTarget.style.background = 'lightblue'
+            e.dataTransfer.effectAllowed = 'link'
+            e.dataTransfer.dropEffect = 'link'
+            e.currentTarget.classList.add('dragover')
             e.preventDefault()
         },
-        dropHandler: function (e) {
-            console.log('Drop')
-            e.preventDefault()
-            // Get the id of drag source element (that was added to the drag data
-            // payload by the dragstart event handler)
-            var id = e.dataTransfer.getData('text')
-            // Only Move the element if the source and destination ids are both "move"
-            if (id == 'src_move' && e.target.id == 'dest_move')
-                e.target.appendChild(document.getElementById(id))
-            // Copy the element if the source and destination ids are both "copy"
-            if (id == 'src_copy' && e.target.id == 'dest_copy') {
-                var nodeCopy = document.getElementById(id).cloneNode(true)
-                nodeCopy.id = 'newId'
-                e.target.appendChild(nodeCopy)
+
+        getDropHandler: function (callBack) {
+            return function dropHandler(e) {
+                console.log('drop')
+                e.preventDefault()
+                e.dataTransfer.effectAllowed = 'link'
+                e.currentTarget.classList.remove('dragover')
+                const data = e.dataTransfer.getData('text')
+                callBack(e.target, data)
             }
         },
         dragendHandler: function (e) {
             console.log('dragEnd')
-            // Restore source's border
-            e.target.style.border = 'solid black'
+            e.currentTarget.classList.remove('dragging')
             // Remove all of the drag data
             e.dataTransfer.clearData()
         },
