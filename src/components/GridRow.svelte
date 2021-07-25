@@ -13,6 +13,7 @@
     export let selections = []
     export let writable
     export let audioSession
+    export let dragAndDrop = false
 
     function getCellColor() {
         return note.name[note.name.length - 1] === '#' ? 'black' : 'white'
@@ -20,22 +21,20 @@
 
     function isCellSelected(column, row, selections) {
         let selected = selections.some(
-            coords => coords.length && coords[0] === column && coords[1] === row
+            (coords) =>
+                coords.length && coords[0] === column && coords[1] === row
         )
         return selected
     }
 </script>
-
-<style>
-
-</style>
 
 <g
     class="row"
     {id}
     data-row={row}
     data-note-name={`${note.name}${note.octave}`}
-    data-note-value={note.value}>
+    data-note-value={note.value}
+>
     {#each MotivicUtils.general.range(columns, 1) as col}
         <GridCell
             {defId}
@@ -49,6 +48,11 @@
             {fontSize}
             selected={isCellSelected(col, row, selections)}
             {writable}
-            {audioSession} />
+            {audioSession}
+            {dragAndDrop}
+        />
     {/each}
 </g>
+
+<style>
+</style>

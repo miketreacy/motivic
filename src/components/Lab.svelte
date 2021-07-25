@@ -15,22 +15,23 @@
 </script>
 
 {#if open}
-    <!-- <MotifList
-        id="motifs"
-        title="My Motifs"
-        listOpen={motifListOpen}
-        {motifs}
-        parentId=""
-        viewType="flat"
-        on:listViewChange
-        on:displayToggle
-        on:displayCrudModal
-        on:motifSelection
-        on:displayAlert
-        on:downloadFile
-    /> -->
     {#if motifs.length}
-        <ItemSelector
+        <MotifList
+            id="motifs"
+            title="My Motifs"
+            listOpen={motifListOpen}
+            {motifs}
+            parentId=""
+            viewType="flat"
+            draggable="true"
+            on:listViewChange
+            on:displayToggle
+            on:displayCrudModal
+            on:motifSelection
+            on:displayAlert
+            on:downloadFile
+        />
+        <!-- <ItemSelector
             {formId}
             itemGroups={[{ type: 'motif', label: 'motifs', items: motifs }]}
             itemType="motifs"
@@ -38,7 +39,7 @@
             defaultSelection={null}
             on:itemSelection
             on:displayAlert
-        />
+        /> -->
     {/if}
     <LabPalette />
     <LabBlock />

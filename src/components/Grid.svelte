@@ -11,6 +11,7 @@
     export let selections = [[]]
     export let writable = true
     export let audioSession
+    export let dragAndDrop = false
 
     let defId = 'cell'
     let fontSize
@@ -24,12 +25,12 @@
     const gridDimensionsMap = {
         small: 300,
         medium: 400,
-        large: 500
+        large: 500,
     }
     const gridLabelSizeMap = {
         small: { width: 20, fontSize: 12, yOffset: -9 },
         medium: { width: 30, fontSize: 15, yOffset: -13 },
-        large: { width: 40, fontSize: 20, yOffset: -17 }
+        large: { width: 40, fontSize: 20, yOffset: -17 },
     }
     let innerWidth
 
@@ -45,13 +46,6 @@
     $: cellHeight = getCellDimension(height, rows)
     $: fontSize = getFontSize(height)
 </script>
-
-<style>
-    .grid {
-        display: flex;
-        flex: 0 0 auto;
-    }
-</style>
 
 <svelte:window bind:innerWidth />
 
@@ -71,7 +65,16 @@
                 {selections}
                 {fontSize}
                 {writable}
-                {audioSession} />
+                {audioSession}
+                {dragAndDrop}
+            />
         {/each}
     </g>
 </svg>
+
+<style>
+    .grid {
+        display: flex;
+        flex: 0 0 auto;
+    }
+</style>

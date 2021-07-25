@@ -22,6 +22,7 @@
     export let expandedMotifId
     export let scrollDown = false
     export let fileDownloading = false
+    export let draggable = false
     const generationLevels = Config.motifGenerationDisplayCount
     const dispatch = createEventDispatcher()
 
@@ -41,11 +42,11 @@
     function motifSelection(e) {
         let selectAll = e.target.id === 'select-all'
         let add = e.target.checked
-        let newIds = selectAll ? motifs.map(m => m.id) : [e.target.value]
+        let newIds = selectAll ? motifs.map((m) => m.id) : [e.target.value]
         dispatch('motifSelection', {
             existingIds: selectedMotifIds,
             newIds,
-            add
+            add,
         })
     }
 
@@ -59,7 +60,7 @@
             viewType,
             sortType,
             sortOrder,
-            expandedMotifId
+            expandedMotifId,
         })
     }
 
@@ -67,8 +68,8 @@
         let add = e.target.checked
         let themeId = e.target.dataset.motifId
         let childVariationIds = motifs
-            .filter(m => m.parentId === themeId)
-            .map(m => m.id)
+            .filter((m) => m.parentId === themeId)
+            .map((m) => m.id)
 
         selectedMotifIds = updateSelectedMotifIds(childVariationIds, add)
     }
@@ -77,26 +78,28 @@
         if (add) {
             return MotivicUtils.general.unique([
                 ...selectedMotifIds,
-                ...motifIds
+                ...motifIds,
             ])
         } else {
-            return selectedMotifIds.filter(id => !motifIds.includes(id))
+            return selectedMotifIds.filter((id) => !motifIds.includes(id))
         }
     }
 
     function allVariationsAreSelected(themeId) {
         let childVariationIds = motifs
-            .filter(m => m.parentId === themeId)
-            .map(m => m.id)
+            .filter((m) => m.parentId === themeId)
+            .map((m) => m.id)
         if (selectedMotifIds.length && childVariationIds.length) {
-            return childVariationIds.every(id => selectedMotifIds.includes(id))
+            return childVariationIds.every((id) =>
+                selectedMotifIds.includes(id)
+            )
         } else {
             return false
         }
     }
 
     function getMotifVariations(motifId) {
-        return motifs.filter(m => m.parentId === motifId)
+        return motifs.filter((m) => m.parentId === motifId)
     }
 
     function motifVariationCount(motifId) {
@@ -105,7 +108,7 @@
 
     function updateSelectedMotifs(ids) {
         console.log(`updateSelectedMotifs()called with ids: ${ids.join(',')}`)
-        return ids.map(id => motifs.find(m => m.id === id))
+        return ids.map((id) => motifs.find((m) => m.id === id))
     }
 
     function displayMotif(motif) {
@@ -120,7 +123,7 @@
             } else {
                 // this is the root list - display any motifs without parents
                 let parentExists = motif.parentId
-                    ? motifs.some(m => m.id === motif.parentId)
+                    ? motifs.some((m) => m.id === motif.parentId)
                     : false
                 display = !parentExists
             }
@@ -131,7 +134,7 @@
     function motifSorter(key, order) {
         console.info(`motifSorter(${key}, ${order})`)
         if (key === 'created') {
-            return MotivicUtils.general.objectKeySorterNum(key, order, ts =>
+            return MotivicUtils.general.objectKeySorterNum(key, order, (ts) =>
                 new Date(ts).getTime()
             )
         } else {
@@ -141,8 +144,8 @@
     }
 
     function dispatchDisplayModal(event) {
-        let motif = motifs.find(m => m.id === event.target.dataset.motifId)
-        let motifChildren = motifs.filter(m => m.parentId === motif.id)
+        let motif = motifs.find((m) => m.id === event.target.dataset.motifId)
+        let motifChildren = motifs.filter((m) => m.parentId === motif.id)
         dispatch('displayCrudModal', {
             modalProps: {
                 show: true,
@@ -150,8 +153,8 @@
                 item: motif,
                 itemChildren: motifChildren,
                 formType: event.target.dataset.action,
-                actionComplete: false
-            }
+                actionComplete: false,
+            },
         })
     }
 
@@ -169,13 +172,230 @@
     $: selectedMotifs = updateSelectedMotifs(selectedMotifIds)
     $: console.log(`selectedMotifIds = [${selectedMotifIds.join(',')}]`)
     $: console.log(`viewType = ${viewType}`)
-    $: console.log(`allMotifIds = [${motifs.map(m => m.id).join(',')}]`)
+    $: console.log(`allMotifIds = [${motifs.map((m) => m.id).join(',')}]`)
     $: {
         console.log(`selectedMotifs changed`)
         console.dir(selectedMotifs)
     }
     $: dispatchListViewChange(viewType, sortType, sortOrder, expandedMotifId)
 </script>
+
+<section
+    {id}
+    class="motifs"
+    class:nested={Boolean(parentId)}
+    class:scrolldown={scrollDown}
+    data-closed={!listOpen}
+    in:fade
+>
+    {#if listOpen && motifs.length}
+        <h2 on:click={toggleOpen}>{title} ({motifs.length})</h2>
+        {#if !parentId}
+            <section class="motif-controls">
+                <AudioControls {selectedMotifs} on:displayAlert />
+            </section>
+            {#if motifs.length > 1}
+                <div class="list-controls">
+                    <div class="select-all">
+                        <input
+                            type="checkbox"
+                            id="select-all"
+                            on:click|self|stopPropagation={motifSelection}
+                        />
+                        <label for="select-all">all</label>
+                    </div>
+                    {#if motifs.some((m) => m.parentId)}
+                        <!-- only display if there are variations to nest -->
+                        <div class="list-view">
+                            <!-- <span>list view:</span> -->
+                            <input
+                                type="radio"
+                                name="list-view"
+                                id="list-view-flat"
+                                value="flat"
+                                checked={viewType == 'flat'}
+                                bind:group={viewType}
+                            />
+                            <label for="list-view-flat">flat</label>
+                            <input
+                                type="radio"
+                                name="list-view"
+                                id="list-view-nested"
+                                value="nested"
+                                checked={viewType == 'nested'}
+                                bind:group={viewType}
+                            />
+                            <label for="list-view-nested">nested</label>
+                        </div>
+                    {/if}
+                    <div class="list-sort">
+                        <select bind:value={sortType}>
+                            {#each Config.motifSorts as sort}
+                                <option value={sort}>{sort}</option>
+                            {/each}
+                        </select>
+                        <button class="sort-order" on:click={toggleSortOrder}>
+                            {#if sortOrder === 'asc'}
+                                <span class="asc">&#8679;</span>
+                            {:else}
+                                <span class="desc">&#8681;</span>
+                            {/if}
+                        </button>
+                    </div>
+                </div>
+            {/if}
+        {/if}
+        <ul
+            class="motif-list item-list"
+            data-type="motifs"
+            data-view-type={viewType}
+        >
+            {#each motifs
+                .filter(displayMotif)
+                .sort(motifSorter(sortType, sortOrder)) as { id: motifId, name, created, meta, parentId: motifParentId, notes, saved, transformations }}
+                <li
+                    class="motif"
+                    class:expanded={expandedMotifId === motifId}
+                    id="motif_{motifId}"
+                    data-id={motifId}
+                    data-saved={saved.local}
+                    {draggable}
+                    on:dragstart={draggable
+                        ? MotivicUtils.ui.dragstartHandler
+                        : (e) => false}
+                    on:dragend={draggable
+                        ? MotivicUtils.ui.dragendHandler
+                        : (e) => false}
+                >
+                    <div class="selection">
+                        <label class="select-theme">
+                            <input
+                                class="select"
+                                type="checkbox"
+                                on:click|self|stopPropagation={motifSelection}
+                                value={motifId}
+                                checked={selectedMotifIds.includes(motifId)}
+                            />
+                        </label>
+                        <!-- TODO: commenting this out for now because things have gotten too crowded -->
+                        <!-- TODO: maybe move motif crud operation back to the batch edit multi-selector? -->
+                        <!-- {#if viewType === 'nested' && motifVariationCount(motifId) > 1}
+                            <label class="select-all-variations">
+                                <input
+                                    class="select-all-variations"
+                                    type="checkbox"
+                                    data-motif-id={motifId}
+                                    on:click|self|stopPropagation={toggleAllVariations}
+                                    checked={allVariationsAreSelected(motifId)} />
+                                <span>all variations</span>
+                            </label>
+                        {/if} -->
+                    </div>
+                    <div
+                        class="name-wrap"
+                        data-motif-id={motifId}
+                        on:click|stopPropagation={expandMotif}
+                    >
+                        <ItemName
+                            itemType="motifs"
+                            item={motifs.find((m) => m.id === motifId)}
+                            on:click
+                            on:displayCrudModal
+                        />
+                    </div>
+
+                    {#if saved.local}
+                        <span class="saved">saved</span>
+                    {:else}
+                        <button
+                            class="save"
+                            data-action="save"
+                            data-motif-id={motifId}
+                            on:click|self={dispatchDisplayModal}
+                            disabled={motifs.filter((m) => m.saved.local)
+                                .length >=
+                                Config.userData.savedItemLimit[
+                                    Config.userData.motifType
+                                ]}
+                        >
+                            save
+                        </button>
+                    {/if}
+                    <button
+                        class="delete"
+                        data-action="delete"
+                        data-motif-id={motifId}
+                        on:click|self={dispatchDisplayModal}
+                    >
+                        &#9747;
+                    </button>
+                    <div class="motif-created">
+                        {MotivicUtils.general.dateDisplay(new Date(created))}
+                    </div>
+                    {#if expandedMotifId === motifId}
+                        <!-- TODO: assign uploaded motifs tempo, length, timeSignature, etc so I can expect all these props to exist -->
+                        <div class="motif-settings">
+                            <MotifSettingsList
+                                title="settings"
+                                settings={meta}
+                            />
+                        </div>
+
+                        <div class="motif-display">
+                            <button on:click={(e) => openMotifView(motifId)}>
+                                open
+                            </button>
+                        </div>
+
+                        {#if !parentId}
+                            <div class="download">
+                                <DownloadControls
+                                    loading={fileDownloading}
+                                    selectedMotifs={[
+                                        motifs.find((m) => m.id === motifId),
+                                    ]}
+                                    on:downloadFile
+                                />
+                            </div>
+                        {/if}
+                        {#if transformations && transformations.length}
+                            <div class="transformations">
+                                <MotifSettingsList
+                                    title="transformations"
+                                    settings={transformations.reduce(
+                                        (map, { type, params }) => {
+                                            map[type] = params.join(', ')
+                                            return map
+                                        },
+                                        {}
+                                    )}
+                                />
+                            </div>
+                        {/if}
+                        {#if viewType === 'nested' && motifVariationCount(motifId)}
+                            <svelte:self
+                                id={`${motifId}_variations`}
+                                title="variations"
+                                {listOpen}
+                                {viewType}
+                                {sortType}
+                                {sortOrder}
+                                motifs={getMotifVariations(motifId)}
+                                parentId={motifId}
+                                {expandedMotifId}
+                                {selectedMotifIds}
+                                {allSelected}
+                                on:displayToggle
+                                on:displayCrudModal
+                                on:motifSelection
+                            />
+                        {/if}
+                    {/if}
+                </li>
+            {/each}
+        </ul>
+    {/if}
+</section>
 
 <style>
     h2 {
@@ -456,195 +676,3 @@
         border: 1px solid var(--theme_color_1);
     }
 </style>
-
-<section
-    {id}
-    class="motifs"
-    class:nested={Boolean(parentId)}
-    class:scrolldown={scrollDown}
-    data-closed={!listOpen}
-    in:fade>
-
-    {#if listOpen && motifs.length}
-        <h2 on:click={toggleOpen}>{title} ({motifs.length})</h2>
-        {#if !parentId}
-            <section class="motif-controls">
-                <AudioControls {selectedMotifs} on:displayAlert />
-            </section>
-            {#if motifs.length > 1}
-                <div class="list-controls">
-                    <div class="select-all">
-                        <input
-                            type="checkbox"
-                            id="select-all"
-                            on:click|self|stopPropagation={motifSelection} />
-                        <label for="select-all">all</label>
-                    </div>
-                    {#if motifs.some(m => m.parentId)}
-                        <!-- only display if there are variations to nest -->
-                        <div class="list-view">
-                            <!-- <span>list view:</span> -->
-                            <input
-                                type="radio"
-                                name="list-view"
-                                id="list-view-flat"
-                                value="flat"
-                                checked={viewType == 'flat'}
-                                bind:group={viewType} />
-                            <label for="list-view-flat">flat</label>
-                            <input
-                                type="radio"
-                                name="list-view"
-                                id="list-view-nested"
-                                value="nested"
-                                checked={viewType == 'nested'}
-                                bind:group={viewType} />
-                            <label for="list-view-nested">nested</label>
-                        </div>
-                    {/if}
-                    <div class="list-sort">
-                        <select bind:value={sortType}>
-                            {#each Config.motifSorts as sort}
-                                <option value={sort}>{sort}</option>
-                            {/each}
-                        </select>
-                        <button class="sort-order" on:click={toggleSortOrder}>
-                            {#if sortOrder === 'asc'}
-                                <span class="asc">&#8679;</span>
-                            {:else}
-                                <span class="desc">&#8681;</span>
-                            {/if}
-                        </button>
-                    </div>
-                </div>
-            {/if}
-        {/if}
-        <ul
-            class="motif-list item-list"
-            data-type="motifs"
-            data-view-type={viewType}>
-            {#each motifs
-                .filter(displayMotif)
-                .sort(
-                    motifSorter(sortType, sortOrder)
-                ) as { id: motifId, name, created, meta, parentId: motifParentId, notes, saved, transformations }}
-                <li
-                    class="motif"
-                    class:expanded={expandedMotifId === motifId}
-                    id="motif_{motifId}"
-                    data-id={motifId}
-                    data-saved={saved.local}>
-                    <div class="selection">
-                        <label class="select-theme">
-                            <input
-                                class="select"
-                                type="checkbox"
-                                on:click|self|stopPropagation={motifSelection}
-                                value={motifId}
-                                checked={selectedMotifIds.includes(motifId)} />
-                        </label>
-                        <!-- TODO: commenting this out for now because things have gotten too crowded -->
-                        <!-- TODO: maybe move motif crud operation back to the batch edit multi-selector? -->
-                        <!-- {#if viewType === 'nested' && motifVariationCount(motifId) > 1}
-                            <label class="select-all-variations">
-                                <input
-                                    class="select-all-variations"
-                                    type="checkbox"
-                                    data-motif-id={motifId}
-                                    on:click|self|stopPropagation={toggleAllVariations}
-                                    checked={allVariationsAreSelected(motifId)} />
-                                <span>all variations</span>
-                            </label>
-                        {/if} -->
-                    </div>
-                    <div
-                        class="name-wrap"
-                        data-motif-id={motifId}
-                        on:click|stopPropagation={expandMotif}>
-                        <ItemName
-                            itemType="motifs"
-                            item={motifs.find(m => m.id === motifId)}
-                            on:click
-                            on:displayCrudModal />
-                    </div>
-
-                    {#if saved.local}
-                        <span class="saved">saved</span>
-                    {:else}
-                        <button
-                            class="save"
-                            data-action="save"
-                            data-motif-id={motifId}
-                            on:click|self={dispatchDisplayModal}
-                            disabled={motifs.filter(m => m.saved.local).length >= Config.userData.savedItemLimit[Config.userData.motifType]}>
-                            save
-                        </button>
-                    {/if}
-                    <button
-                        class="delete"
-                        data-action="delete"
-                        data-motif-id={motifId}
-                        on:click|self={dispatchDisplayModal}>
-                        &#9747;
-                    </button>
-                    <div class="motif-created">
-                        {MotivicUtils.general.dateDisplay(new Date(created))}
-                    </div>
-                    {#if expandedMotifId === motifId}
-                        <!-- TODO: assign uploaded motifs tempo, length, timeSignature, etc so I can expect all these props to exist -->
-                        <div class="motif-settings">
-                            <MotifSettingsList
-                                title="settings"
-                                settings={meta} />
-                        </div>
-
-                        <div class="motif-display">
-                            <button on:click={e => openMotifView(motifId)}>
-                                open
-                            </button>
-                        </div>
-
-                        {#if !parentId}
-                            <div class="download">
-                                <DownloadControls
-                                    loading={fileDownloading}
-                                    selectedMotifs={[motifs.find(m => m.id === motifId)]}
-                                    on:downloadFile />
-                            </div>
-                        {/if}
-                        {#if transformations && transformations.length}
-                            <div class="transformations">
-                                <MotifSettingsList
-                                    title="transformations"
-                                    settings={transformations.reduce(
-                                        (map, { type, params }) => {
-                                            map[type] = params.join(', ')
-                                            return map
-                                        },
-                                        {}
-                                    )} />
-                            </div>
-                        {/if}
-                        {#if viewType === 'nested' && motifVariationCount(motifId)}
-                            <svelte:self
-                                id={`${motifId}_variations`}
-                                title="variations"
-                                {listOpen}
-                                {viewType}
-                                {sortType}
-                                {sortOrder}
-                                motifs={getMotifVariations(motifId)}
-                                parentId={motifId}
-                                {expandedMotifId}
-                                {selectedMotifIds}
-                                {allSelected}
-                                on:displayToggle
-                                on:displayCrudModal
-                                on:motifSelection />
-                        {/if}
-                    {/if}
-                </li>
-            {/each}
-        </ul>
-    {/if}
-</section>

@@ -13,6 +13,7 @@
     export let fontSize
     export let selected = false
     export let audioSession
+    export let dragAndDrop = false
 
     function deSelectCell(el) {
         let tieId = el.dataset.tie_id
@@ -50,7 +51,7 @@
                 el.classList.remove('tie-candidate')
                 console.info(`Cell Tied! column ${el.dataset.column}`)
                 if (els.length > 1) {
-                    let preTiedEl = [...els].find(el => el.dataset.tie_id)
+                    let preTiedEl = [...els].find((el) => el.dataset.tie_id)
                     let tieId = preTiedEl ? preTiedEl.dataset.tie_id : randomId
                     el.setAttribute('data-tie_id', tieId)
                 }
@@ -73,7 +74,7 @@
             playNote({
                 name: note.slice(0, note.length - 1),
                 octave: note.slice(note.length - 1, note.length),
-                duration: 4
+                duration: 4,
             })
         }
     }
@@ -84,7 +85,7 @@
             let colCells = document.querySelectorAll(
                 `.selected[data-column="${cellCol}"]`
             )
-            colCells.forEach(cell => {
+            colCells.forEach((cell) => {
                 if (cell !== cellEl) {
                     deSelectCell(cell)
                 }
@@ -143,6 +144,42 @@
     $: disabled = !audioSession.ctx
 </script>
 
+{#if label}
+    <text
+        class="label"
+        data-key-color={cellColor}
+        {width}
+        {height}
+        x={column * width}
+        y={row * height}
+        dy={fontSize}
+        font-size={fontSize}
+    >
+        {content}
+    </text>
+{:else}
+    <use
+        class="cell"
+        class:selected
+        href="#{defId}"
+        x={column * width}
+        y={row * height}
+        data-column={column}
+        draggable={dragAndDrop}
+        on:mousemove={mouseMoveHandler}
+        on:mouseup={mouseUpHandler}
+        on:mousedown={mouseDownHandler}
+        on:dragstart={dragAndDrop
+            ? MotivicUtils.ui.dragstartHandler
+            : (e) => false}
+        on:dragend={dragAndDrop ? MotivicUtils.ui.dragendHandler : (e) => false}
+        on:dragover={dragAndDrop
+            ? MotivicUtils.ui.dragoverHandler
+            : (e) => false}
+        on:drop={dragAndDrop ? MotivicUtils.ui.dropHandler : (e) => false}
+    />
+{/if}
+
 <style>
     .label {
         stroke: var(--theme_color_3);
@@ -181,28 +218,3 @@
         stroke: var(--theme_color_1);
     }
 </style>
-
-{#if label}
-    <text
-        class="label"
-        data-key-color={cellColor}
-        {width}
-        {height}
-        x={column * width}
-        y={row * height}
-        dy={fontSize}
-        font-size={fontSize}>
-        {content}
-    </text>
-{:else}
-    <use
-        class="cell"
-        class:selected
-        href="#{defId}"
-        x={column * width}
-        y={row * height}
-        data-column={column}
-        on:mousemove={mouseMoveHandler}
-        on:mouseup={mouseUpHandler}
-        on:mousedown={mouseDownHandler} />
-{/if}
