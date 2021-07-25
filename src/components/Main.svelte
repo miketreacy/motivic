@@ -9,6 +9,7 @@
     import Motif from './Motif.svelte'
     import AudioInput from './AudioInput.svelte'
     import SequencerForm from './SequencerForm.svelte'
+    import LabForm from './LabForm.svelte'
 
     export let selectedMotifIds = []
     export let allSelected = false
@@ -30,7 +31,8 @@
         randomizer: true,
         sequencer: true,
         transformer: true,
-        audio: false
+        audio: false,
+        lab: true,
     }
     let showSectionMap = Object.assign({}, defaultShowSectionMap)
 
@@ -42,7 +44,7 @@
         displayTimeMs: 0,
         dismissable: false,
         top: 0,
-        displayLabel: true
+        displayLabel: true,
     }
 
     function updateDisplayState(openSection, openItemId) {
@@ -83,6 +85,130 @@
         openSection === 'motifs' && !motifs.length ? '' : openSection
 </script>
 
+<main>
+    {#if displayAlert}
+        <Alert {...alertProps} on:displayAlert={handleDisplayAlert} />
+    {/if}
+
+    {#if view === 'about'}
+        <About />
+    {/if}
+    {#if view === 'home'}
+        <div
+            id="tools-wrap"
+            class:closed={openSection === '' || openSection === 'audio'}
+        >
+            {#if showSectionMap.motif && openItemId}
+                <Motif
+                    motif={motifs.find((m) => m.id === openItemId)}
+                    on:displayToggle
+                    on:displayAlert={handleDisplayAlert}
+                    on:displayCrudModal
+                />
+            {/if}
+            {#if showSectionMap.motifs}
+                <MotifList
+                    id="motifs"
+                    title="My Motifs"
+                    listOpen={openSection === 'motifs'}
+                    {motifs}
+                    {selectedMotifIds}
+                    {allSelected}
+                    parentId=""
+                    {viewType}
+                    {sortType}
+                    {sortOrder}
+                    {expandedMotifId}
+                    {scrollDown}
+                    {fileDownloading}
+                    on:listViewChange={handleListViewChange}
+                    on:displayToggle
+                    on:displayCrudModal
+                    on:motifSelection
+                    on:displayAlert={handleDisplayAlert}
+                    on:downloadFile
+                />
+            {/if}
+            {#if showSectionMap.settings}
+                <SettingsList
+                    id="settings"
+                    title="My Settings"
+                    listOpen={openSection === 'settings'}
+                    {motifs}
+                    {selectedMotifIds}
+                    {allSelected}
+                    {viewType}
+                    {sortType}
+                    {sortOrder}
+                    {expandedMotifId}
+                    {scrollDown}
+                    {fileDownloading}
+                    on:listViewChange={handleListViewChange}
+                    on:displayToggle
+                    on:displayCrudModal
+                    on:motifSelection
+                    on:displayAlert={handleDisplayAlert}
+                    on:downloadFile
+                />
+            {/if}
+            {#if showSectionMap.lab}
+                <!-- audio is an experimental route TODO: put this somewhere else in the future -->
+                <LabForm
+                    formOpen={openSection === 'lab'}
+                    motifs={[]}
+                    on:displayToggle
+                    on:displayAlert
+                    on:displayCrudModal
+                />
+            {/if}
+            {#if showSectionMap.sequencer}
+                <SequencerForm
+                    formOpen={openSection === 'sequencer'}
+                    motifs={[]}
+                    on:displayToggle
+                    on:displayAlert
+                    on:displayCrudModal
+                />
+            {/if}
+            {#if showSectionMap.randomizer}
+                <RandomizerForm
+                    formOpen={openSection === 'randomizer'}
+                    {motifs}
+                    {settings}
+                    {scrollDown}
+                    on:displayToggle
+                    on:displayAlert={handleDisplayAlert}
+                    on:displayCrudModal
+                />
+            {/if}
+            {#if showSectionMap.uploader}
+                <UploaderForm
+                    formOpen={openSection === 'uploader'}
+                    on:displayToggle
+                    on:displayAlert={handleDisplayAlert}
+                    on:displayCrudModal
+                />
+            {/if}
+            {#if showSectionMap.transformer && motifs.length}
+                <TransformerForm
+                    formOpen={openSection === 'transformer'}
+                    {motifs}
+                    {settings}
+                    {scrollDown}
+                    selectedMotifId={motifs.length ? motifs[0].id : ''}
+                    on:displayToggle
+                    on:displayAlert={handleDisplayAlert}
+                    on:displayCrudModal
+                />
+            {/if}
+            {#if showSectionMap.audio}
+                <!-- audio is an experimental route TODO: put this somewhere else in the future -->
+                <AudioInput />
+            {/if}
+        </div>
+    {/if}
+</main>
+
 <style>
     main {
         display: flex;
@@ -106,109 +232,3 @@
         padding: 20px;
     }
 </style>
-
-<main>
-    {#if displayAlert}
-        <Alert {...alertProps} on:displayAlert={handleDisplayAlert} />
-    {/if}
-
-    {#if view === 'about'}
-        <About />
-    {/if}
-    {#if view === 'home'}
-        <div
-            id="tools-wrap"
-            class:closed={openSection === '' || openSection === 'audio'}>
-            {#if showSectionMap.motif && openItemId}
-                <Motif
-                    motif={motifs.find(m => m.id === openItemId)}
-                    on:displayToggle
-                    on:displayAlert={handleDisplayAlert}
-                    on:displayCrudModal />
-            {/if}
-            {#if showSectionMap.motifs}
-                <MotifList
-                    id="motifs"
-                    title="My Motifs"
-                    listOpen={openSection === 'motifs'}
-                    {motifs}
-                    {selectedMotifIds}
-                    {allSelected}
-                    parentId=""
-                    {viewType}
-                    {sortType}
-                    {sortOrder}
-                    {expandedMotifId}
-                    {scrollDown}
-                    {fileDownloading}
-                    on:listViewChange={handleListViewChange}
-                    on:displayToggle
-                    on:displayCrudModal
-                    on:motifSelection
-                    on:displayAlert={handleDisplayAlert}
-                    on:downloadFile />
-            {/if}
-            {#if showSectionMap.settings}
-                <SettingsList
-                    id="settings"
-                    title="My Settings"
-                    listOpen={openSection === 'settings'}
-                    {motifs}
-                    {selectedMotifIds}
-                    {allSelected}
-                    {viewType}
-                    {sortType}
-                    {sortOrder}
-                    {expandedMotifId}
-                    {scrollDown}
-                    {fileDownloading}
-                    on:listViewChange={handleListViewChange}
-                    on:displayToggle
-                    on:displayCrudModal
-                    on:motifSelection
-                    on:displayAlert={handleDisplayAlert}
-                    on:downloadFile />
-            {/if}
-            {#if showSectionMap.sequencer}
-                <SequencerForm
-                    formOpen={openSection === 'sequencer'}
-                    motifs={[]}
-                    on:displayToggle
-                    on:displayAlert
-                    on:displayCrudModal />
-            {/if}
-            {#if showSectionMap.randomizer}
-                <RandomizerForm
-                    formOpen={openSection === 'randomizer'}
-                    {motifs}
-                    {settings}
-                    {scrollDown}
-                    on:displayToggle
-                    on:displayAlert={handleDisplayAlert}
-                    on:displayCrudModal />
-            {/if}
-            {#if showSectionMap.uploader}
-                <UploaderForm
-                    formOpen={openSection === 'uploader'}
-                    on:displayToggle
-                    on:displayAlert={handleDisplayAlert}
-                    on:displayCrudModal />
-            {/if}
-            {#if showSectionMap.transformer && motifs.length}
-                <TransformerForm
-                    formOpen={openSection === 'transformer'}
-                    {motifs}
-                    {settings}
-                    {scrollDown}
-                    selectedMotifId={motifs.length ? motifs[0].id : ''}
-                    on:displayToggle
-                    on:displayAlert={handleDisplayAlert}
-                    on:displayCrudModal />
-            {/if}
-            {#if showSectionMap.audio}
-                <!-- audio is an experimental route TODO: put this somewhere else in the future -->
-                <AudioInput />
-            {/if}
-        </div>
-    {/if}
-</main>
