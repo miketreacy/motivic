@@ -15,13 +15,20 @@
     export let audioSession
     export let dragAndDrop = false
     export let itemId = ''
+    // values are ['simple', 'compound']
+    // compound means it is a cell WITH text
+    // simple means it is either a cell OR text
+    export let type = 'simple'
+    // a state object for the cell
+    export let state = {}
+    export let stateUpdaterFn = (state) => state
 
     const dispatch = createEventDispatcher()
 
-    function handleDrop(dropTargetEl, data) {
-        dispatch('cellDrop', {
+    function handleDrop(dropTargetEl, motifId) {
+        dispatch('cellChange', {
             type: 'motif',
-            id: data,
+            id: motifId,
             row: row,
             column: column,
         })
@@ -159,20 +166,43 @@
     $: disabled = !audioSession.ctx
 </script>
 
-{#if label}
-    <text
-        class="label"
-        data-key-color={cellColor}
-        {width}
-        {height}
-        x={column * width}
-        y={row * height}
-        dy={fontSize}
-        font-size={fontSize}
-    >
-        {content}
-    </text>
-{:else if itemId}
+{#if type === 'simple'}
+    {#if label}
+        <text
+            class="label"
+            data-key-color={cellColor}
+            {width}
+            {height}
+            x={column * width}
+            y={row * height}
+            dy={fontSize}
+            font-size={fontSize}
+        >
+            {content}
+        </text>
+    {:else}
+        <use
+            class="cell"
+            class:selected
+            href="#{defId}"
+            x={column * width}
+            y={row * height}
+            data-column={column}
+            draggable={dragAndDrop}
+            on:mousemove={mouseMoveHandler}
+            on:mouseup={mouseUpHandler}
+            on:mousedown={mouseDownHandler}
+            on:dragstart={dragAndDrop ? dragStartHandler : (e) => false}
+            on:dragend={dragAndDrop
+                ? MotivicUtils.ui.dragendHandler
+                : (e) => false}
+            on:dragover={dragAndDrop
+                ? MotivicUtils.ui.dragoverHandler
+                : (e) => false}
+            on:drop={dragAndDrop ? dropHandler : (e) => false}
+        />
+    {/if}
+{:else}
     <g>
         <use
             class="cell"
@@ -195,28 +225,9 @@
             on:drop={dragAndDrop ? dropHandler : (e) => false}
         />
         <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
-            >itemId</text
+            >{content}</text
         >
     </g>
-{:else}
-    <use
-        class="cell"
-        class:selected
-        href="#{defId}"
-        x={column * width}
-        y={row * height}
-        data-column={column}
-        draggable={dragAndDrop}
-        on:mousemove={mouseMoveHandler}
-        on:mouseup={mouseUpHandler}
-        on:mousedown={mouseDownHandler}
-        on:dragstart={dragAndDrop ? dragStartHandler : (e) => false}
-        on:dragend={dragAndDrop ? MotivicUtils.ui.dragendHandler : (e) => false}
-        on:dragover={dragAndDrop
-            ? MotivicUtils.ui.dragoverHandler
-            : (e) => false}
-        on:drop={dragAndDrop ? dropHandler : (e) => false}
-    />
 {/if}
 
 <style>

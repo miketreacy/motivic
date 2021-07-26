@@ -11,6 +11,15 @@
 
     const formId = 'lab'
     let motifListOpen = true
+    let numMotifLengthsToDisplayInRow = 4
+
+    function cellChangeHander(event) {
+        const data = event.detail
+        console.info(
+            `cellChangeHandler() called! on ${data.type} id: ${data.id} at row: ${data.row} column: ${data.column}`
+        )
+        labGrid.updateGridCell(data.row, data.column, data.id)
+    }
 </script>
 
 {#if open}
@@ -41,7 +50,11 @@
         /> -->
     {/if}
     <LabPalette />
-    <LabGrid state={$labGrid} />
+    <LabGrid
+        state={$labGrid}
+        stateUpdaterFn={labGrid.updateGrid}
+        on:cellChange={cellChangeHander}
+    />
 {/if}
 
 <style></style>

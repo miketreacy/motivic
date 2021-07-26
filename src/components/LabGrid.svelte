@@ -4,14 +4,16 @@
     import Grid from './Grid.svelte'
 
     export let horizontalGrids = 1
-    export let state = {}
+    export let state = { matrix: [] }
     export let motifLengths = 4
-    export let voiceLanes = []
+    export let stateUpdaterFn = (state) => state
 
     let audioSession = { ctx: null, isPlaying: false, timeoutIDs: [] }
     let width = 800
     let height = 50
     let viewColumns = horizontalGrids * motifLengths
+    // number of rows in grid state matrix
+    let voiceLanes = state.matrix.length
     let rows = Math.max(voiceLanes.length, 1)
 
     function getGridViewBox(width, height, columns, rows, horizontalGrids) {
@@ -20,13 +22,6 @@
         let viewBox = `${x} ${y} ${width} ${height}`
         console.info(`getGridViewBox() ${viewBox}`)
         return viewBox
-    }
-
-    function cellDropHander(event) {
-        const data = event.detail
-        console.info(
-            `cellDropHandler() called! on ${data.type} id: ${data.id} at row: ${data.row} column: ${data.column}`
-        )
     }
 
     onMount(() => {
@@ -52,17 +47,21 @@
 
 <div id="grid-wrap" style={`width: ${width}px;`}>
     <Grid
+        {state}
+        {stateUpdaterFn}
+        itemType="motif"
+        cellType="compound"
         id="svg-grid"
         width={width * horizontalGrids}
         {height}
         {rows}
-        columns={motifLengths}
+        columns={motifLengths + 1}
         viewBox={gridViewBox}
         labelSet={voiceLaneNames}
         dragAndDrop={true}
         writable={true}
         {audioSession}
-        on:cellDrop={cellDropHander}
+        on:cellChange
     />
 </div>
 

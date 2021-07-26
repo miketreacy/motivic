@@ -12,6 +12,11 @@
     export let writable = true
     export let audioSession
     export let dragAndDrop = false
+    export let cellType = 'simple'
+    export let itemType = 'note'
+    // grid state object with matrix property for holding array of row state arrays
+    export let state = { matrix: [] }
+    export let stateUpdaterFn = (state) => state
 
     let defId = 'cell'
     let fontSize
@@ -56,6 +61,10 @@
     <g {id}>
         {#each MotivicUtils.general.range(rows, 1) as row, idx}
             <GridRow
+                state={state[idx]}
+                {stateUpdaterFn}
+                {itemType}
+                {cellType}
                 {defId}
                 {row}
                 {columns}
@@ -67,7 +76,7 @@
                 {writable}
                 {audioSession}
                 {dragAndDrop}
-                on:cellDrop
+                on:cellChange
             />
         {/each}
     </g>
