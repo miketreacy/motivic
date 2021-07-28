@@ -28,7 +28,15 @@ function cellStateUpdateFn(
     }
 }
 
-function gridRowAdderUpdateFn(columns) {
+/**
+ * Updates the number of matrix rows in state.
+ * If the new number of rows is greater than the existing matrix,
+ * new default rows are populated to satisfy the desired number of rows.
+ * @param {Number} numRows Number of desired rows in new grid state matrix
+ * @param {Boolean} addRows Should the function add rows? (Will remove rows if false)
+ * @returns {Function} stateReducer that gets passed old state
+ */
+function rowUpdateFn(numRows, addRows = true) {
     /**
      * Closes over outer diff state map and returns the new computed state
      * @param {Object} oldState Old state object
@@ -38,7 +46,19 @@ function gridRowAdderUpdateFn(columns) {
         let oldStateClone = JSON.parse(JSON.stringify(oldState))
         // if there's no key specified, then the whole state is changing (like when a preset is selected)
         // TODO: update state.matrix to add an empty row
-        return stateFilterFn(xIndex, yIndex, cellValue, oldStateClone)
+        let oldMatrix = oldStateClone.matrix
+        let matrixColumnCount = oldMatrix[0].length
+        let oldMatrixRowCount = oldMatrix.length
+        let newNumRows = addRows
+            ? oldMatrixRowCount + numRows
+            : oldMatrixRowCount - numRows
+        let newRows = Array(newNumRows).fill(Array(matrixColumnCount).fill({}))
+        let newMatrix = newRows.reduce((matrix, row, idx, arr) => {
+            let newRow = oldMatrix[idx] || row
+            matrix.push(newRow)
+            return matrix
+        }, [])
+        return newMatrix
     }
 }
 
@@ -56,7 +76,7 @@ function gridStateStoreFactory(
     return {
         subscribe,
         unsubscribe,
-        updateGridCell: (xIndex, yIndex, value) => {
+        updateCell: (xIndex, yIndex, value) => {
             const stateReducer = cellStateUpdateFn(
                 xIndex,
                 yIndex,
@@ -65,8 +85,12 @@ function gridStateStoreFactory(
             )
             update(stateReducer)
         },
-        addRow: (columns) => {
-            const stateReducer = gridRowAdderUpdateFn(columns)
+        addRows: (rowsToAdd) => {
+            const stateReducer = rowUpdateFn(rowsToAdd, true)
+            update(stateReducer)
+        },
+        removeRows: (rowsToRemove) => {
+            const stateReducer = rowUpdateFn(rowsToRemove, false)
             update(stateReducer)
         },
         resetGrid: () => set(initialState),
