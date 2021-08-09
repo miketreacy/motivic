@@ -1,5 +1,5 @@
 <script>
-    import { labGrid } from '../stores/GridState.js'
+    import { labGrid, initLabGrid } from '../stores/GridState.js'
     import LabGrid from './LabGrid.svelte'
     import LabPalette from './LabPalette.svelte'
     import MotifList from './MotifList.svelte'
@@ -7,18 +7,32 @@
 
     export let open = false
     export let motifs = []
-    export let selectedMotifId = ''
 
     const formId = 'lab'
     let motifListOpen = true
     let numMotifLengthsToDisplayInRow = 4
+    // $labGrid = initLabGrid()
 
     function cellChangeHander(event) {
         const data = event.detail
         console.info(
             `cellChangeHandler() called! on ${data.type} id: ${data.id} at row: ${data.row} column: ${data.column}`
         )
-        labGrid.updateGridCell(data.row, data.column, data.id)
+        labGrid.updateCell(data.row, data.column, data.id)
+    }
+
+    function laneChangeHandler(event) {
+        const { add, lanes } = event.data
+        console.info(
+            `laneChangeHandler() called to ${
+                add ? 'add' : 'remove'
+            } ${lanes} lane${lanes > 1 ? 's' : ''}`
+        )
+        if (add) {
+            labGrid.addRows(lanes)
+        } else {
+            labGrid.removeRows(lanes)
+        }
     }
 </script>
 
@@ -52,7 +66,7 @@
     <LabPalette />
     <LabGrid
         state={$labGrid}
-        stateUpdaterFn={labGrid.updateGrid}
+        stateUpdaterFn={labGrid.updateCell}
         on:cellChange={cellChangeHander}
     />
 {/if}

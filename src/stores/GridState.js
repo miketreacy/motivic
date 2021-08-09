@@ -58,7 +58,7 @@ function rowUpdateFn(numRows, addRows = true) {
             matrix.push(newRow)
             return matrix
         }, [])
-        return newMatrix
+        return { matrix: newMatrix }
     }
 }
 
@@ -70,7 +70,7 @@ function rowUpdateFn(numRows, addRows = true) {
  */
 function gridStateStoreFactory(
     initialState = { matrix: [] },
-    stateFilterFn = Function.prototype
+    cellStateFilterFn = Function.prototype
 ) {
     const { subscribe, unsubscribe, update, set } = writable(initialState)
     return {
@@ -81,7 +81,7 @@ function gridStateStoreFactory(
                 xIndex,
                 yIndex,
                 value,
-                stateFilterFn
+                cellStateFilterFn
             )
             update(stateReducer)
         },
@@ -97,7 +97,7 @@ function gridStateStoreFactory(
     }
 }
 
-function labGridStateFilterFn(xIndex, yIndex, cellValue, oldStateClone) {
+function labGridCellStateFilterFn(xIndex, yIndex, cellValue, oldStateClone) {
     oldStateClone.matrix[xIndex][yIndex] = cellValue
     return oldStateClone
 }
@@ -105,11 +105,11 @@ function labGridStateFilterFn(xIndex, yIndex, cellValue, oldStateClone) {
 // stores the state of the lab grid selection matrix
 export const labGrid = gridStateStoreFactory(
     { matrix: [] },
-    labGridStateFilterFn
+    labGridCellStateFilterFn
 )
 
 export function initLabGrid(rows, columns) {
     const initialMatrix = Array(rows).fill(Array(columns).fill({}))
     const initialState = { matrix: initialMatrix }
-    return gridStateStoreFactory(initialState, labGridStateFilterFn)
+    return gridStateStoreFactory(initialState, labGridCellStateFilterFn)
 }

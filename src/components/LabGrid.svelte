@@ -1,5 +1,6 @@
 <script>
     import { onMount, onDestroy } from 'svelte'
+    import { initLabGrid } from '../stores/GridState.js'
     import { newAudioContext } from '../Audio.js'
     import Grid from './Grid.svelte'
 
@@ -12,6 +13,8 @@
     let width = 800
     let height = 50
     let viewColumns = horizontalGrids * motifLengths
+    // number of columns in grid state matrix
+    let columns = motifLengths + 1
     // number of rows in grid state matrix
     let voiceLanes = state.matrix.length
     let rows = Math.max(voiceLanes.length, 1)
@@ -55,7 +58,7 @@
         width={width * horizontalGrids}
         {height}
         {rows}
-        columns={motifLengths + 1}
+        {columns}
         viewBox={gridViewBox}
         labelSet={voiceLaneNames}
         dragAndDrop={true}
