@@ -640,9 +640,7 @@ const MotivicUtils = {
             },
 
             download: function (motifs = []) {
-                let a = doc.createElement('a')
                 let file = new Midi.File()
-
                 motifs.forEach((m) => file.addTrack(this.getTrack(m)))
                 let name = motifs[0].name
                 MotivicUtils.file.processDownload('midi', name, file, false)
@@ -739,7 +737,7 @@ const MotivicUtils = {
                 downloadURL = window.URL.createObjectURL(data)
             } else {
                 downloadURL =
-                    `'data:audio/${fileType};base64,` + win.btoa(data.toBytes())
+                    `data:audio/${fileType};base64,` + win.btoa(data.toBytes())
             }
 
             let a = doc.createElement('a')

@@ -7,8 +7,9 @@
     import DropDown from './DropDown.svelte'
 
     export let selectedMotifs = []
-    export let loading
+    export let loading = false
 
+    console.info(`DownloadControls.loading = ${loading}`)
     let fileType = 'wav'
     let selectedVoice
     let displayVoiceSelector
@@ -19,7 +20,7 @@
         sawtooth: '&#8961',
         sine: '&#8767;',
         square: '&#9633;',
-        triangle: '&#9651;'
+        triangle: '&#9651;',
     }
 
     function downloadFile(e) {
@@ -27,7 +28,7 @@
             type: fileType,
             progress: 0,
             items: selectedMotifs,
-            voice: selectedVoice
+            voice: selectedVoice,
         })
     }
     function selectVoice(event) {
@@ -39,6 +40,45 @@
 
     $: displayVoiceSelector = fileType === 'wav'
 </script>
+
+<div
+    class="download-controls"
+    class:disabled={loading}
+    class:sub-menu={displayVoiceSelector}
+>
+    <!-- <select bind:value={fileType}>
+        {#each Config.downloadFileTypes as fileType}
+            <option>{fileType}</option>
+        {/each}
+    </select> -->
+    <DropDown
+        id="file-type"
+        options={Config.downloadFileTypes}
+        displayCompact={true}
+        displayVeryCompact={displayVoiceSelector}
+        disabled={false}
+        multiDim={false}
+        on:updateSelection={selectFileType}
+    />
+    {#if displayVoiceSelector}
+        <DropDown
+            id="voice-control"
+            options={Config.audio.voices}
+            displayCompact={true}
+            displayVeryCompact={displayVoiceSelector}
+            disabled={false}
+            optionIconMap={waveFormIconMap}
+            on:updateSelection={selectVoice}
+        />
+    {/if}
+    <button disabled={loading} on:click={downloadFile}>
+        {#if loading}
+            <div class="spinner" transition:fade class:disabled={loading} />
+        {:else}
+            <span>&#8681;</span>
+        {/if}
+    </button>
+</div>
 
 <style>
     div {
@@ -60,39 +100,3 @@
         max-width: 45px;
     }
 </style>
-
-<div
-    class="download-controls"
-    class:disabled={loading}
-    class:sub-menu={displayVoiceSelector}>
-    <!-- <select bind:value={fileType}>
-        {#each Config.downloadFileTypes as fileType}
-            <option>{fileType}</option>
-        {/each}
-    </select> -->
-    <DropDown
-        id="file-type"
-        options={Config.downloadFileTypes}
-        displayCompact={true}
-        displayVeryCompact={displayVoiceSelector}
-        disabled={false}
-        multiDim={false}
-        on:updateSelection={selectFileType} />
-    {#if displayVoiceSelector}
-        <DropDown
-            id="voice-control"
-            options={Config.audio.voices}
-            displayCompact={true}
-            displayVeryCompact={displayVoiceSelector}
-            disabled={false}
-            optionIconMap={waveFormIconMap}
-            on:updateSelection={selectVoice} />
-    {/if}
-    <button disabled={loading} on:click={downloadFile}>
-        {#if loading}
-            <div class="spinner" transition:fade class:disabled={loading} />
-        {:else}
-            <span>&#8681;</span>
-        {/if}
-    </button>
-</div>
