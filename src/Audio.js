@@ -84,14 +84,23 @@ export function playTone(
     )
 
     if (note.name !== 'rest') {
+        let startTime = timeLine
+        let stopTime = timeLine + playLength
         let o = ctx.createOscillator()
         o.type = voice
         o.frequency.value = _getFrequency(note.name, note.octave)
-        o.start(timeLine)
-        o.stop(timeLine + playLength)
+        o.start(startTime)
+        o.stop(stopTime)
         o.connect(ctx.destination)
         // TODO: either get the midi output scheduled with the audio or set it up as a separate loop
-        sendMIDINote(midiOutput, note, playLength)
+        sendMIDINote(
+            midiOutput,
+            note,
+            startTime * 1000,
+            stopTime * 1000,
+
+            ctx
+        )
     }
 
     return (timeLine += playLength)

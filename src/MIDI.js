@@ -6,20 +6,20 @@ const NOTE_ON = 144
 const NOTE_OFF = 128
 const VELOCITY = 100
 
-export function sendMIDINote(output, note, durationSeconds) {
-    console.info(output.send.toString())
-    // TODO: convert Motif.note to:
-    // 1. MIDI note on message
-    // 2. MIDI note off message
-    let pitch = note.value + 11
-    let noteOnMessage = [NOTE_ON, pitch, VELOCITY]
-    let noteOffMessage = [NOTE_OFF, pitch, VELOCITY]
-
-    // TODO: convert the duration to milliseconds
-    let durationMilliseconds = durationSeconds * 1000
-    let delay = window.performance.now() + durationMilliseconds
-    output.send(noteOnMessage)
-    output.send(noteOffMessage, delay)
+export function sendMIDINote(output, note, startTime, stopTime, audioCtx) {
+    const pitch = note.value + 11
+    const channel = 1
+    const noteOnMessage = [NOTE_ON, pitch, VELOCITY]
+    const noteOffMessage = [NOTE_OFF, pitch, VELOCITY]
+    const now = window.performance.now()
+    console.info(
+        `sendMIDINote() now = ${now}\tstartTime = ${startTime}\tstopTime = ${stopTime}`
+    )
+    const timingOffset = now - audioCtx.currentTime * 1000
+    startTime = startTime + timingOffset
+    stopTime = stopTime + timingOffset
+    output.send(noteOnMessage, startTime)
+    output.send(noteOffMessage, stopTime)
 }
 
 export async function getMIDIAccess() {
