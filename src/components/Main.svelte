@@ -10,6 +10,7 @@
     import AudioInput from './AudioInput.svelte'
     import SequencerForm from './SequencerForm.svelte'
     import LabForm from './LabForm.svelte'
+    import MidiOutputControls from './MIDIOutputControls.svelte'
 
     export let selectedMotifIds = []
     export let allSelected = false
@@ -20,6 +21,7 @@
     export let settings = []
     export let scrollDown = false
     export let fileDownloading = false
+    export let midiOutput = null
     let viewType = 'flat'
     let sortType = 'created'
     let sortOrder = 'desc'
@@ -33,6 +35,7 @@
         transformer: true,
         audio: false,
         lab: true,
+        midi: false,
     }
     let showSectionMap = Object.assign({}, defaultShowSectionMap)
 
@@ -98,6 +101,12 @@
             id="tools-wrap"
             class:closed={openSection === '' || openSection === 'audio'}
         >
+            {#if showSectionMap.midi}
+                <MidiOutputControls
+                    connectedOutput={midiOutput}
+                    on:midiOutputConnection
+                />
+            {/if}
             {#if showSectionMap.motif && openItemId}
                 <Motif
                     motif={motifs.find((m) => m.id === openItemId)}
@@ -121,6 +130,7 @@
                     {expandedMotifId}
                     {scrollDown}
                     {fileDownloading}
+                    {midiOutput}
                     on:listViewChange={handleListViewChange}
                     on:displayToggle
                     on:displayCrudModal
@@ -177,6 +187,7 @@
                     {motifs}
                     {settings}
                     {scrollDown}
+                    {midiOutput}
                     on:displayToggle
                     on:displayAlert={handleDisplayAlert}
                     on:displayCrudModal
@@ -196,6 +207,7 @@
                     {motifs}
                     {settings}
                     {scrollDown}
+                    {midiOutput}
                     selectedMotifId={motifs.length ? motifs[0].id : ''}
                     on:displayToggle
                     on:displayAlert={handleDisplayAlert}

@@ -9,13 +9,14 @@
     export let motifs = []
     export let settings = []
     export let scrollDown = false
+    export let midiOutput = null
 
     const {
         notes,
         modes,
         timeSignatureBeats,
         timeSignatureUnits,
-        noteDurations
+        noteDurations,
     } = Config
     const formId = 'randomizer'
     const formTitle = 'Randomizer'
@@ -26,7 +27,7 @@
     let newMotif = null
     const leapRangeConfig = {
         min: { min: 0, max: 11 },
-        max: { min: 2, max: 48 }
+        max: { min: 2, max: 48 },
     }
     // some state is local to this form and updated in stateFilterFn()
     const submitOptions = Config.api.operations.randomizer
@@ -42,7 +43,7 @@
         let minMax = Math.min(leapRangeConfig.min.max, maxMax - 6)
         let range = {
             min: { min: 0, max: minMax },
-            max: { min: minMax + 2, max: maxMax }
+            max: { min: minMax + 2, max: maxMax },
         }
         return range
     }
@@ -57,7 +58,7 @@
                     label: 'key',
                     value: state.key,
                     options: notes,
-                    info: 'The tonic of the melody'
+                    info: 'The tonic of the melody',
                 },
                 {
                     type: 'select',
@@ -65,8 +66,8 @@
                     label: 'mode',
                     value: state.mode,
                     options: Object.keys(modes),
-                    info: 'The sequence of intervals that comprise the scale'
-                }
+                    info: 'The sequence of intervals that comprise the scale',
+                },
             ],
             [
                 {
@@ -78,7 +79,7 @@
                     min: 0,
                     max: 8,
                     info: 'Uses piano octaves (Scientific Pitch Notation)',
-                    rowLayout
+                    rowLayout,
                 },
                 {
                     type: 'number',
@@ -89,8 +90,8 @@
                     min: 0,
                     max: 8,
                     info: 'Uses piano octaves (Scientific Pitch Notation)',
-                    rowLayout
-                }
+                    rowLayout,
+                },
             ],
             [
                 {
@@ -101,9 +102,8 @@
                     step: 1,
                     min: leapRange.min.min,
                     max: leapRange.min.max,
-                    info:
-                        'Minimum leap (in half-steps) between two consecutive notes',
-                    rowLayout
+                    info: 'Minimum leap (in half-steps) between two consecutive notes',
+                    rowLayout,
                 },
                 {
                     type: 'number',
@@ -113,10 +113,9 @@
                     step: 1,
                     min: leapRange.max.min,
                     max: leapRange.max.max,
-                    info:
-                        'Maximum leap (in half-steps) between two consecutive notes',
-                    rowLayout
-                }
+                    info: 'Maximum leap (in half-steps) between two consecutive notes',
+                    rowLayout,
+                },
             ],
             [
                 {
@@ -126,7 +125,7 @@
                     value: state.duration_min,
                     options: noteDurations,
                     info: 'Minimum note length',
-                    rowLayout
+                    rowLayout,
                 },
                 {
                     type: 'select',
@@ -135,8 +134,8 @@
                     value: state.duration_max,
                     options: noteDurations,
                     info: 'Maximum note length',
-                    rowLayout
-                }
+                    rowLayout,
+                },
             ],
             [
                 {
@@ -146,7 +145,7 @@
                     value: state.timeSignature_beat_0,
                     options: timeSignatureBeats,
                     info: 'Beats per measure',
-                    rowLayout
+                    rowLayout,
                 },
                 {
                     type: 'select',
@@ -154,16 +153,15 @@
                     label: 'time signature unit',
                     value: state.timeSignature_unit_1,
                     options: timeSignatureUnits,
-                    info:
-                        'Which note duration gets one beat (4 = quarter note, etc)',
-                    rowLayout
-                }
+                    info: 'Which note duration gets one beat (4 = quarter note, etc)',
+                    rowLayout,
+                },
             ],
             [
                 {
                     type: 'hidden',
                     id: 'tempo_type',
-                    value: 'bpm'
+                    value: 'bpm',
                 },
                 {
                     type: 'number',
@@ -173,14 +171,14 @@
                     step: 1,
                     min: 60,
                     max: 240,
-                    roughIncrement: 10
-                }
+                    roughIncrement: 10,
+                },
             ],
             [
                 {
                     type: 'hidden',
                     id: 'length_type',
-                    value: 'measures'
+                    value: 'measures',
                 },
                 {
                     type: 'number',
@@ -189,9 +187,9 @@
                     value: state.length_units,
                     step: 1,
                     min: 1,
-                    max: 8
-                }
-            ]
+                    max: 8,
+                },
+            ],
         ]
     }
 
@@ -234,7 +232,7 @@
             message: success ? `New random motif created!` : msg,
             displayTimeMs: 1000,
             dismissable: false,
-            top: 58
+            top: 58,
         })
         newMotif = createdMotif
     }
@@ -246,15 +244,11 @@
         responseCallbackFn,
         submitOptions,
         getRequestBodyFn,
-        formCanSubmitDefault
+        formCanSubmitDefault,
     }
     $: fieldRows = getFieldRows($randomizer)
     $: selectedSettingId = $randomizer.setting_id
 </script>
-
-<style>
-
-</style>
 
 <MotifForm
     {...staticProps}
@@ -266,9 +260,14 @@
     {formOpen}
     {newMotif}
     {motifs}
-    settings={settings.filter(s => s.form === formId)}
+    settings={settings.filter((s) => s.form === formId)}
     {scrollDown}
+    {midiOutput}
     stickyControls={true}
     on:displayToggle
     on:displayCrudModal
-    on:displayAlert />
+    on:displayAlert
+/>
+
+<style>
+</style>

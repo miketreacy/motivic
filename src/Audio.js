@@ -1,5 +1,6 @@
 'use strict'
 import Config from './Config'
+import { sendMIDINote } from './MIDI'
 
 export function newAudioContext() {
     // construct Audio context once per session and re-use it
@@ -27,7 +28,7 @@ export function newAudioContext() {
  * Defaults to 4 which means a quarter note equals one beat.
  * @returns {number} (float) Note duration in seconds.
  */
-function _getNoteTimeDuration(
+export function getNoteTimeDuration(
     rhythmicUnit,
     noteDuration,
     bpm = 120,
@@ -44,7 +45,7 @@ function _getMelodyTimeDuration(melody) {
     return melody.notes.reduce((time, note) => {
         return (
             time +
-            _getNoteTimeDuration(
+            getNoteTimeDuration(
                 Config.rhythmicUnit,
                 note.duration,
                 melody.meta.tempo.units,
@@ -66,8 +67,16 @@ function _getFrequency(pitch, octave) {
  * @param {*} timeSig
  * @param {*} voice
  */
-export function playTone(ctx, note, timeLine, tempo, timeSig, voice) {
-    let playLength = _getNoteTimeDuration(
+export function playTone(
+    ctx,
+    note,
+    timeLine,
+    tempo,
+    timeSig,
+    voice,
+    midiOutput
+) {
+    let playLength = getNoteTimeDuration(
         Config.rhythmicUnit,
         note.duration,
         tempo,
@@ -81,6 +90,8 @@ export function playTone(ctx, note, timeLine, tempo, timeSig, voice) {
         o.start(timeLine)
         o.stop(timeLine + playLength)
         o.connect(ctx.destination)
+        // TODO: either get the midi output scheduled with the audio or set it up as a separate loop
+        sendMIDINote(midiOutput, note, playLength)
     }
 
     return (timeLine += playLength)
@@ -114,7 +125,8 @@ export function playMelody(
             time,
             melody.meta.tempo.units,
             melody.meta.timeSignature,
-            voice
+            voice,
+            session.midiOutput
         )
     }
     setTimeout(() => {

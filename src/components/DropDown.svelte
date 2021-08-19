@@ -8,17 +8,26 @@
     export let disabled = true
     export let optionIconMap = null
     export let multiDim = true
+    export let optionIds = false
 
     const dispatch = createEventDispatcher()
 
     let iconContent = ''
-    let selection = multiDim ? options[0][0] : options[0]
+    let selection = optionIds
+        ? options[0].id
+        : multiDim
+        ? options[0][0]
+        : options[0]
 
     function resetSelection(disabled) {
         return disabled ? options[0][0] : selection
     }
 
-    function getOptionDisplay(name, isCompact = false) {
+    function getOptionDisplay(name, isCompact = false, optionIds = false) {
+        console.info(name)
+        if (optionIds) {
+            return options.find((opt) => opt.id === name).name
+        }
         let shortName = multiDim
             ? options.find(([full, _]) => full === name)[1]
             : null
@@ -34,6 +43,46 @@
     $: updateSelection(selection)
 </script>
 
+<div
+    class="wrap"
+    {disabled}
+    class:compact={displayCompact}
+    class:large={optionIds}
+    class:very-compact={displayVeryCompact}
+>
+    {#if optionIconMap && !displayCompact}
+        <span class="icon">
+            {@html iconContent}
+        </span>
+    {/if}
+
+    <span class="value"
+        >{getOptionDisplay(selection, displayCompact, optionIds)}</span
+    >
+
+    <select bind:value={selection} {disabled} {id}>
+        {#if optionIds}
+            {#each options as option}
+                <option value={option.id}>
+                    <span>{option.name}</span>
+                </option>
+            {/each}
+        {:else if multiDim}
+            {#each options as [fullName, shortName]}
+                <option value={fullName}>
+                    <span>{fullName}</span>
+                </option>
+            {/each}
+        {:else}
+            {#each options as name}
+                <option value={name}>
+                    <span>{name}</span>
+                </option>
+            {/each}
+        {/if}
+    </select>
+</div>
+
 <style>
     .wrap {
         position: relative;
@@ -43,6 +92,9 @@
         max-width: 100px;
         margin: 0;
         box-sizing: border-box;
+    }
+    .wrap.large {
+        max-width: 100%;
     }
     .wrap.compact {
         max-width: 60px;
@@ -94,31 +146,3 @@
         white-space: pre;
     }
 </style>
-
-<div
-    class="wrap"
-    {disabled}
-    class:compact={displayCompact}
-    class:very-compact={displayVeryCompact}>
-    {#if optionIconMap && !displayCompact}
-        <span class="icon">
-            {@html iconContent}
-        </span>
-    {/if}
-    <span class="value">{getOptionDisplay(selection, displayCompact)}</span>
-    <select bind:value={selection} {disabled} {id}>
-        {#if multiDim}
-            {#each options as [fullName, shortName]}
-                <option value={fullName}>
-                    <span>{fullName}</span>
-                </option>
-            {/each}
-        {:else}
-            {#each options as name}
-                <option value={name}>
-                    <span>{name}</span>
-                </option>
-            {/each}
-        {/if}
-    </select>
-</div>

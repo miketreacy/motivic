@@ -6,22 +6,28 @@
         newAudioContext,
         playMelody,
         loopMelody,
-        stopLoop
+        stopLoop,
     } from '../Audio.js'
     import DropDown from './DropDown.svelte'
     export let selectedVoice = 'sine'
     export let selectedMotifs = []
     export let displayCompact = false
+    export let midiOutput = null
     let isPlaying = false
     let isLooping = false
     let disabled = true
-    let AudioSession = { ctx: null, isPlaying: false, timeoutIDs: [] }
+    let AudioSession = {
+        ctx: null,
+        isPlaying: false,
+        timeoutIDs: [],
+        midiOutput: midiOutput,
+    }
     const timelineStart = 0
     const waveFormIconMap = {
         sawtooth: '&#8961',
         sine: '&#8767;',
         square: '&#9633;',
-        triangle: '&#9651;'
+        triangle: '&#9651;',
     }
     const dispatch = createEventDispatcher()
 
@@ -40,7 +46,7 @@
 
     function playMotifs(motifs) {
         isPlaying = true
-        motifs.forEach(motif =>
+        motifs.forEach((motif) =>
             playMelody(
                 AudioSession,
                 motif,
@@ -63,7 +69,7 @@
     function loopMotifs(motifs) {
         isPlaying = true
         isLooping = true
-        motifs.forEach(motif =>
+        motifs.forEach((motif) =>
             loopMelody(AudioSession, motif, timelineStart, selectedVoice)
         )
     }
@@ -95,6 +101,44 @@
     $: disabled = !AudioSession.ctx || !selectedMotifs.length
 </script>
 
+<!-- Don't display AudioControls if playback is impossible -->
+{#if AudioSession.ctx}
+    <DropDown
+        id="voice-control"
+        options={Config.audio.voices}
+        {displayCompact}
+        {disabled}
+        optionIconMap={Config.waveformIconMap}
+        on:updateSelection={selectVoice}
+    />
+
+    <button
+        class="play"
+        class:compact={displayCompact}
+        class:playing={isPlaying}
+        {disabled}
+        on:click={playClickHandler}
+    >
+        {#if !displayCompact}
+            <span>&#9658;</span>
+        {/if}
+        <span>play</span>
+    </button>
+
+    <button
+        class="loop"
+        class:compact={displayCompact}
+        class:playing={isLooping}
+        {disabled}
+        on:click={loopClickHandler}
+    >
+        {#if !displayCompact}
+            <span>&infin;</span>
+        {/if}
+        <span>loop</span>
+    </button>
+{/if}
+
 <style>
     .playing {
         color: var(--theme_color_9);
@@ -117,38 +161,3 @@
         color: var(--theme_color_6);
     }
 </style>
-
-<!-- Don't display AudioControls if playback is impossible -->
-{#if AudioSession.ctx}
-    <DropDown
-        id="voice-control"
-        options={Config.audio.voices}
-        {displayCompact}
-        {disabled}
-        optionIconMap={Config.waveformIconMap}
-        on:updateSelection={selectVoice} />
-
-    <button
-        class="play"
-        class:compact={displayCompact}
-        class:playing={isPlaying}
-        {disabled}
-        on:click={playClickHandler}>
-        {#if !displayCompact}
-            <span>&#9658;</span>
-        {/if}
-        <span>play</span>
-    </button>
-
-    <button
-        class="loop"
-        class:compact={displayCompact}
-        class:playing={isLooping}
-        {disabled}
-        on:click={loopClickHandler}>
-        {#if !displayCompact}
-            <span>&infin;</span>
-        {/if}
-        <span>loop</span>
-    </button>
-{/if}

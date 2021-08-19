@@ -28,6 +28,7 @@
     export let scrollDown = false
     export let stickyControls = false
     export let selectedSettingId = ''
+    export let midiOutput = null
 
     const dispatch = createEventDispatcher()
     const presets = Config.formPresets[formId] || []
@@ -41,7 +42,7 @@
     const settingsSelectorDefault = hasSettings
         ? {
               id: Config.formDefaults[formId].setting_id,
-              name: '--none--'
+              name: '--none--',
           }
         : null
     let settingsSelectorTypes = getSettingsSelectorTypes(settings, presets)
@@ -71,7 +72,7 @@
         })
         if (diffKeys.length) {
             let diffMsg = diffKeys
-                .map(diff => `${diff[0]} was ${diff[1]}, is ${diff[2]}`)
+                .map((diff) => `${diff[0]} was ${diff[1]}, is ${diff[2]}`)
                 .join('\n')
             result = false
         }
@@ -79,7 +80,7 @@
     }
 
     function isInPresetState(state, presetStates) {
-        return presetStates.some(presetState =>
+        return presetStates.some((presetState) =>
             isInDefaultState(state, presetState)
         )
     }
@@ -107,7 +108,7 @@
             method,
             body: JSON.stringify(payload),
             mode,
-            headers
+            headers,
         }
     }
 
@@ -132,7 +133,7 @@
                 message: `${formTitle} API operation failed.\n${error.message}`,
                 displayTimeMs: 1500,
                 dismissable: true,
-                top: 45
+                top: 45,
             })
         }
 
@@ -147,7 +148,7 @@
         if (!newMotif) {
             return null
         }
-        let match = motifs.find(m => m.id === newMotif.id)
+        let match = motifs.find((m) => m.id === newMotif.id)
         if (match && !match.saved.local) {
             return match
         } else {
@@ -157,7 +158,7 @@
 
     function getSettingState(settingId, settings) {
         if (settingId) {
-            let setting = settings.find(s => s.id === settingId)
+            let setting = settings.find((s) => s.id === settingId)
             if (setting) {
                 return setting.formState
             }
@@ -193,8 +194,8 @@
                 itemType: Config.userData.settingType,
                 item: setting,
                 formType: 'save',
-                actionComplete: false
-            }
+                actionComplete: false,
+            },
         }
         console.dir(payload)
         dispatch('displayCrudModal', payload)
@@ -205,7 +206,7 @@
     function getSettingsSelectorTypes(settings, presets) {
         return [
             { type: 'user', label: 'my settings', items: settings },
-            { type: 'preset', label: 'presets', items: presets }
+            { type: 'preset', label: 'presets', items: presets },
         ]
     }
 
@@ -213,13 +214,101 @@
         formInDefaultState = isInDefaultState(state, defaultState)
         formInPresetState = isInPresetState(
             state,
-            presets.concat(settings).map(setting => setting.formState)
+            presets.concat(settings).map((setting) => setting.formState)
         )
         formCanSubmit = canFormSubmit(formInDefaultState, loading)
     }
     $: newMotif = getNewMotif(newMotif, motifs)
     $: settingsSelectorTypes = getSettingsSelectorTypes(settings, presets)
 </script>
+
+<svelte:window bind:scrollY={scrollPos} />
+<section id={formId} data-closed={!formOpen}>
+    <MotifFormHeader
+        {formId}
+        {formTitle}
+        {formInfo}
+        {formOpen}
+        {toggleFormFn}
+    />
+
+    {#if formOpen}
+        {#if topControls}
+            <MotifFormControls
+                {formOpen}
+                {formInDefaultState}
+                {formInPresetState}
+                {toggleFormFn}
+                {resetFormFn}
+                {saveSettingsFn}
+                {submitFormFn}
+                {formCanSubmit}
+                {scrollDown}
+                sticky={stickyControls}
+                {loading}
+                controls={formControls}
+            />
+        {/if}
+        {#if newMotif}
+            <MotifAudition
+                motif={newMotif}
+                {midiOutput}
+                on:toggleMotifAudition={handleAuditionToggle}
+                on:displayCrudModal
+                on:displayAlert
+            />
+        {/if}
+        <slot />
+        {#if fieldRows.length}
+            <fieldset class="user-input" in:fade>
+                <legend>settings</legend>
+                {#if hasSettings}
+                    <div class="form-row" class:horizontal={true}>
+                        <ItemSelector
+                            {formId}
+                            itemType="settings"
+                            itemGroups={settingsSelectorTypes}
+                            selectedItemId={selectedSettingId}
+                            formFieldLayout={true}
+                            defaultSelection={settingsSelectorDefault}
+                            on:itemSelection={handleSettingSelection}
+                            on:displayAlert
+                        />
+                    </div>
+                {/if}
+                {#each fieldRows as fields}
+                    <div
+                        class="form-row"
+                        class:horizontal={fields.some(
+                            (f) => f.rowLayout === 'horizontal'
+                        )}
+                    >
+                        {#each fields as field}
+                            <Field
+                                {...field}
+                                updaterFn={stateUpdaterFn}
+                                on:inputValueChange
+                                on:displayAlert
+                            />
+                        {/each}
+                    </div>
+                {/each}
+            </fieldset>
+        {/if}
+    {/if}
+    <MotifFormControls
+        {formOpen}
+        {formInDefaultState}
+        {formInPresetState}
+        {toggleFormFn}
+        {resetFormFn}
+        {submitFormFn}
+        {formCanSubmit}
+        {scrollDown}
+        {loading}
+        controls={formControls}
+    />
+</section>
 
 <style>
     section {
@@ -258,82 +347,3 @@
         border-bottom: none;
     }
 </style>
-
-<svelte:window bind:scrollY={scrollPos} />
-<section id={formId} data-closed={!formOpen}>
-
-    <MotifFormHeader
-        {formId}
-        {formTitle}
-        {formInfo}
-        {formOpen}
-        {toggleFormFn} />
-
-    {#if formOpen}
-        {#if topControls}
-            <MotifFormControls
-                {formOpen}
-                {formInDefaultState}
-                {formInPresetState}
-                {toggleFormFn}
-                {resetFormFn}
-                {saveSettingsFn}
-                {submitFormFn}
-                {formCanSubmit}
-                {scrollDown}
-                sticky={stickyControls}
-                {loading}
-                controls={formControls} />
-        {/if}
-        {#if newMotif}
-            <MotifAudition
-                motif={newMotif}
-                on:toggleMotifAudition={handleAuditionToggle}
-                on:displayCrudModal
-                on:displayAlert />
-        {/if}
-        <slot />
-        {#if fieldRows.length}
-            <fieldset class="user-input" in:fade>
-                <legend>settings</legend>
-                {#if hasSettings}
-                    <div class="form-row" class:horizontal={true}>
-                        <ItemSelector
-                            {formId}
-                            itemType="settings"
-                            itemGroups={settingsSelectorTypes}
-                            selectedItemId={selectedSettingId}
-                            formFieldLayout={true}
-                            defaultSelection={settingsSelectorDefault}
-                            on:itemSelection={handleSettingSelection}
-                            on:displayAlert />
-                    </div>
-                {/if}
-                {#each fieldRows as fields}
-                    <div
-                        class="form-row"
-                        class:horizontal={fields.some(f => f.rowLayout === 'horizontal')}>
-                        {#each fields as field}
-                            <Field
-                                {...field}
-                                updaterFn={stateUpdaterFn}
-                                on:inputValueChange
-                                on:displayAlert />
-                        {/each}
-                    </div>
-                {/each}
-            </fieldset>
-        {/if}
-    {/if}
-    <MotifFormControls
-        {formOpen}
-        {formInDefaultState}
-        {formInPresetState}
-        {toggleFormFn}
-        {resetFormFn}
-        {submitFormFn}
-        {formCanSubmit}
-        {scrollDown}
-        {loading}
-        controls={formControls} />
-</section>

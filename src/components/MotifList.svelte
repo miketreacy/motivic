@@ -23,6 +23,7 @@
     export let scrollDown = false
     export let fileDownloading = false
     export let draggable = false
+    export let midiOutput = null
     const generationLevels = Config.motifGenerationDisplayCount
     const dispatch = createEventDispatcher()
     const dragStartHandler = MotivicUtils.ui.getDragStartHandler('id')
@@ -193,7 +194,7 @@
         <h2 on:click={toggleOpen}>{title} ({motifs.length})</h2>
         {#if !parentId}
             <section class="motif-controls">
-                <AudioControls {selectedMotifs} on:displayAlert />
+                <AudioControls {selectedMotifs} {midiOutput} on:displayAlert />
             </section>
             {#if motifs.length > 1}
                 <div class="list-controls">

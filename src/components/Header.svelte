@@ -15,7 +15,7 @@
         id: 'upload',
         label: 'Upload file (MIDI or JSON)',
         accept: '.json, .midi, .mid',
-        wrap: false
+        wrap: false,
     }
     let motifListOpen = false
     function toggleNavMenu() {
@@ -42,14 +42,14 @@
 
     function handleUploadedMotifs(results) {
         showUpload = false
-        results.forEach(result => {
+        results.forEach((result) => {
             let [success, msg, motif] = result
             dispatch('displayAlert', {
                 visible: true,
                 type: success ? 'success' : 'error',
                 message: msg,
                 displayTimeMs: 1500,
-                dismissable: false
+                dismissable: false,
             })
         })
     }
@@ -87,7 +87,7 @@
             motifListOpen = !motifListOpen
             dispatch('displayToggle', {
                 section: 'motifs',
-                open: motifListOpen
+                open: motifListOpen,
             })
         }
     }
@@ -96,9 +96,64 @@
         dispatch('displayToggle', { section: '', open: false })
     }
 
+    function loadMIDIView(e) {
+        dispatch('displayToggle', { section: 'midi', open: true })
+    }
+
     $: motifListOpen = openSection === 'motifs'
     $: fullDisplay = openSection === ''
 </script>
+
+<header class="show" class:scrolldown={scrollDown} class:compact={!fullDisplay}>
+    <div class="wrap">
+        {#if openSection}
+            <div class="button-wrap left">
+                <button class="home" on:click={loadHomeView}>
+                    <!-- <span>&#127968;</span> -->
+                    <img
+                        alt="home"
+                        src="./images/favicon_144_white_on_blue.svg"
+                    />
+                </button>
+            </div>
+        {:else}
+            <div class="button-wrap left">
+                <button class="midi" on:click={loadMIDIView}>
+                    <img alt="midi" src="./images/midi_icon.svg" />
+                </button>
+            </div>
+        {/if}
+
+        {#if fullDisplay}
+            <h1>
+                <a href="/">Motivic</a>
+            </h1>
+        {/if}
+        {#if motifs.length}
+            <div class="button-wrap right">
+                <button
+                    id="motifs"
+                    on:click={toggleMotifList}
+                    class:small={motifs.length > 9}
+                >
+                    {#if motifs.length < 10}
+                        <span>&#9835;</span>
+                    {/if}
+                    <span class="motif-count" class:small={motifs.length > 9}>
+                        {motifs.length}
+                    </span>
+                </button>
+            </div>
+        {/if}
+    </div>
+    {#if fullDisplay}
+        <p class="subtitle">
+            <span class="icons">&#9836;</span>
+            tools for composers
+            <span class="icons">&#9836;</span>
+        </p>
+    {/if}
+</header>
 
 <style>
     :root {
@@ -216,46 +271,3 @@
         }
     }
 </style>
-
-<header class="show" class:scrolldown={scrollDown} class:compact={!fullDisplay}>
-    <div class="wrap">
-        {#if openSection}
-            <div class="button-wrap left">
-                <button class="home" on:click={loadHomeView}>
-                    <!-- <span>&#127968;</span> -->
-                    <img
-                        alt="home"
-                        src="./images/favicon_144_white_on_blue.svg" />
-                </button>
-            </div>
-        {/if}
-
-        {#if fullDisplay}
-            <h1>
-                <a href="/">Motivic</a>
-            </h1>
-        {/if}
-        {#if motifs.length}
-            <div class="button-wrap right">
-                <button
-                    id="motifs"
-                    on:click={toggleMotifList}
-                    class:small={motifs.length > 9}>
-                    {#if motifs.length < 10}
-                        <span>&#9835;</span>
-                    {/if}
-                    <span class="motif-count" class:small={motifs.length > 9}>
-                        {motifs.length}
-                    </span>
-                </button>
-            </div>
-        {/if}
-    </div>
-    {#if fullDisplay}
-        <p class="subtitle">
-            <span class="icons">&#9836;</span>
-            tools for composers
-            <span class="icons">&#9836;</span>
-        </p>
-    {/if}
-</header>

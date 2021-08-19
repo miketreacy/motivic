@@ -12,6 +12,7 @@
     export let settings = []
     export let selectedMotifId = ''
     export let scrollDown = false
+    export let midiOutput = null
 
     const formId = 'transformer'
     const formTitle = 'Transformer'
@@ -34,7 +35,7 @@
                     step: 1,
                     min: -11,
                     max: 11,
-                    info: 'Move the melody up or down in pitch'
+                    info: 'Move the melody up or down in pitch',
                 },
                 {
                     type: 'checkbox',
@@ -43,8 +44,8 @@
                     labelLink:
                         'https://wikipedia.org/wiki/Inversion_(music)#Melodies',
                     value: state.invert,
-                    info: 'Turn the melody upside-down'
-                }
+                    info: 'Turn the melody upside-down',
+                },
             ],
             [
                 {
@@ -53,7 +54,7 @@
                     label: 'reverse pitches',
                     labelLink: 'https://wikipedia.org/wiki/Retrograde_(music)',
                     value: state.reverse_pitch_1,
-                    info: "Turn the melody's pitches backwards"
+                    info: "Turn the melody's pitches backwards",
                 },
                 {
                     type: 'checkbox',
@@ -61,8 +62,8 @@
                     label: 'reverse durations',
                     labelLink: 'https://wikipedia.org/wiki/Retrograde_(music)',
                     value: state.reverse_rhythm_0,
-                    info: "Turn the melody's note durations backwards"
-                }
+                    info: "Turn the melody's note durations backwards",
+                },
             ],
             [
                 {
@@ -75,7 +76,7 @@
                     step: 2,
                     min: 0,
                     max: 4,
-                    info: 'Increase the duration of notes by this factor'
+                    info: 'Increase the duration of notes by this factor',
                 },
                 {
                     type: 'number',
@@ -86,7 +87,7 @@
                     step: 2,
                     min: 0,
                     max: 4,
-                    info: 'Reduce the duration of notes by this factor'
+                    info: 'Reduce the duration of notes by this factor',
                 },
                 {
                     type: 'number',
@@ -97,9 +98,8 @@
                     step: 1,
                     min: 0,
                     max: 64,
-                    info:
-                        'Offset the start of the melody by this many 64th notes'
-                }
+                    info: 'Offset the start of the melody by this many 64th notes',
+                },
             ],
             [
                 {
@@ -110,8 +110,7 @@
                     step: 1,
                     min: 1,
                     max: 4,
-                    info:
-                        "Warp the melodic contour by multiplying each note's relative distance to an anchor pitch by this number"
+                    info: "Warp the melodic contour by multiplying each note's relative distance to an anchor pitch by this number",
                 },
                 {
                     type: 'select',
@@ -119,8 +118,8 @@
                     label: 'warp anchor pitch',
                     value: state.warp_anchor_1,
                     options: ['--none--'].concat(Config.notes),
-                    info: 'Warp the melodic contour relative to this pitch (defaults to the motif\'s average pitch)'
-                    }
+                    info: "Warp the melodic contour relative to this pitch (defaults to the motif's average pitch)",
+                },
             ],
             [
                 {
@@ -128,9 +127,9 @@
                     id: 'name',
                     label: 'name',
                     max: 16,
-                    info: 'The name of the new transformed motif'
-                }
-            ]
+                    info: 'The name of the new transformed motif',
+                },
+            ],
         ]
     }
     const submitOptions = Config.api.operations.transformer
@@ -143,18 +142,15 @@
         let { transformations, melody: parentMotif } = data.request.body
         // add the newly-created variation motif
         let nameEl = document.querySelector('#name')
-        let [
-            success,
-            msg,
-            savedVariationMotif
-        ] = MotivicUtils.userData.processNewItem(
-            motif,
-            Config.userData.motifType,
-            (nameEl && nameEl.value) || `${motif.name}_var_1`,
-            '',
-            parentMotif.id,
-            transformations
-        )
+        let [success, msg, savedVariationMotif] =
+            MotivicUtils.userData.processNewItem(
+                motif,
+                Config.userData.motifType,
+                (nameEl && nameEl.value) || `${motif.name}_var_1`,
+                '',
+                parentMotif.id,
+                transformations
+            )
 
         dispatch('displayAlert', {
             visible: true,
@@ -162,7 +158,7 @@
             message: success ? 'New motif variation created!' : msg,
             displayTimeMs: 1000,
             dismissable: false,
-            top: 55
+            top: 55,
         })
         newMotif = savedVariationMotif
     }
@@ -170,27 +166,27 @@
     function getCompoundTransformation(transformationMap) {
         let transformType = transformationMap.type.split('_')[0]
         let thisMap = { type: transformType, params: [false, false] }
-
     }
-    
-    
+
     // returns a list of objects representing each transformation field key and value if
     // the value is not the default value
     function getTransformations(state) {
         let list = []
-        for (let [key, value] of Object.entries(state)) {            
+        for (let [key, value] of Object.entries(state)) {
             if (value !== Config.formDefaults.transformer[key]) {
                 let map = { type: key, params: [value] }
                 let keyParts = key.split('_')
                 if (keyParts.length === 3) {
                     let transKey = keyParts[0]
                     let argIdx = parseInt(keyParts[2])
-                    let preExistingMaps = list.filter(m => m.type === transKey)
-                    if (preExistingMaps.length) {                        
+                    let preExistingMaps = list.filter(
+                        (m) => m.type === transKey
+                    )
+                    if (preExistingMaps.length) {
                         preExistingMaps[0].params[argIdx] = value
                         continue
-                        } 
-                    map = { type: transKey, params: [] }                    
+                    }
+                    map = { type: transKey, params: [] }
                     map.params[argIdx] = value
                 }
                 if (typeof value === 'boolean') {
@@ -198,9 +194,9 @@
                 }
                 list.push(map)
             }
-        }        
+        }
         return list
-    }    
+    }
 
     function getRequestBodyFn(state) {
         return { melody: motif, transformations: getTransformations(state) }
@@ -211,7 +207,7 @@
     }
 
     function selectMotif(motifId) {
-        motif = motifs.find(m => m.id === motifId)
+        motif = motifs.find((m) => m.id === motifId)
         return motif
     }
 
@@ -222,17 +218,13 @@
         responseCallbackFn,
         submitOptions,
         getRequestBodyFn,
-        formCanSubmitDefault
+        formCanSubmitDefault,
     }
 
     $: motif = selectMotif(selectedMotifId)
     $: fieldRows = getFieldRows($transformer)
     $: selectedSettingId = $transformer.setting_id
 </script>
-
-<style>
-
-</style>
 
 <MotifForm
     {...staticProps}
@@ -244,10 +236,12 @@
     {formOpen}
     {newMotif}
     {motifs}
-    settings={settings.filter(s => s.form === formId)}
+    settings={settings.filter((s) => s.form === formId)}
     {scrollDown}
+    {midiOutput}
     on:displayToggle
-    on:displayCrudModal>
+    on:displayCrudModal
+>
     {#if motifs.length}
         <ItemSelector
             {formId}
@@ -256,6 +250,10 @@
             selectedItemId={selectedMotifId}
             defaultSelection={null}
             on:itemSelection={handleItemSelection}
-            on:displayAlert />
+            on:displayAlert
+        />
     {/if}
 </MotifForm>
+
+<style>
+</style>

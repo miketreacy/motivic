@@ -28,12 +28,13 @@
         displayTimeMs: 0,
         dismissable: false,
         top: 0,
-        displayLabel: true
+        displayLabel: true,
     }
     let scrollPos
     let scrollDown = false
     let scrollUp = true
     let openItemId = urlQueryMap['id'] || ''
+    let midiOutput = null
 
     /**
      * Updates user data in memory in the global MOTIVIC namespace and in the component waterfall
@@ -41,7 +42,7 @@
     function updateGlobalUserData(items, type) {
         let initGlobal = window[Config.nameSpace] || {
             user: { motifs: [], settings: [] },
-            lib: { utils: MotivicUtils }
+            lib: { utils: MotivicUtils },
         }
         initGlobal.user[type] = items
         window[Config.nameSpace] = initGlobal
@@ -71,10 +72,10 @@
         if (add) {
             selectedMotifIds = MotivicUtils.general.unique([
                 ...existingIds,
-                ...newIds
+                ...newIds,
             ])
         } else {
-            selectedMotifIds = existingIds.filter(id => !newIds.includes(id))
+            selectedMotifIds = existingIds.filter((id) => !newIds.includes(id))
         }
     }
 
@@ -110,6 +111,11 @@
         }
     }
 
+    function handleMIDIOutputConnection(event) {
+        let { name, id } = event.detail
+        midiOutput = event.detail
+    }
+
     function scrollHandler(scrollPos) {
         let threshold = 30
         scrollDown = scrollPos >= threshold
@@ -128,10 +134,6 @@
     $: handleEmptyMotifList(motifs)
 </script>
 
-<style>
-
-</style>
-
 <svelte:window bind:scrollY={scrollPos} />
 
 <Header
@@ -140,7 +142,8 @@
     {scrollDown}
     on:viewChange={handleViewChange}
     on:displayToggle={handleDisplayToggle}
-    on:displayAlert={handleDisplayAlert} />
+    on:displayAlert={handleDisplayAlert}
+/>
 
 <Main
     {view}
@@ -154,10 +157,13 @@
     {alertProps}
     {scrollDown}
     {fileDownloading}
+    {midiOutput}
+    on:midiOutputConnection={handleMIDIOutputConnection}
     on:displayToggle={handleDisplayToggle}
     on:displayCrudModal={handleModalDisplay}
     on:motifSelection={handleMotifSelection}
-    on:downloadFile={handleDownloadFile} />
+    on:downloadFile={handleDownloadFile}
+/>
 {#if openSection === '' && view !== 'audio'}
     <Footer />
 {/if}
@@ -166,5 +172,9 @@
     <ItemCrudModal
         {...modalProps}
         on:displayCrudModal={handleModalDisplay}
-        on:displayAlert={handleDisplayAlert} />
+        on:displayAlert={handleDisplayAlert}
+    />
 {/if}
+
+<style>
+</style>
