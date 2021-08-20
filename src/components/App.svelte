@@ -112,8 +112,8 @@
     }
 
     function handleMIDIOutputConnection(event) {
-        let { name, id } = event.detail
-        midiOutput = event.detail
+        let { connection, output } = event.detail
+        midiOutput = connection ? output : null
     }
 
     function scrollHandler(scrollPos) {
@@ -163,6 +163,7 @@
     on:displayCrudModal={handleModalDisplay}
     on:motifSelection={handleMotifSelection}
     on:downloadFile={handleDownloadFile}
+    on:displayAlert={handleDisplayAlert}
 />
 {#if openSection === '' && view !== 'audio'}
     <Footer />

@@ -17,7 +17,19 @@
     const dispatch = createEventDispatcher()
 
     function connectMidiOutput(outputId) {
-        dispatch('midiOutputConnection', midiAccess.outputs.get(outputId))
+        const output = midiAccess.outputs.get(outputId)
+        console.table(output)
+        dispatch('midiOutputConnection', {
+            connection: true,
+            output,
+        })
+        dispatch('displayAlert', {
+            visible: true,
+            type: output.state === 'connected' ? 'success' : 'error',
+            message: `MIDI output connection to ${output.manufacturer} ${output.name}`,
+            displayTimeMs: 1500,
+            dismissable: false,
+        })
     }
 
     function selectMidiOutput(event) {

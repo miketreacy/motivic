@@ -105,6 +105,7 @@
                 <MidiOutputControls
                     connectedOutput={midiOutput}
                     on:midiOutputConnection
+                    on:displayAlert
                 />
             {/if}
             {#if showSectionMap.motif && openItemId}
