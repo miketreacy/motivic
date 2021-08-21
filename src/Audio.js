@@ -92,15 +92,16 @@ export function playTone(
         o.start(startTime)
         o.stop(stopTime)
         o.connect(ctx.destination)
-        // TODO: either get the midi output scheduled with the audio or set it up as a separate loop
-        sendMIDINote(
-            midiOutput,
-            note,
-            startTime * 1000,
-            stopTime * 1000,
-
-            ctx
-        )
+        if (midiOutput) {
+            // if there is a MIDI output connection, send note to that device
+            sendMIDINote(
+                midiOutput,
+                note,
+                startTime * 1000,
+                stopTime * 1000,
+                ctx
+            )
+        }
     }
 
     return (timeLine += playLength)
