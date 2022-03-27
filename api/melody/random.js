@@ -203,7 +203,7 @@ function distributeDurationValues(durations, min, max, totalUnitsTarget) {
     console.info(`durations: ${durations.join(', ')}`)
     console.info(`total: ${generalUtils.sum(durations)}`)
     let [areValid, totalDiff] = durationSetIsValid(
-        newDurations,
+        durations,
         min,
         max,
         totalUnitsTarget
