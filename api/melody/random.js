@@ -146,7 +146,7 @@ function durationSetIsValid(durations, min, max, totalUnitsTarget) {
     let resultSet = generalUtils.unique(diffMap.map(([isValid]) => isValid))
     let resultSetValid = resultSet[0] && resultSet.length === 1
     let result = totalResult && resultSetValid
-    return [result, totalDiff, diffMap]
+    return [result, totalDiff, resultSetValid]
 }
 
 function distributeDurationValues(durations, min, max, totalUnitsTarget) {
@@ -202,7 +202,7 @@ function distributeDurationValues(durations, min, max, totalUnitsTarget) {
     }
     console.info(`durations: ${durations.join(', ')}`)
     console.info(`total: ${generalUtils.sum(durations)}`)
-    let [areValid, totalDiff] = durationSetIsValid(
+    let [areValid, totalDiff, valuesAreValid] = durationSetIsValid(
         durations,
         min,
         max,
@@ -215,9 +215,14 @@ function distributeDurationValues(durations, min, max, totalUnitsTarget) {
         // This should NEVER happen
         console.info(`durations: ${durations.join(', ')}`)
         console.info(`🤮 EPIC FAIL!!! 🤮: _getRandomDurations()\n`)
-        let errMsg = totalDiff
+        let valuesMsg = valuesAreValid
+            ? ''
+            : `make note durations conform to given min/max range of ${min} - ${max}`
+        let totalMsg = totalDiff
             ? `make sum of note durations meet total duration target. Total was off by ${totalDiff}`
-            : 'make note durations conform to given min/max parameters'
+            : ''
+        let conjunctionStr = totalMsg && valuesMsg ? ' and ' : ''
+        let errMsg = `${valuesMsg}${conjunctionStr}${totalMsg}`
         throw new AppError(
             `Application failed to ${errMsg}. Please try other min/max values.`
         )
@@ -235,7 +240,7 @@ function distributeDurationValues(durations, min, max, totalUnitsTarget) {
  * @private
  */
 function validateRandomDurations(durations, min, max, totalUnitsTarget) {
-    let [areValid, totalDiff] = durationSetIsValid(
+    let [areValid, totalDiff, valuesAreValid] = durationSetIsValid(
         durations,
         min,
         max,
@@ -249,10 +254,22 @@ function validateRandomDurations(durations, min, max, totalUnitsTarget) {
         )
         return durations
     }
-    if (totalDiff) {
-        console.warn(`\nBAD PATH B: valid values but INVALID sum`)
-    } else {
+    if (totalDiff === 0) {
         console.warn(`\nBAD PATH A: valid sum but INVALID values`)
+    } else {
+        if (valuesAreValid) {
+            console.warn(
+                `\nBAD PATH B: valid values but INVALID sum ${
+                    totalUnitsTarget + totalDiff
+                }`
+            )
+        } else {
+            console.warn(
+                `\nBAD PATH C: INVALID values and INVALID sum ${
+                    totalUnitsTarget + totalDiff
+                }`
+            )
+        }
     }
     return distributeDurationValues(durations, min, max, totalUnitsTarget)
 }
