@@ -202,7 +202,12 @@ function distributeDurationValues(durations, min, max, totalUnitsTarget) {
     }
     console.info(`durations: ${durations.join(', ')}`)
     console.info(`total: ${generalUtils.sum(durations)}`)
-    let [areValid] = durationSetIsValid(durations, min, max, totalUnitsTarget)
+    let [areValid, totalDiff] = durationSetIsValid(
+        newDurations,
+        min,
+        max,
+        totalUnitsTarget
+    )
     if (areValid) {
         console.info(`✅ 🎉Validation was successful!!!🎉\n`)
         return durations
@@ -230,7 +235,12 @@ function distributeDurationValues(durations, min, max, totalUnitsTarget) {
  * @private
  */
 function validateRandomDurations(durations, min, max, totalUnitsTarget) {
-    let [areValid] = durationSetIsValid(durations, min, max, totalUnitsTarget)
+    let [areValid, totalDiff] = durationSetIsValid(
+        durations,
+        min,
+        max,
+        totalUnitsTarget
+    )
     if (areValid) {
         console.debug(
             `✅ _getRandomDurations() succeeded for total:${totalUnitsTarget}, min:${min}, max:${max}\ndurations: ${durations.join(
