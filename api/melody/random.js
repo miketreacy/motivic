@@ -150,7 +150,6 @@ function durationSetIsValid(durations, min, max, totalUnitsTarget) {
 }
 
 function distributeDurationValues(durations, min, max, totalUnitsTarget) {
-    console.info(`\nBAD PATH A: valid sum, invalid values`)
     console.info(`durations: ${durations.join(', ')}`)
 
     // putting the invalid values in front
@@ -211,8 +210,11 @@ function distributeDurationValues(durations, min, max, totalUnitsTarget) {
         // This should NEVER happen
         console.info(`durations: ${durations.join(', ')}`)
         console.info(`🤮 EPIC FAIL!!! 🤮: _getRandomDurations()\n`)
+        let errMsg = totalDiff
+            ? `make sum of note durations meet total duration target. Total was off by ${totalDiff}`
+            : 'make note durations conform to given min/max parameters'
         throw new AppError(
-            'Application failed to make durations conform to min/max parameters. Please try other min/max values.'
+            `Application failed to ${errMsg}. Please try other min/max values.`
         )
     }
 }
@@ -236,6 +238,11 @@ function validateRandomDurations(durations, min, max, totalUnitsTarget) {
             )}`
         )
         return durations
+    }
+    if (totalDiff) {
+        console.warn(`\nBAD PATH B: valid values but INVALID sum`)
+    } else {
+        console.warn(`\nBAD PATH A: valid sum but INVALID values`)
     }
     return distributeDurationValues(durations, min, max, totalUnitsTarget)
 }
