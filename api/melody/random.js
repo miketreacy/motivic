@@ -337,6 +337,9 @@ function getRandomMelody({
         max: noteDurMax = config.default.noteDuration.max,
     } = {},
 } = {}) {
+    console.info(`getRandomMelody() raw inputs`)
+    console.dir(...arguments)
+
     // Name-spacing nested arguments because nested JS default params are a pain
     const octave = { init: octaveInit, low: octaveLow, high: octaveHigh }
     const pitch = { init: pitchInit, low: pitchLow, high: pitchHigh }
@@ -348,6 +351,23 @@ function getRandomMelody({
         min: Math.max(noteDurMin, config.default.noteDuration.min),
         max: Math.min(noteDurMax, config.default.noteDuration.max),
     }
+    console.info(`getRandomMelody() formatted inputs`)
+    console.info(`key = ${key}`)
+    console.info(`mode = ${mode}`)
+    console.info(`octave`)
+    console.dir(octave)
+    console.info('pitch')
+    console.dir(pitch)
+    console.info(`leap`)
+    console.dir(leap)
+    console.info(`duration`)
+    console.dir(duration)
+    console.info(`timeSignature`)
+    console.dir(timeSignature)
+    console.info(`tempo`)
+    console.dir(tempo)
+    console.info(`length`)
+    console.dir(length)
 
     let inValidDurs = []
     for (let [k, v] of Object.entries(duration)) {

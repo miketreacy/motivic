@@ -58,6 +58,9 @@ function _getMelodyTimeDuration(melody) {
 function _getFrequency(pitch, octave) {
     return Config.frequencies[octave][pitch.toLowerCase()]
 }
+
+// TODO: implement dynamics in Motivic by translating MIDI velocity values (0-127)
+// to WebAudioAPI GainNode values (0-1): https://developer.mozilla.org/en-US/docs/Web/API/GainNode
 /**
  *
  * @param {*} ctx
