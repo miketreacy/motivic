@@ -140,7 +140,7 @@ function getRandomDurations(totalUnits, min, max) {
     }
 
     // shuffle the results to disperse clumps
-    return Utils.general.shuffle(results)
+    return generalUtils.shuffle(validatedResults)
 }
 
 /**
