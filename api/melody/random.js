@@ -105,176 +105,6 @@ function getRandomDuration(min, max) {
 }
 
 /**
- * Higher-order function that takes a min and max duration and returns a
- * validator function for iterating over duration values.
- * @param {number} min Minimum note duration in atomic rhythmic units.
- * @param {number} max Maximum note duration in atomic rhythmic units.
- * @returns {function(number): [boolean, Object]}
- * @private
- */
-function durationIsValid(min, max) {
-    /**
-     * Determines if a given duration value honors min and max parameters
-     * @param {number} d Duration value to validate
-     * @returns {[boolean, Object]} A pseudo-tuple of "is valid", diffMap
-     */
-    return function isValid(d) {
-        // if either diff is negative, then number is invalid
-        let diff = { min: d - min, max: max - d }
-
-        return [diff.min >= 0 && diff.max >= 0, diff]
-    }
-}
-
-/**
- * Determines if a given array of durations is valid
- * @param {[number]} durations Array of numbers representing note durations
- * in atomic rhythmic units.
- * @param {number} min Minimum note duration in atomic rhythmic units.
- * @param {number} max Maximum note duration in atomic rhythmic units.
- * @param {number} totalUnitsTarget Number of duration units to fill.
- * @returns {[boolean, number, [boolean]]} A pseudo-tuple of "is valid", the
- * total unit diff, and a mapped list of "is valid" for each duration
- * @private
- */
-function durationSetIsValid(durations, min, max, totalUnitsTarget) {
-    let totalUnits = generalUtils.sum(durations)
-    let totalDiff = totalUnitsTarget - totalUnits
-    let totalResult = !Math.abs(totalDiff)
-    let isDurValid = durationIsValid(min, max)
-    let diffMap = durations.map(isDurValid)
-    let resultSet = generalUtils.unique(diffMap.map(([isValid]) => isValid))
-    let resultSetValid = resultSet[0] && resultSet.length === 1
-    let result = totalResult && resultSetValid
-    return [result, totalDiff, resultSetValid]
-}
-
-function distributeDurationValues(durations, min, max, totalUnitsTarget) {
-    console.info(`durations: ${durations.join(', ')}`)
-
-    // putting the invalid values in front
-    // durations.pop()
-    durations.reverse()
-
-    let validator = durationIsValid(min, max)
-    let validations = durations.map(validator)
-    let balance = totalUnitsTarget - generalUtils.sum(durations)
-
-    for (let [i, [isValid, diff]] of validations.entries()) {
-        console.log(
-            `${i}: valid:${isValid} diffMin:${diff.min} diffMax:${diff.max}`
-        )
-        let dur = durations[i]
-        if (!isValid) {
-            // if number is invalid, correct it
-            let low = diff.min < 0
-            let high = diff.max < 0
-            if (low) {
-                // if number is lower than min, raise it to min
-                durations[i] = dur - diff.min
-                balance += diff.min
-            } else if (high) {
-                // NOTE: in practice this path is not hit
-                // if number is higher than max, lower it to max
-                durations[i] = dur + diff.max
-                balance += diff.max
-            }
-        } else {
-            if (Math.abs(balance)) {
-                // there is a balance to be paid
-
-                // if number is valid, pay the balance with it
-                if (balance > 0 && dur < max) {
-                    // raise a low number
-                    while (durations[i] < max && balance) {
-                        durations[i]++
-                        balance = balance - 1
-                    }
-                } else if (balance < 0 && dur > min) {
-                    // reduce a high number
-                    while (durations[i] > min && balance < 0) {
-                        durations[i] = durations[i] - 1
-                        balance = balance + 1
-                    }
-                }
-            }
-        }
-    }
-    console.info(`durations: ${durations.join(', ')}`)
-    console.info(`total: ${generalUtils.sum(durations)}`)
-    let [areValid, totalDiff, valuesAreValid] = durationSetIsValid(
-        durations,
-        min,
-        max,
-        totalUnitsTarget
-    )
-    if (areValid) {
-        console.info(`✅ 🎉Validation was successful!!!🎉\n`)
-        return durations
-    } else {
-        // This should NEVER happen
-        console.info(`durations: ${durations.join(', ')}`)
-        console.info(`🤮 EPIC FAIL!!! 🤮: _getRandomDurations()\n`)
-        let valuesMsg = valuesAreValid
-            ? ''
-            : `make note durations conform to given min/max range of ${min} - ${max}`
-        let totalMsg = totalDiff
-            ? `make sum of note durations meet total duration target. Total was off by ${totalDiff}`
-            : ''
-        let conjunctionStr = totalMsg && valuesMsg ? ' and ' : ''
-        let errMsg = `${valuesMsg}${conjunctionStr}${totalMsg}`
-        throw new AppError(
-            `Application failed to ${errMsg}. Please try other min/max values.`
-        )
-    }
-}
-
-/**
- * Ensures that random duration set confirms to parameters
- * @param {[number]} durations Array of numbers representing note durations
- * in atomic rhythmic units.
- * @param {number} min Minimum note duration in atomic rhythmic units.
- * @param {number} max Maximum note duration in atomic rhythmic units.
- * @param {number} totalUnitsTarget Number of duration units to fill.
- * @returns {*}
- * @private
- */
-function validateRandomDurations(durations, min, max, totalUnitsTarget) {
-    let [areValid, totalDiff, valuesAreValid] = durationSetIsValid(
-        durations,
-        min,
-        max,
-        totalUnitsTarget
-    )
-    if (areValid) {
-        console.debug(
-            `✅ _getRandomDurations() succeeded for total:${totalUnitsTarget}, min:${min}, max:${max}\ndurations: ${durations.join(
-                ','
-            )}`
-        )
-        return durations
-    }
-    if (totalDiff === 0) {
-        console.warn(`\nBAD PATH A: valid sum but INVALID values`)
-    } else {
-        if (valuesAreValid) {
-            console.warn(
-                `\nBAD PATH B: valid values but INVALID sum ${
-                    totalUnitsTarget + totalDiff
-                }`
-            )
-        } else {
-            console.warn(
-                `\nBAD PATH C: INVALID values and INVALID sum ${
-                    totalUnitsTarget + totalDiff
-                }`
-            )
-        }
-    }
-    return distributeDurationValues(durations, min, max, totalUnitsTarget)
-}
-
-/**
  * Generates a random sequence of rhythmic durations that subdivide a given
  * number of beats with an optional min and max duration length.
  * @param {number} totalUnits Number of beats to generate.
@@ -296,18 +126,21 @@ function getRandomDurations(totalUnits, min, max) {
     while (unitsLeft > 0) {
         let newBeatMax = Math.min(max, unitsLeft)
         let newBeat = getRandomDuration(min, newBeatMax)
+        let remainder = unitsLeft - newBeat
+        if (remainder && remainder < min) {
+            // This will yield an invalid final value, so intervene
+            if (unitsLeft / 2 < min) {
+                newBeat = unitsLeft
+            } else {
+                newBeat = unitsLeft - min
+            }
+        }
         results.push(newBeat)
         unitsLeft = unitsLeft - newBeat
     }
-    // Make sure the results satisfy the parameters
-    let validatedResults = validateRandomDurations(
-        results,
-        min,
-        max,
-        totalUnits
-    )
+
     // shuffle the results to disperse clumps
-    return generalUtils.shuffle(validatedResults)
+    return Utils.general.shuffle(results)
 }
 
 /**
