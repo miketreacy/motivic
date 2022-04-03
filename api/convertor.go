@@ -1054,7 +1054,10 @@ func jsonDataConversionHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 2. CONVERT MOTIF TO AUDIO FILE
 	fmt.Println("Converting Motif...")
-	outputFileName := b.Motif.Name
+	var outputFileName string = "my-motif"
+	if len(b.Motif.Name) > 0 {
+		outputFileName = b.Motif.Name
+	}
 	randomString := getRandomString(8)
 	// TODO: forego writing files to disk: keep bytes in memory and return a blob?
 	wavFileoutputFilePath, _ := getFilePathFromName(outputFileDir, randomString, outputFileName, "wav")

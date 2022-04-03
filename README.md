@@ -4,13 +4,12 @@ _tools for composers_
 
 This app allows users to do the following:
 
-1. Generate a monophonic melody one of three ways
-    - Inputting notes via the grid UI
-    - Creating a random melody with the randomizer tool
-    - Importing a MIDI or JSON file
-2. Transform that melody into a new motif using concepts from baroque composition.
+1. Generate a monophonic melody, or motif one of three ways
+    - Creating a random motif with the randomizer tool
+    - Importing a MIDI or JSON file (must be monophonic!)
+2. Transform that motif into a new motif using concepts from baroque composition.
 3. Layer multiple motifs to create unique melodic counterpoint.
-4. Export that new composition as a MIDI or JSON file.
+4. Export that new motif as a MIDI, JSON, or WAV file.
 
 Motivic uses the Web Audio API to generate all sounds.
 
