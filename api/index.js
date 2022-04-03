@@ -1,13 +1,12 @@
 module.exports = (req, res) => {
     const apiRouteMap = {
-        '/api/melody/random': 'POST',
-        '/api/melody/transform': 'POST',
-        '/api/convertor': 'POST',
+        '/api/melody/random (NodeJS)': 'POST',
+        '/api/melody/transform (NodeJS)': 'POST',
+        '/api/convertor (Golang)': 'POST',
     }
     const operations = Object.keys(apiRouteMap)
-        .map((k) => `<li>${apiRouteMap[k]} <a href="${k}">${k}</a></li>`)
+        .map((k) => `<li>${apiRouteMap[k]} ${k}</li>`)
         .join('')
-    const message = `<h1>Welcome to the Motivic API!</h1> <div>available operations:<ul>${operations}</ul></div>`
     const response = `<html>
                         <head>
                             <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,6 +27,9 @@ module.exports = (req, res) => {
                                 }
                                 section {
                                     width: 100%;
+                                }
+                                h1, h2 {
+                                    font-family: Helvetica;
                                 }
                                 li {
                                     position: relative;
@@ -53,14 +55,18 @@ module.exports = (req, res) => {
                         </head>
                         <body>
                         <main>
+                            <h1>Welcome to the Motivic API!</h1> 
                     
-                            <section>${message}</section>
                             <section>
-                                <h2>Testing the API from the command line with <a href="https://curl.se/">cURL</a> and <a href="https://stedolan.github.io/jq/">jq</a></h2>
-                                <p>Steps to generate a random melody, convert it to a WAV file, and listen to the results.</p>
+                                <h2>Available Operations</h2>
+                                <ul>${operations}</ul>
+                            </section>
+                            <section>
+                                <h2>Try It Out</h2>                                
+                                <p>Interact with the API from the command line using <a href="https://curl.se/">cURL</a> and <a href="https://stedolan.github.io/jq/">jq</a>. Generate a random melody, convert it to a WAV file, and listen to the results.</p>
                                 <ol>
                                     <li>
-                                        <p>Generate a random melody and write the response to a JSON file</p>
+                                        <p>Make a request to the <a href="https://github.com/miketreacy/motivic/blob/master/api/melody/random.js">random melody endpoint</a> and write the response to a JSON file.</p>
                                         <p>with default settings...</p>
                                         
                                         <pre>
@@ -119,7 +125,7 @@ module.exports = (req, res) => {
                                         </pre>
                                     </li>
                                     <li>
-                                        <p>Send a request to the convertor API to generate a WAV audio file. The response will be compressed in a .zip file.</p>
+                                        <p>Send a request to the <a href="https://github.com/miketreacy/motivic/blob/master/api/convertor.go">Golang convertor endpoint</a> to generate a WAV audio file from the JSON motif. The response will be compressed in a .zip file.</p>
                                         
                                         <pre>
                                             <button class="copy">&#128203;</button>
