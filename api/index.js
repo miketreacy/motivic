@@ -9,6 +9,10 @@ module.exports = (req, res) => {
         .join('')
     const response = `<html>
                         <head>
+                            <meta
+                                name="viewport"
+                                content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+                            />
                             <link rel="preconnect" href="https://fonts.googleapis.com">
                             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
                             <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
@@ -18,6 +22,12 @@ module.exports = (req, res) => {
                                     flex-direction: column;
                                     align-items: center;
                                     width: 100vw;
+                                }
+                                main {
+                                    display: flex;
+                                    flex-direction: column;
+                                    align-items: center;
+                                    padding: 10px;
                                 }                               
                                 button.copy {
                                     position: absolute;
@@ -55,7 +65,7 @@ module.exports = (req, res) => {
                         </head>
                         <body>
                         <main>
-                            <h1>Welcome to the Motivic API!</h1> 
+                            <h1>Motivic API</h1> 
                     
                             <section>
                                 <h2>Available Operations</h2>
@@ -63,10 +73,10 @@ module.exports = (req, res) => {
                             </section>
                             <section>
                                 <h2>Try It Out</h2>                                
-                                <p>Interact with the API from the command line using <a href="https://curl.se/">cURL</a> and <a href="https://stedolan.github.io/jq/">jq</a>. Generate a random melody, convert it to a WAV file, and listen to the results.</p>
+                                <p>Interact with the API from the command line using <a href="https://curl.se/" target="_blank">cURL</a> and <a href="https://stedolan.github.io/jq/" target="_blank">jq</a>. Generate a random melody, convert it to a WAV file, and listen to the results.</p>
                                 <ol>
                                     <li>
-                                        <p>Make a request to the <a href="https://github.com/miketreacy/motivic/blob/master/api/melody/random.js">random melody endpoint</a> and write the response to a JSON file.</p>
+                                        <p>Make a request to the <a href="https://github.com/miketreacy/motivic/blob/master/api/melody/random.js" target="_blank">random melody endpoint</a> and write the response to a JSON file.</p>
                                         <p>with default settings...</p>
                                         
                                         <pre>
@@ -125,7 +135,7 @@ module.exports = (req, res) => {
                                         </pre>
                                     </li>
                                     <li>
-                                        <p>Send a request to the <a href="https://github.com/miketreacy/motivic/blob/master/api/convertor.go">Golang convertor endpoint</a> to generate a WAV audio file from the JSON motif. The response will be compressed in a .zip file.</p>
+                                        <p>Send a request to the <a href="https://github.com/miketreacy/motivic/blob/master/api/convertor.go" target="_blank">Golang convertor endpoint</a> to generate a WAV audio file from the JSON motif. The response will be compressed in a .zip file.</p>
                                         
                                         <pre>
                                             <button class="copy">&#128203;</button>
