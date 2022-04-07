@@ -1020,7 +1020,7 @@ func jsonDataConversionHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, msg, http.StatusBadRequest)
 
 		// Catch any type errors, like trying to assign a string in the
-		// JSON request body to a int field in our Person struct. We can
+		// JSON request body to a int field in the Motif struct. We can
 		// interpolate the relevant field name and position into the error
 		// message to make it easier for the client to fix.
 		case errors.As(err, &unmarshalTypeError):

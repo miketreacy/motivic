@@ -1,0 +1,234 @@
+openapi: 3.0.1
+info:
+    title: Motivic API
+    version: 0.1.0
+    description: >-
+        This is a REST API for generating random musical motifs,
+        transforming them via principles of Baroque counterpoint,
+        and downloading them as WAV audio files.
+    contact:
+        email: michaelstreacy@gmail.com
+    license:
+        name: Apache 2.0
+        url: http://www.apache.org/licenses/LICENSE-2.0.html
+externalDocs:
+    description: Find out more about the Motivic API
+    url: https://motivic.io/api
+servers:
+    - url: https://motivic.io/api
+      description: Production server
+paths:
+    /melody/random:
+        post:
+    /melody/transform:
+        post:
+    /convertor:
+        post:
+            summary: Convert a JSON representation of a motif to a WAV file
+            operationId: convertor
+            requestBody:
+                $ref: '#/components/requestBodies/MotifAudioFile'
+            responses:
+                '200':
+                    description: A ZIP file containing a WAV file (audio/wav)
+                    content:
+                        application/zip:
+                            schema:
+                                type: string
+                                format: binary
+                '400':
+                    description: Request body is empty, contains invalid JSON, or has a JSON value of the incorrect type
+                '413':
+                    description: Request body is too large. Request body must not be larger than 1MB
+                '422':
+                    description: Conversion failed due to an unprocessable entity
+                '500':
+                    description: Internal Server Error
+                '504':
+                    description: The request timed out
+components:
+    schemas:
+        Note:
+            type: object
+            properties:
+                value:
+                    type: integer
+                    format: int32
+                duration:
+                    type: integer
+                    format: int32
+                octave:
+                    type: integer
+                    format: int32
+                name:
+                    type: string
+                pitch:
+                    type: string
+            required:
+                - value
+                - duration
+                - octave
+                - name
+                - pitch
+            xml:
+                name: Note
+        MotifNote:
+            allOf:
+                - $ref: '#/components/schemas/Note'
+                - type: object
+                  properties:
+                      steps:
+                          type: integer
+                          format: int32
+                      startingBeat:
+                          type: integer
+                          format: int32
+                      interval:
+                          type: integer
+                          format: int32
+                  required:
+                      - startingBeat
+            xml:
+                name: MotifNote
+        TempoType:
+            type: string
+            enum:
+                - bpm
+        Tempo:
+            type: object
+            properties:
+                type:
+                    $ref: '#/components/schemas/TempoType'
+                units:
+                    type: integer
+                    format: int32
+            xml:
+                name: Tempo
+        TimeSignature:
+            type: array
+            items:
+                type: integer
+                format: int32
+            minItems: 2
+            maxItems: 2
+        MotifMeta:
+            type: object
+            properties:
+                key:
+                    type: string
+                mode:
+                    type: string
+                tempo:
+                    $ref: '#/components/schemas/Tempo'
+                timeSignature:
+                    $ref: '#/components/schemas/TimeSignature'
+            required:
+                - tempo
+                - timeSignature
+        Motif:
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                meta:
+                    $ref: '#/components/schemas/MotifMeta'
+                notes:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Note'
+            required:
+                - notes
+                - meta
+    requestBodies:
+        RandomMotif:
+            description: Request body to generate a random motif based on input parameters
+            content:
+                application/json:
+                    schema:
+                        properties:
+                            # {
+                            #     "key": "c",
+                            #     "mode": "chromatic",
+                            #     "octave": {
+                            #         "low": 3,
+                            #         "high": 5
+                            #     },
+                            #     "leap": {
+                            #         "min": 1,
+                            #         "max": 23
+                            #     },
+                            #     "duration": {
+                            #         "min": 4,
+                            #         "max": 16
+                            #     },
+                            #     "timeSignature": [
+                            #         4,
+                            #         4
+                            #     ],
+                            #     "tempo": {
+                            #         "type": "bpm",
+                            #         "units": 120
+                            #     },
+                            #     "length": {
+                            #         "type": "measures",
+                            #         "units": 2
+                            #     },
+                            #     "setting": {
+                            #         "id": "preset-default"
+                            #     }
+                            # }
+            required: true
+        TransformedMotif:
+            description: Request body to generate a transformed motif based on input parameters
+            content:
+                application/json:
+                    schema:
+                        properties:
+                            # {
+                            #     "melody": {},
+                            #     "transformations": [
+                            #         {
+                            #             "type": "invert",
+                            #             "params": []
+                            #         },
+                            #         {
+                            #             "type": "reverse",
+                            #             "params": [
+                            #                 null,
+                            #                 true
+                            #             ]
+                            #         },
+                            #         {
+                            #             "type": "augment",
+                            #             "params": [
+                            #                 4
+                            #             ]
+                            #         },
+                            #         {
+                            #             "type": "stagger",
+                            #             "params": [
+                            #                 4
+                            #             ]
+                            #         }
+                            #     ]
+                            # }
+
+            required: true
+        MotifAudioFile:
+            description: Request body to convert a JSON motif into a WAV file
+            content:
+                application/json:
+                    schema:
+                        properties:
+                            motif:
+                                $ref: '#/components/schemas/Motif'
+                            voice:
+                                type: string
+                                enum:
+                                    - sine
+                                    - triangle
+                                    - square
+                                    - sawtooth
+            required: true
