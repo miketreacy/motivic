@@ -162,17 +162,7 @@
                     on:downloadFile
                 />
             {/if}
-            {#if showSectionMap.lab}
-                <!-- audio is an experimental route TODO: put this somewhere else in the future -->
-                <LabForm
-                    formOpen={openSection === 'lab'}
-                    {motifs}
-                    selectedMotifId={motifs.length ? motifs[0].id : ''}
-                    on:displayToggle
-                    on:displayAlert
-                    on:displayCrudModal
-                />
-            {/if}
+
             {#if showSectionMap.sequencer}
                 <SequencerForm
                     formOpen={openSection === 'sequencer'}
