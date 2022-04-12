@@ -162,16 +162,6 @@
                     on:downloadFile
                 />
             {/if}
-
-            {#if showSectionMap.sequencer}
-                <SequencerForm
-                    formOpen={openSection === 'sequencer'}
-                    motifs={[]}
-                    on:displayToggle
-                    on:displayAlert
-                    on:displayCrudModal
-                />
-            {/if}
             {#if showSectionMap.randomizer}
                 <RandomizerForm
                     formOpen={openSection === 'randomizer'}
@@ -202,6 +192,15 @@
                     selectedMotifId={motifs.length ? motifs[0].id : ''}
                     on:displayToggle
                     on:displayAlert={handleDisplayAlert}
+                    on:displayCrudModal
+                />
+            {/if}
+            {#if showSectionMap.sequencer}
+                <SequencerForm
+                    formOpen={openSection === 'sequencer'}
+                    motifs={[]}
+                    on:displayToggle
+                    on:displayAlert
                     on:displayCrudModal
                 />
             {/if}
