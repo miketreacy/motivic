@@ -20,8 +20,30 @@ servers:
 paths:
     /melody/random:
         post:
+            summary: Generate a random motif based on user parameters
+            operationId: randomizer
+            requestBody:
+                $ref: '#/components/requestBodies/RandomMotif'
+            responses:
+                '200':
+                    description: A random motif
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/JsonApiResponse'
     /melody/transform:
         post:
+            summary: Transforms a given motif with the given transformation parameters
+            operationId: transformer
+            requestBody:
+                $ref: '#/components/requestBodies/TransformMotif'
+            responses:
+                '200':
+                    description: A transformed motif
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/JsonApiResponse'
     /convertor:
         post:
             summary: Convert a JSON representation of a motif to a WAV file
@@ -48,30 +70,125 @@ paths:
                     description: The request timed out
 components:
     schemas:
+        PitchValue:
+            description: A number representing a pitch >= 1 ('c0') and <= 108 ('b8').
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 108
+            example: 95
+        NotePitchValue:
+            description: The pitch value of a note. A value of `null` indicates that the note is a rest.
+            nullable: true
+            oneOf:
+                - $ref: '#/components/schemas/PitchValue'
+        Duration:
+            description: Rhythmic duration in 64th notes.
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 64
+            example: 5
+        DurationDivision:
+            description: An enumeration of standard rhythmic duration divisions in 64th notes ("1" represents a 64th note, "64" represents a whole note).
+            type: integer
+            format: int32
+            enum:
+                - 1
+                - 2
+                - 4
+                - 8
+                - 16
+                - 32
+                - 64
+            example: 8
+        DurationRange:
+            description: A range of duration values for a motif.
+            type: object
+            properties:
+                min:
+                    $ref: '#/components/schemas/DurationDivision'
+                max:
+                    $ref: '#/components/schemas/DurationDivision'
+        Octave:
+            description: The octaves on a piano in scientific pitch notation.
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 8
+            example: 4
+        OctaveValue:
+            description: The octave value of a note. A value of `null` indicates that the note is a rest.
+            nullable: true
+            oneOf:
+                - $ref: '#/components/schemas/Octave'
+        OctaveRange:
+            description: A range of octaves for a motif.
+            type: object
+            properties:
+                low:
+                    $ref: '#/components/schemas/Octave'
+                high:
+                    $ref: '#/components/schemas/Octave'
+        LeapRange:
+            description: A range of melodic interval leaps for a motif.
+            type: object
+            properties:
+                min:
+                    type: integer
+                    format: int32
+                    minimum: 0
+                    maximum: 11
+                    example: 2
+                max:
+                    type: integer
+                    format: int32
+                    minimum: 2
+                    maximum: 48
+                    example: 12
+        NoteName:
+            description: The names of pitches in western music theory.
+            type: string
+            enum:
+                - c
+                - c#
+                - d
+                - d#
+                - e
+                - f
+                - f#
+                - g
+                - g#
+                - a
+                - a#
+                - b
+            example: c
+        NoteNameValue:
+            description: The note name value of a note. A value of `null` indicates that the note is a rest.
+            nullable: true
+            oneOf:
+                - $ref: '#/components/schemas/NoteName'
         Note:
             type: object
             properties:
                 value:
-                    type: integer
-                    format: int32
+                    $ref: '#/components/schemas/NotePitchValue'
                 duration:
-                    type: integer
-                    format: int32
+                    $ref: '#/components/schemas/Duration'
                 octave:
-                    type: integer
-                    format: int32
+                    $ref: '#/components/schemas/OctaveValue'
                 name:
-                    type: string
+                    $ref: '#/components/schemas/NoteNameValue'
                 pitch:
+                    description: A scientific pitch notation string representing a specific pitch, such as 'c4', 'f#7', etc. A value of 'rest' indicates that the note is a rest.
                     type: string
+                    example: c4
             required:
                 - value
                 - duration
                 - octave
                 - name
                 - pitch
-            xml:
-                name: Note
         MotifNote:
             allOf:
                 - $ref: '#/components/schemas/Note'
@@ -80,20 +197,23 @@ components:
                       steps:
                           type: integer
                           format: int32
+                          example: 0
                       startingBeat:
                           type: integer
                           format: int32
+                          example: 7
                       interval:
                           type: integer
                           format: int32
+                          example: 4
                   required:
                       - startingBeat
-            xml:
-                name: MotifNote
         TempoType:
+            description: The type of tempo units. In the future will allow classical Italian tempo indicators (Grave - Prestissimo).
             type: string
             enum:
                 - bpm
+            example: bpm
         Tempo:
             type: object
             properties:
@@ -102,8 +222,22 @@ components:
                 units:
                     type: integer
                     format: int32
-            xml:
-                name: Tempo
+                    example: 120
+        LengthType:
+            description: The type of length units. In the future will allow absolute time in seconds.
+            type: string
+            enum:
+                - measures
+            example: measures
+        Length:
+            type: object
+            properties:
+                type:
+                    $ref: '#/components/schemas/LengthType'
+                units:
+                    type: integer
+                    format: int32
+                    example: 2
         TimeSignature:
             type: array
             items:
@@ -111,13 +245,28 @@ components:
                 format: int32
             minItems: 2
             maxItems: 2
+            example: [4, 4]
+        Mode:
+            description: One of the western modes, or scales plus 'chromatic' (all possible pitches) and 'whole' (the whole tone scale).
+            type: string
+            example: ionian
+            enum:
+                - chromatic
+                - whole
+                - ionian
+                - dorian
+                - phrygian
+                - lydian
+                - mixolydian
+                - aeolian
+                - locrian
         MotifMeta:
             type: object
             properties:
                 key:
-                    type: string
+                    $ref: '#/components/schemas/NoteName'
                 mode:
-                    type: string
+                    $ref: '#/components/schemas/Mode'
                 tempo:
                     $ref: '#/components/schemas/Tempo'
                 timeSignature:
@@ -130,8 +279,10 @@ components:
             properties:
                 id:
                     type: string
+                    example: 39i7d98hs2
                 name:
                     type: string
+                    example: my-motif
                 meta:
                     $ref: '#/components/schemas/MotifMeta'
                 notes:
@@ -141,6 +292,45 @@ components:
             required:
                 - notes
                 - meta
+        Transformation:
+            type: object
+            properties:
+                type:
+                    type: string
+                    description: name of the transformation operation
+                    example: reverse
+                params:
+                    type: array
+                    items:
+                        nullable: true
+                        oneOf:
+                            - type: boolean
+                            - type: integer
+                              example: true
+        JsonApiResponseRequest:
+            type: object
+            description: returning the request information as part of the response for client convenience
+            properties:
+                headers:
+                    type: object
+                    description: the request headers
+                method:
+                    type: string
+                    description: the http request method
+                    default: POST
+                url:
+                    type: string
+                    description: relative url path
+                body:
+                    type: object
+                    description: request body
+        JsonApiResponse:
+            type: object
+            properties:
+                request:
+                    $ref: '#/components/schemas/JsonApiResponseRequest'
+                response:
+                    $ref: '#/components/schemas/Motif'
     requestBodies:
         RandomMotif:
             description: Request body to generate a random motif based on input parameters
@@ -148,73 +338,35 @@ components:
                 application/json:
                     schema:
                         properties:
-                            # {
-                            #     "key": "c",
-                            #     "mode": "chromatic",
-                            #     "octave": {
-                            #         "low": 3,
-                            #         "high": 5
-                            #     },
-                            #     "leap": {
-                            #         "min": 1,
-                            #         "max": 23
-                            #     },
-                            #     "duration": {
-                            #         "min": 4,
-                            #         "max": 16
-                            #     },
-                            #     "timeSignature": [
-                            #         4,
-                            #         4
-                            #     ],
-                            #     "tempo": {
-                            #         "type": "bpm",
-                            #         "units": 120
-                            #     },
-                            #     "length": {
-                            #         "type": "measures",
-                            #         "units": 2
-                            #     },
-                            #     "setting": {
-                            #         "id": "preset-default"
-                            #     }
-                            # }
+                            key:
+                                $ref: '#/components/schemas/NoteName'
+                            mode:
+                                $ref: '#/components/schemas/Mode'
+                            octave:
+                                $ref: '#/components/schemas/OctaveRange'
+                            leap:
+                                $ref: '#/components/schemas/LeapRange'
+                            duration:
+                                $ref: '#/components/schemas/DurationRange'
+                            timeSignature:
+                                $ref: '#/components/schemas/TimeSignature'
+                            tempo:
+                                $ref: '#/components/schemas/Tempo'
+                            length:
+                                $ref: '#/components/schemas/Length'
             required: true
-        TransformedMotif:
+        TransformMotif:
             description: Request body to generate a transformed motif based on input parameters
             content:
                 application/json:
                     schema:
                         properties:
-                            # {
-                            #     "melody": {},
-                            #     "transformations": [
-                            #         {
-                            #             "type": "invert",
-                            #             "params": []
-                            #         },
-                            #         {
-                            #             "type": "reverse",
-                            #             "params": [
-                            #                 null,
-                            #                 true
-                            #             ]
-                            #         },
-                            #         {
-                            #             "type": "augment",
-                            #             "params": [
-                            #                 4
-                            #             ]
-                            #         },
-                            #         {
-                            #             "type": "stagger",
-                            #             "params": [
-                            #                 4
-                            #             ]
-                            #         }
-                            #     ]
-                            # }
-
+                            melody:
+                                $ref: '#/components/schemas/Motif'
+                            transformations:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Transformation'
             required: true
         MotifAudioFile:
             description: Request body to convert a JSON motif into a WAV file
@@ -232,3 +384,16 @@ components:
                                     - square
                                     - sawtooth
             required: true
+    headers:
+        access-control-allow-headers:
+            schema:
+                type: string
+        access-control-allow-origin:
+            schema:
+                type: string
+        cache-control:
+            schema:
+                type: string
+        content-type:
+            schema:
+                type: string
