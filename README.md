@@ -24,6 +24,7 @@ Motivic uses the Web Audio API to generate all sounds.
     -   future:
         -   could be configured into a PWA
 -   [motivic API](https://motivic.io/api)
+    -   [Swagger API Doc](https://petstore.swagger.io/?url=https://motivic.io/openapi.yaml)
     -   [API curl test steps here](https://motivic.io/api)
     -   exposes core business logic of Motivic
     -   REST API hosted as polyglot serverless funtions:
