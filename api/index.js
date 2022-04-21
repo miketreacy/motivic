@@ -1,12 +1,4 @@
 module.exports = (req, res) => {
-    const apiRouteMap = {
-        '/api/melody/random (NodeJS)': 'POST',
-        '/api/melody/transform (NodeJS)': 'POST',
-        '/api/convertor (Golang)': 'POST',
-    }
-    const operations = Object.keys(apiRouteMap)
-        .map((k) => `<li>${apiRouteMap[k]} ${k}</li>`)
-        .join('')
     const response = `<html>
                         <head>
                             <meta
@@ -22,12 +14,14 @@ module.exports = (req, res) => {
                                     flex-direction: column;
                                     align-items: center;
                                     width: 100vw;
+                                    margin: 0;
                                 }
                                 main {
                                     display: flex;
                                     flex-direction: column;
                                     align-items: center;
                                     padding: 10px;
+                                    max-width: 768px;
                                 }                               
                                 button.copy {
                                     position: absolute;
@@ -36,18 +30,23 @@ module.exports = (req, res) => {
                                     background-color: white;
                                 }
                                 section {
-                                    width: 100%;
+                                    width: 100%;                                    
                                 }
                                 h1, h2 {
                                     font-family: Helvetica;
                                 }
+                                ul, ol {
+                                    display: flex;
+                                    flex-direction: column;
+                                    padding-inline-start: 20px;
+                                }
                                 li {
-                                    position: relative;
+                                    position: relative;                                    
                                 }                            
                                 pre {
                                     position: relative;
                                     display: flex;
-                                    max-width: 75vw;
+                                    max-width: 85vw;
                                     flex-direction: column;
                                     color: #39ff14;
                                     background-color: black;                                   
@@ -56,6 +55,7 @@ module.exports = (req, res) => {
                                     border-radius: .2rem;
                                     font-family: 'Roboto Mono', monospace;
                                     overflow: hidden;
+                                    margin: 0;
                                 }
                                 button {
                                     cursor: copy;
@@ -65,11 +65,12 @@ module.exports = (req, res) => {
                         </head>
                         <body>
                         <main>
-                            <h1>Motivic API</h1> 
-                    
-                            <section>
-                                <h2>Available Operations</h2>
-                                <ul>${operations}</ul>
+                            <h1>Motivic API</h1>                            
+                            <section>                                
+                                    <h2>Documentation</h2>
+                                    <ul>
+                                        <li><a href="https://petstore.swagger.io/?url=https://motivic.io/openapi.yaml" target="_blank">Swagger (Open API Specification)</a></li>                                         
+                                    </ul>                                                         
                             </section>
                             <section>
                                 <h2>Try It Out</h2>                                

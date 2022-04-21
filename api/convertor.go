@@ -1095,11 +1095,11 @@ func jsonDataConversionHandler(w http.ResponseWriter, r *http.Request) {
 func Handler(w http.ResponseWriter, r *http.Request) {
 	// set the music theory config
 	initMotivicConfig()
-	// TODO: this is a hacky compromise to process distinct REST operations on the same endpoint
+	// NOTE: this is a hacky compromise to process distinct REST operations on the same endpoint
 	// I'm only doing this because the file conversion code currently writes a temp file to disk
 	// and since these are serverless functions, upload and download operations can't share a
-	// file system. To work around this, I'm parsing a request header check wether or not this is
-	// and upload or download request.
+	// file system. To work around this, I'm parsing a request header to check whether or not this is
+	// an upload or download request.
 
 	// Let's check out those headers!
 	for k, v := range r.Header {
