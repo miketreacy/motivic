@@ -22,6 +22,7 @@
     export let scrollDown = false
     export let fileDownloading = false
     export let midiOutput = null
+    export let playMotifOnSectionDisplay = false
     let viewType = 'flat'
     let sortType = 'created'
     let sortOrder = 'desc'
@@ -169,6 +170,7 @@
                     {settings}
                     {scrollDown}
                     {midiOutput}
+                    playOnMount={playMotifOnSectionDisplay}
                     on:displayToggle
                     on:displayAlert={handleDisplayAlert}
                     on:displayCrudModal

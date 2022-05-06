@@ -29,6 +29,7 @@
     export let stickyControls = false
     export let selectedSettingId = ''
     export let midiOutput = null
+    export let playOnMount = false
 
     const dispatch = createEventDispatcher()
     const presets = Config.formPresets[formId] || []
@@ -253,6 +254,7 @@
             <MotifAudition
                 motif={newMotif}
                 {midiOutput}
+                {playOnMount}
                 on:toggleMotifAudition={handleAuditionToggle}
                 on:displayCrudModal
                 on:displayAlert

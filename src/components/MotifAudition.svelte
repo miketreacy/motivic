@@ -5,6 +5,7 @@
     import CrudControls from './CrudControls.svelte'
     export let motif
     export let midiOutput = null
+    export let playOnMount = false
 
     const dispatch = createEventDispatcher()
 
@@ -30,6 +31,7 @@
             displayCompact={true}
             selectedMotifs={[motif]}
             {midiOutput}
+            {playOnMount}
             on:displayAlert
         />
         <CrudControls

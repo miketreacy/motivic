@@ -13,6 +13,7 @@
     export let selectedMotifs = []
     export let displayCompact = false
     export let midiOutput = null
+    export let playOnMount = false
     let isPlaying = false
     let isLooping = false
     let disabled = true
@@ -57,13 +58,17 @@
         )
     }
 
-    function playClickHandler(e) {
+    function playHandler() {
         if (AudioSession.isPlaying) {
             return false
         }
         if (selectedMotifs.length) {
             playMotifs(selectedMotifs)
         }
+    }
+
+    function playClickHandler(e) {
+        return playHandler()
     }
 
     function loopMotifs(motifs) {
@@ -90,6 +95,9 @@
 
     onMount(() => {
         AudioSession.ctx = newAudioContext()
+        if (playOnMount) {
+            playHandler()
+        }
     })
 
     onDestroy(async () => {

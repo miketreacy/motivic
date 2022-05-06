@@ -35,6 +35,7 @@
     let scrollUp = true
     let openItemId = urlQueryMap['id'] || ''
     let midiOutput = null
+    let playMotifOnSectionDisplay = false
 
     /**
      * Updates user data in memory in the global MOTIVIC namespace and in the component waterfall
@@ -57,9 +58,10 @@
     function handleDisplayToggle(event) {
         console.log(`handleDisplayToggle() called`)
         console.dir(event.detail)
-        let { section, open, id } = event.detail
+        let { section, open, id, playOnDisplay = false } = event.detail
         if (open) {
             openSection = section
+            playMotifOnSectionDisplay = playOnDisplay
         } else {
             openSection = ''
         }
@@ -158,6 +160,7 @@
     {scrollDown}
     {fileDownloading}
     {midiOutput}
+    {playMotifOnSectionDisplay}
     on:midiOutputConnection={handleMIDIOutputConnection}
     on:displayToggle={handleDisplayToggle}
     on:displayCrudModal={handleModalDisplay}

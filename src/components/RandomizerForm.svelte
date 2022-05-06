@@ -10,6 +10,7 @@
     export let settings = []
     export let scrollDown = false
     export let midiOutput = null
+    export let playOnMount = false
 
     const {
         notes,
@@ -235,6 +236,15 @@
             top: 58,
         })
         newMotif = createdMotif
+        if (success) {
+            // 1. open randomizer form
+            // 2. play new motif if it exists
+            dispatch('displayToggle', {
+                section: formId,
+                open: true,
+                playOnDisplay: Boolean(newMotif),
+            })
+        }
     }
 
     let staticProps = {
@@ -264,6 +274,7 @@
     {scrollDown}
     {midiOutput}
     stickyControls={true}
+    {playOnMount}
     on:displayToggle
     on:displayCrudModal
     on:displayAlert
